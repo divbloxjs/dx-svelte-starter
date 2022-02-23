@@ -20,7 +20,7 @@ upstream        DISABLE (push)
 4. Fetch the upstream:
 ```
 git fetch upstream
-git rebase upstream/master
+git rebase upstream/main
 ```
 You should now be able to pull any changes from this template as they come in.
 
