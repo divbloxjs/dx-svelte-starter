@@ -24,6 +24,8 @@ git rebase upstream/master
 ```
 You should now be able to pull any changes from this template as they come in.
 
+***It might be necessary to rename your upstream branch when using Github Desktop so that it does not see it as a conflicting branch name. You can do this within Github Desktop if you have trouble fetching from the upstream***
+
 ## Once you have the template fetched on your local machine
 To get started run: 
 
