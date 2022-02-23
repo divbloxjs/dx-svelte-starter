@@ -2,6 +2,29 @@
 
 This project aims to be a starting point for new frontend projects that use divbloxjs as their backend. It contains all the basics such as routing and a solid UI framework. The project will be continuously expanded with new svelte components that we find useful when building frontend solutions on top of divbloxjs.
 
+To use this as a template in a private repo follow these steps:
+
+1. Create your private repo and clone it to your local machine
+2. Add this repo as upstream to your newly created repo:
+```
+git remote add upstream https://github.com/divbloxjs/svelte-frontend-starter.git
+git remote set-url --push upstream DISABLE
+```
+3. You can list all your remotes with git remote -v. You should see:
+```
+origin  https://github.com/<your_username>/<your_repo>.git (fetch)
+origin  https://github.com/<your_username>/<your_repo>.git (push)
+upstream        https://github.com/divbloxjs/svelte-frontend-starter.git (fetch)
+upstream        DISABLE (push)
+```
+4. Fetch the upstream:
+```
+git fetch upstream
+git rebase upstream/master
+```
+You should now be able to pull any changes from this template as they come in.
+
+## Once you have the template fetched on your local machine
 To get started run: 
 
 `npm install`
