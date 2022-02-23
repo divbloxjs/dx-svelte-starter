@@ -24,7 +24,7 @@ git rebase upstream/main
 ```
 or
 ```
-git merge
+git merge upstream/main
 ```
 
 You should now be able to pull any future changes from this template using the above commands to fetch and rebase or merge.
