@@ -21,7 +21,7 @@ https://tailwindcss.com/
 **daisyUI**
 https://daisyui.com/
 
-For theming: https://themes.ionevolve.com/
+For daisyUI theming: https://themes.ionevolve.com/
 
 **Fontawesome**
 https://github.com/Cweili/svelte-fa
