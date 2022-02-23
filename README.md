@@ -22,7 +22,12 @@ upstream        DISABLE (push)
 git fetch upstream
 git rebase upstream/main
 ```
-You should now be able to pull any future changes from this template using the above commands to fetch and rebase.
+or
+```
+git merge upstream/main
+```
+
+You should now be able to pull any future changes from this template using the above commands to fetch and rebase or merge.
 
 ## Once you have the template fetched on your local machine
 To get started run: 
