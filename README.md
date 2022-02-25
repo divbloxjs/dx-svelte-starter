@@ -6,10 +6,13 @@ To use this as a template in a private repo follow these steps:
 
 1. Create your private repository
 2. Create a bare clone of this repository. (This is temporary and will be removed so just do it wherever.)
+```
+git clone --bare git@github.com:divbloxjs/svelte-frontend-starter.git
+```
 3. Mirror-push your bare clone to your new private repository.
 ```
 cd svelte-frontend-starter.git
-git push --mirror https://github.com/your_username>/<your_repo>.git
+git push --mirror git@github.com:<your_username>/<your_repo>.git
 ```
 4. Remove the temporary local repository you created in step 1.
 ```
