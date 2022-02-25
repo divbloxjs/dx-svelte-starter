@@ -2,7 +2,7 @@
 
 This project aims to be a starting point for new frontend projects that use divbloxjs as their backend. It contains all the basics such as routing and a solid UI framework. The project will be continuously expanded with new svelte components that we find useful when building frontend solutions on top of divbloxjs.
 
-To use this as a template in a private repo follow these steps:
+To use this as a template in a private repository follow these steps:
 
 1. Create your private repository
 2. Create a bare clone of this repository. (This is temporary and will be removed so just do it wherever.)
