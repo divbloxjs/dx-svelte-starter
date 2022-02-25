@@ -4,20 +4,32 @@ This project aims to be a starting point for new frontend projects that use divb
 
 To use this as a template in a private repo follow these steps:
 
-1. Create your private repo and clone it to your local machine
-2. Add this repo as upstream to your newly created repo:
+1. Create your private repository
+2. Create a bare clone of this repository. (This is temporary and will be removed so just do it wherever.)
+3. Mirror-push your bare clone to your new private repository.
+```
+cd svelte-frontend-starter.git
+git push --mirror https://github.com/your_username>/<your_repo>.git
+```
+4. Remove the temporary local repository you created in step 1.
+```
+cd ..
+rm -rf svelte-frontend-starter.git
+```
+5. Clone your new private repository to your local machine
+6. Add this repo as upstream to your newly created repo:
 ```
 git remote add upstream https://github.com/divbloxjs/svelte-frontend-starter.git
 git remote set-url --push upstream DISABLE
 ```
-3. You can list all your remotes with git remote -v. You should see:
+7. You can list all your remotes with git remote -v. You should see:
 ```
 origin  https://github.com/<your_username>/<your_repo>.git (fetch)
 origin  https://github.com/<your_username>/<your_repo>.git (push)
 upstream        https://github.com/divbloxjs/svelte-frontend-starter.git (fetch)
 upstream        DISABLE (push)
 ```
-4. Fetch the upstream:
+8. Fetch the upstream:
 ```
 git fetch upstream
 git rebase upstream/main
