@@ -1,5 +1,5 @@
 <script>
-    import ComponentLibrary from "../lib/pages/componentLibrary.svelte";
+    import ComponentLibrary from "../lib/base_components/componentLibrary.svelte";
 </script>
 
 <ComponentLibrary/>

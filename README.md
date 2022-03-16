@@ -1,6 +1,8 @@
 # Divblox + Svelte + tailwindcss + daisyUI + Vite starter project
 
-This project aims to be a starting point for new frontend projects that use divbloxjs as their backend. It contains all the basics such as routing and a solid UI framework. The project will be continuously expanded with new svelte components that we find useful when building frontend solutions on top of divbloxjs.
+This project aims to be a starting point for new frontend projects that use divbloxjs as their backend. It contains all the basics such as routing and a solid UI framework. 
+
+The project will be continuously expanded with new svelte components that we find useful when building frontend solutions on top of divbloxjs. These components will be placed inside the /lib/base_components/ folder. 
 
 To get started run: 
 
