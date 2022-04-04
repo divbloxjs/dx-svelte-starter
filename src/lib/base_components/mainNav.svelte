@@ -3,9 +3,14 @@
     import {push, pop, replace} from "svelte-spa-router";
     import Fa from "svelte-fa";
     import {faCircleUser} from "@fortawesome/free-solid-svg-icons";
+    import {logout} from "../js/authentication";
 
     const doNavigate = (event, page) => {
         push("/"+page);
+    }
+
+    const doLogout = () => {
+      logout(null, null);
     }
 
 </script>
@@ -30,6 +35,14 @@
                 <li>
                     <a href="#/">Page 2</a>
                 </li>
+                <li>
+                  <span class="justify-between">
+                    Profile
+                    <span class="badge">New</span>
+                  </span>
+                </li>
+                <li><span>Settings</span></li>
+                <li><span on:click="{doLogout}">Logout</span></li>
               </ul>
         </div>
     </div>
@@ -61,7 +74,7 @@
             </span>
           </li>
           <li><span>Settings</span></li>
-          <li><span>Logout</span></li>
+          <li><span on:click="{doLogout}">Logout</span></li>
         </ul>
       </div>
     </div>
