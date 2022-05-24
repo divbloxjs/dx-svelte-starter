@@ -1,5 +1,5 @@
 <script>
-  import { domainRoot, appName } from "../js/stores";
+  import { domainRoot, appName } from "../../lib/js/stores";
   const currentYear = new Date().getFullYear();
 </script>
 
