@@ -2,9 +2,9 @@
 
 This project aims to be a starting point for new frontend projects that use divbloxjs as their backend. It contains all the basics such as routing and a solid UI framework. 
 
-The project will be continuously expanded with new svelte components that we find useful when building frontend solutions on top of divbloxjs. These components will be placed inside the /base_components folder. Never edit the components in the /base_components folder since you might lose those changes when updating from this master repo.
+The project will be continuously expanded with new svelte components that we find useful when building frontend solutions on top of divbloxjs. These components will be placed inside the /src/base_components folder. Never edit the components in the /src/base_components folder since you might lose those changes when updating from this master repo.
 
-The aim is not to change any of the files in the /lib folder to allow the developer to use this as a true starting point, but this may still happen while the repo is in its early stages. So bare that in mind when updating from this master repo.
+The aim is not to change any of the files in the /src/lib folder to allow the developer to use this as a true starting point, but this may still happen while the repo is in its early stages. So bare that in mind when updating from this master repo.
 
 To use this as a template in a private repository follow these steps:
 

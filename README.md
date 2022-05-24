@@ -1,1 +1,1 @@
-See readme in /base_components for more details
+See readme in /src/base_components for more details
