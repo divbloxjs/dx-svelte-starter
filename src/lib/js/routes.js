@@ -4,6 +4,10 @@ import ComponentLibrary from "../../base_components/pages/componentLibraryPage.s
 import NotFound from "../pages/notFoundPage.svelte";
 import Login from "../pages/loginPage.svelte";
 
+/**
+ * Update this to suit your needs
+ */
+
 const routes = {
     "/": Home,
     "/home": Home,
