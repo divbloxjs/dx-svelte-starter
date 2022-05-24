@@ -1,6 +1,5 @@
 <script>
     import RoutingExampleNav from "../navigation/routingExampleNav.svelte";
-    import MainFooter from "../navigation/mainFooter.svelte";
     import { fade } from 'svelte/transition';
 
     $: activeComponentTab = "daisyUiComponents";
@@ -113,5 +112,3 @@
 
     </div>
 </main>
-
-<MainFooter/>
