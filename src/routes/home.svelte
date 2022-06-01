@@ -1,10 +1,10 @@
 <script>
-  import MainNav from "../navigation/mainNav.svelte";
-  import MainFooter from "../navigation/mainFooter.svelte";
+  import MainNav from "../lib/navigation/mainNav.svelte";
+  import MainFooter from "../lib/navigation/mainFooter.svelte";
   import { push, pop, replace } from "svelte-spa-router";
-  import { checkAuthentication } from "../js/authentication";
+  import { checkAuthentication } from "../lib/js/authentication";
   import { onMount } from "svelte";
-  import PageTransitionFade from "../../base_components/page_transitions/pageTransitionFade.svelte";
+  import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
 
   const openComponentLibrary = () => {
     push("/component-library");

@@ -1,15 +1,15 @@
 <script>
-  import MainFooter from "../navigation/mainFooter.svelte";
+  import MainFooter from "../lib/navigation/mainFooter.svelte";
   import {
     domainRoot,
     isAuthenticated,
     appLogo,
     appName,
     defaultLandingPage,
-  } from "../js/stores";
-  import { checkAuthentication, authenticate } from "../js/authentication";
+  } from "../lib/js/stores";
+  import { checkAuthentication, authenticate } from "../lib/js/authentication";
   import { onMount } from "svelte";
-  import PageTransitionFade from "../../base_components/page_transitions/pageTransitionFade.svelte";
+  import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
 
   let username = "";
   let password = "";
