@@ -31,7 +31,7 @@
       </figure>
       <div class="card-body">
         <h2 class="text-xl font-bold text-center">
-          Reset your {appName} password 
+          Reset your {appName} password
         </h2>
         <!-- <p>{isAuthenticatedValue}</p> -->
         <input
