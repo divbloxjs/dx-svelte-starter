@@ -8,18 +8,14 @@
     defaultLandingPage,
   } from "../lib/js/stores";
   import { checkAuthentication, authenticate } from "../lib/js/authentication";
+  import { routeUtilities } from "../lib/js/routeUtilities";
   import { onMount } from "svelte";
   import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
 
   let username = "";
-  let password = "";
 
-  onMount(async () => {
-    checkAuthentication();
-  });
-
-  const doAuthentication = () => {
-    authenticate(username, password, null, null);
+  const doSendPasswordResetLink = () => {
+    alert("Coming soon...");
   };
 </script>
 
@@ -34,7 +30,9 @@
         >
       </figure>
       <div class="card-body">
-        <h2 class="text-xl font-bold text-center">Sign in to {appName}</h2>
+        <h2 class="text-xl font-bold text-center">
+          Reset your {appName} password 
+        </h2>
         <!-- <p>{isAuthenticatedValue}</p> -->
         <input
           type="email"
@@ -42,26 +40,15 @@
           class="input input-bordered w-full"
           value={username}
         />
-        <input
-          type="password"
-          placeholder="Password"
-          class="input input-bordered w-full"
-          value={password}
-        />
 
         <div class="card-actions justify-between">
-          <a href="#/forgot-password" class="btn btn-link text-gray-600 pl-0"
-            >Forgot Password?</a
+          <button
+            on:click={routeUtilities.goBack}
+            class="btn btn-link text-gray-600 pl-0">Cancel</button
           >
-          <button class="btn btn-primary" on:click={doAuthentication}
-            >Sign in</button
+          <button class="btn btn-primary" on:click={doSendPasswordResetLink}
+            >Confirm</button
           >
-          <div class="alert flex-col justify-center">
-            <span class="flex-shrink font-extrabold">New to {appName}?</span>
-            <a href="#/create-account" class="flex-shrink btn btn-outline"
-              >Create your account now</a
-            >
-          </div>
         </div>
       </div>
     </div>

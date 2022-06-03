@@ -8,18 +8,20 @@
     defaultLandingPage,
   } from "../lib/js/stores";
   import { checkAuthentication, authenticate } from "../lib/js/authentication";
+  import { routeUtilities } from "../lib/js/routeUtilities";
   import { onMount } from "svelte";
   import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
 
   let username = "";
   let password = "";
+  let passwordConfirm = "";
 
   onMount(async () => {
-    checkAuthentication();
+    checkAuthentication(null, null, null, "/");
   });
 
-  const doAuthentication = () => {
-    authenticate(username, password, null, null);
+  const doCreateAccount = () => {
+    alert("Coming soon...");
   };
 </script>
 
@@ -34,11 +36,12 @@
         >
       </figure>
       <div class="card-body">
-        <h2 class="text-xl font-bold text-center">Sign in to {appName}</h2>
-        <!-- <p>{isAuthenticatedValue}</p> -->
+        <h2 class="text-xl font-bold text-center">
+          Create your {appName} account
+        </h2>
         <input
           type="email"
-          placeholder="Username or email"
+          placeholder="Email Address"
           class="input input-bordered w-full"
           value={username}
         />
@@ -48,20 +51,21 @@
           class="input input-bordered w-full"
           value={password}
         />
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          class="input input-bordered w-full"
+          value={passwordConfirm}
+        />
 
         <div class="card-actions justify-between">
-          <a href="#/forgot-password" class="btn btn-link text-gray-600 pl-0"
-            >Forgot Password?</a
+          <button
+            on:click={routeUtilities.goBack}
+            class="btn btn-link text-gray-600 pl-0">Cancel</button
           >
-          <button class="btn btn-primary" on:click={doAuthentication}
-            >Sign in</button
+          <button class="btn btn-primary mr-0" on:click={doCreateAccount}
+            >Register</button
           >
-          <div class="alert flex-col justify-center">
-            <span class="flex-shrink font-extrabold">New to {appName}?</span>
-            <a href="#/create-account" class="flex-shrink btn btn-outline"
-              >Create your account now</a
-            >
-          </div>
         </div>
       </div>
     </div>
