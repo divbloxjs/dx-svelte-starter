@@ -1,13 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/dx_icon.ico" />
+    <link rel="icon" href="/assets/images/dx_icon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>divblox.com</title>
-  </head>
-  <body>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="apple-touch-icon" href="/assets/images/app_icon_192.jpg">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/app_icon_192.jpg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/app_icon_192.jpg">
+    <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/app_icon_192.jpg">
+    <link rel="apple-touch-startup-image" sizes="2048x2732" href="/assets/images/apple_splash_2048.jpeg" />
+    <link rel="apple-touch-startup-image" sizes="1668x2224" href="/assets/images/apple_splash_1668.jpeg" />
+    <link rel="apple-touch-startup-image" sizes="1536x2048" href="/assets/images/apple_splash_1536.jpeg" />
+    <link rel="apple-touch-startup-image" sizes="1125x2436" href="/assets/images/apple_splash_1125.jpeg" />
+    <link rel="apple-touch-startup-image" sizes="1242x2208" href="/assets/images/apple_splash_1242.jpeg" />
+    <link rel="apple-touch-startup-image" sizes="750x1334" href="/assets/images/apple_splash_750.jpeg" />
+    <link rel="apple-touch-startup-image" sizes="640x1136" href="/assets/images/apple_splash_640.jpeg" />
+    <title>Divblox</title>
+</head>
+
+<body>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
-  </body>
+</body>
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js', {
+            scope: '/'
+        });
+    }
+</script>
+
 </html>
