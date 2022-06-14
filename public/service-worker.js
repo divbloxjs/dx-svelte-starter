@@ -4,7 +4,7 @@ const OFFLINE_URL = '/offline.html';
 // A list of local resources we always want to be cached.
 const PRECACHE_URLS = [
     OFFLINE_URL,
-    'manifest.json',
+    '/manifest.json',
     '/assets/images/dx_icon.ico',
     '/assets/images/app_logo.png',
     '/assets/images/app_icon_192.png',
@@ -17,7 +17,8 @@ const PRECACHE_URLS = [
     '/assets/images/apple_splash_1125.jpeg',
     '/assets/images/apple_splash_1242.jpeg',
     '/assets/images/apple_splash_750.jpeg',
-    '/assets/images/apple_splash_640.jpeg'
+    '/assets/images/apple_splash_640.jpeg',
+    '/src/*'
 ];
 
 // The install handler takes care of precaching the resources we always need.
@@ -30,6 +31,7 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('message', function(event) {
+    console.log("Message: " + JSON.stringify(event.data));
     if (event.data.action === 'skipWaiting') {
         self.skipWaiting();
     }
@@ -49,41 +51,57 @@ self.addEventListener('activate', event => {
     );
 });
 
-self.addEventListener('fetch', function(event) {
-    if (event.request.mode === 'navigate') {
-        event.respondWith(
-            fetch(event.request).catch(() => caches.match(OFFLINE_URL)).then(function(response) {
-                if (response) {
+// The fetch handler serves responses for same-origin resources from a cache.
+// If no response is found, it populates the runtime cache with the response
+// from the network before returning it to the page.
+self.addEventListener('fetch', event => {
+    if (event.request.url.startsWith(self.location.origin)) {
+        if (event.request.mode === 'navigate') {
+            event.respondWith(
+                fetch(event.request)
+                .then((response) => {
                     return response;
-                }
-            })
-
-        );
-    }
-
-    let req = event.request.clone();
-    if (req.method == "GET") {
-        caches.match(event.request)
-            .then(function(response) {
-                // Cache hit - return response
-                if (response) {
-                    return event.respondWith(response);
-                }
-            });
-
-        // event.respondWith(
-        //     caches.match(event.request)
-        //     .then(function(response) {
-        //         // Cache hit - return response
-        //         if (response) {
-        //             return response;
-        //         }
-        //     })
-        // );
-        // event.respondWith(fetch(event.request));
+                })
+                .catch(() => caches.match(OFFLINE_URL)).then(function(response) {
+                    if (response) {
+                        return response;
+                    }
+                }));
+        } else {
+            return fetch(event.request);
+        }
     } else {
-        event.respondWith(fetch(event.request));
+        return fetch(event.request);
     }
-
-
+    //TODO: Figure this out...
+    // Skip cross-origin requests, like those for Google Analytics.
+    /*if (event.request.url.startsWith(self.location.origin)) {
+        if (event.request.mode === 'navigate') {
+            event.respondWith(
+                fetch(event.request)
+                .then((response) => {
+                    return response;
+                })
+                .catch(() => caches.match(OFFLINE_URL)).then(function(response) {
+                    if (response) {
+                        return response;
+                    }
+                }));
+        } else {
+            console.log("Not navigate");
+            event.respondWith(
+                caches.match(event.request)
+                .then(cachedResponse => {
+                    if (cachedResponse) {
+                        return cachedResponse;
+                    }
+                }, () => {
+                    return fetch(event.request);
+                }).catch(() => {
+                    return fetch(event.request);
+                }));
+        }
+    } else {
+        return fetch(event.request);
+    }*/
 });
