@@ -1,4 +1,8 @@
 <script>
+  import {
+    domainRoot,
+    appName,
+  } from "../../lib/js/stores";
   const currentYear = new Date().getFullYear();
 </script>
 
@@ -6,6 +10,6 @@
   class="fixed bottom-0 z-10 p-4 footer bg-base-300 text-base-content footer-center"
 >
   <div>
-    <p>© {currentYear} Divblox - All rights reserved</p>
+    <p>© {currentYear} <a href="{domainRoot}">{appName}</a> - All rights reserved</p>
   </div>
 </footer>

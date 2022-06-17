@@ -1,5 +1,9 @@
 <script>
-  import logo from "../../assets/images/divblox_logo_violet-02.png";
+  import {
+    domainRoot,
+    appLogo,
+    appName
+  } from "../../lib/js/stores";
   import { push, pop, replace } from "svelte-spa-router";
   import Fa from "svelte-fa";
   import { faCircleUser } from "@fortawesome/free-solid-svg-icons";
@@ -18,8 +22,8 @@
   <div class="flex-1">
     <img
       on:click={(event) => doNavigate(event, "home")}
-      src={logo}
-      alt="Divblox Logo"
+      src={appLogo}
+      alt="{appName} Logo"
       class="max-h-10 px-3 hover:cursor-pointer"
     />
   </div>

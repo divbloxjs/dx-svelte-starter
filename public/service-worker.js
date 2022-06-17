@@ -1,12 +1,9 @@
-const PRECACHE = 'precache-v1641913792';
+const PRECACHE = 'precache-v1';
 const RUNTIME = 'runtime';
-const OFFLINE_URL = '/offline.html';
 // A list of local resources we always want to be cached.
 const PRECACHE_URLS = [
-    OFFLINE_URL,
     '/manifest.json',
     '/assets/images/dx_icon.ico',
-    '/assets/images/app_logo.png',
     '/assets/images/app_icon_192.png',
     '/assets/images/app_icon_512.png',
     '/assets/images/app_icon_192.jpg',
@@ -17,20 +14,19 @@ const PRECACHE_URLS = [
     '/assets/images/apple_splash_1125.jpeg',
     '/assets/images/apple_splash_1242.jpeg',
     '/assets/images/apple_splash_750.jpeg',
-    '/assets/images/apple_splash_640.jpeg',
-    '/src/*'
+    '/assets/images/apple_splash_640.jpeg'
 ];
 
 // The install handler takes care of precaching the resources we always need.
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(PRECACHE)
-            .then(cache => cache.addAll(PRECACHE_URLS))
-            .then(self.skipWaiting())
+        .then(cache => cache.addAll(PRECACHE_URLS))
+        .then(self.skipWaiting())
     );
 });
 
-self.addEventListener('message', function (event) {
+self.addEventListener('message', function(event) {
     console.log("Message: " + JSON.stringify(event.data));
     if (event.data.action === 'skipWaiting') {
         self.skipWaiting();
@@ -66,10 +62,14 @@ self.addEventListener('fetch', event => {
 
                 return caches.open(RUNTIME).then(cache => {
                     return fetch(event.request).then(response => {
-                        // Put a copy of the response in the runtime cache.
-                        return cache.put(event.request, response.clone()).then(() => {
+                        if (event.request.destination === 'image') {
+                            // Put a copy of the response in the runtime cache.
+                            return cache.put(event.request, response.clone()).then(() => {
+                                return response;
+                            });
+                        } else {
                             return response;
-                        });
+                        }
                     });
                 });
             })
