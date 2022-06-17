@@ -8,6 +8,9 @@
   import CreateAccount from "./routes/createAccount.svelte";
   import ForgotPassword from "./routes/forgotPassword.svelte";
   import ResetPassword from "./routes/resetPassword.svelte";
+  import { requestNotificationPermission } from "./lib/js/permissions";
+  import { onMount } from "svelte";
+  import { shouldRequestForNotificationSupport } from "./lib/js/stores";
 
   /**
    * Update this to suit your needs
@@ -26,6 +29,12 @@
 
     "*": NotFound,
   };
+
+  onMount(async () => {
+    if (shouldRequestForNotificationSupport) {
+      requestNotificationPermission();
+    }
+  });
 </script>
 
 <main>

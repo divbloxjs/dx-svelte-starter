@@ -1,5 +1,6 @@
-const PRECACHE = 'precache-v1';
-const RUNTIME = 'runtime';
+const PRECACHE = 'precache-v2';
+const RUNTIME = 'runtime-v1';
+
 // A list of local resources we always want to be cached.
 const PRECACHE_URLS = [
     '/manifest.json',
@@ -17,6 +18,27 @@ const PRECACHE_URLS = [
     '/assets/images/apple_splash_640.jpeg'
 ];
 
+// A list of keywords that we do not want to cache for dev purposes
+const NONCACHE_KEYWORDS = [
+    '@vite',
+    '/src/',
+    '/node_modules'
+];
+
+/**
+ * Matches the given string with one of the keywords provided in NONCACHE_KEYWORDS
+ * @param {*} inputString The string to check on
+ * @returns {boolean} True if matches, false otherwise
+ */
+const matchNonCacheKeywords = (inputString = '') => {
+    for (const keyword of NONCACHE_KEYWORDS) {
+        if (inputString.includes(keyword)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // The install handler takes care of precaching the resources we always need.
 self.addEventListener('install', event => {
     event.waitUntil(
@@ -26,8 +48,8 @@ self.addEventListener('install', event => {
     );
 });
 
-self.addEventListener('message', function(event) {
-    console.log("Message: " + JSON.stringify(event.data));
+self.addEventListener('message', event => {
+    console.log(`The client sent me a message: ${event.data}`);
     if (event.data.action === 'skipWaiting') {
         self.skipWaiting();
     }
@@ -51,7 +73,6 @@ self.addEventListener('activate', event => {
 // If no response is found, it populates the runtime cache with the response
 // from the network before returning it to the page.
 self.addEventListener('fetch', event => {
-    // TODO: Test if this doesn't mess up caches when a new version of the app is built for production
     // Skip cross-origin requests, like those for Google Analytics.
     if (event.request.url.startsWith(self.location.origin)) {
         event.respondWith(
@@ -62,7 +83,7 @@ self.addEventListener('fetch', event => {
 
                 return caches.open(RUNTIME).then(cache => {
                     return fetch(event.request).then(response => {
-                        if (event.request.destination === 'image') {
+                        if (!matchNonCacheKeywords(event.request.url)) {
                             // Put a copy of the response in the runtime cache.
                             return cache.put(event.request, response.clone()).then(() => {
                                 return response;

@@ -26,11 +26,11 @@
     <script type="module" src="/src/main.js"></script>
 </body>
 <script>
-    /*if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js', {
-                scope: '/'
-            });
-        }*/
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/serviceWorker.js', {
+            scope: '/'
+        });
+    }
 </script>
 
 </html>
