@@ -11,13 +11,13 @@
     <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/app_icon_192.jpg">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/app_icon_192.jpg">
     <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/app_icon_192.jpg">
-    <link rel="apple-touch-startup-image" sizes="2048x2732" href="/assets/images/apple_splash_2048.jpeg" />
-    <link rel="apple-touch-startup-image" sizes="1668x2224" href="/assets/images/apple_splash_1668.jpeg" />
-    <link rel="apple-touch-startup-image" sizes="1536x2048" href="/assets/images/apple_splash_1536.jpeg" />
-    <link rel="apple-touch-startup-image" sizes="1125x2436" href="/assets/images/apple_splash_1125.jpeg" />
-    <link rel="apple-touch-startup-image" sizes="1242x2208" href="/assets/images/apple_splash_1242.jpeg" />
-    <link rel="apple-touch-startup-image" sizes="750x1334" href="/assets/images/apple_splash_750.jpeg" />
-    <link rel="apple-touch-startup-image" sizes="640x1136" href="/assets/images/apple_splash_640.jpeg" />
+    <link rel="apple-touch-startup-image" sizes="2048x2732" href="/assets/images/apple_splash_2048.jpg" />
+    <link rel="apple-touch-startup-image" sizes="1668x2224" href="/assets/images/apple_splash_1668.jpg" />
+    <link rel="apple-touch-startup-image" sizes="1536x2048" href="/assets/images/apple_splash_1536.jpg" />
+    <link rel="apple-touch-startup-image" sizes="1125x2436" href="/assets/images/apple_splash_1125.jpg" />
+    <link rel="apple-touch-startup-image" sizes="1242x2208" href="/assets/images/apple_splash_1242.jpg" />
+    <link rel="apple-touch-startup-image" sizes="750x1334" href="/assets/images/apple_splash_750.jpg" />
+    <link rel="apple-touch-startup-image" sizes="640x1136" href="/assets/images/apple_splash_640.jpg" />
     <title>Divblox</title>
 </head>
 
@@ -26,11 +26,21 @@
     <script type="module" src="/src/main.js"></script>
 </body>
 <script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/serviceWorker.js', {
-            scope: '/'
-        });
-    }
+    const registerServiceWorker = async() => {
+        if ('serviceWorker' in navigator) {
+            try {
+                const registration = await navigator.serviceWorker.register(
+                    '/serviceWorker.js', {
+                        scope: '/',
+                    }
+                );
+            } catch (error) {
+                console.error(`Service working registration failed with ${error}`);
+            }
+        }
+    };
+
+    registerServiceWorker();
 </script>
 
 </html>

@@ -1,5 +1,5 @@
-const PRECACHE = 'precache-v2';
-const RUNTIME = 'runtime-v1';
+const PRECACHE = 'precache-v2022-06-20-1';
+const RUNTIME = 'runtime-v2022-06-20-1';
 
 // A list of local resources we always want to be cached.
 const PRECACHE_URLS = [
@@ -9,13 +9,20 @@ const PRECACHE_URLS = [
     '/assets/images/app_icon_512.png',
     '/assets/images/app_icon_192.jpg',
     '/assets/images/app_icon_512.jpg',
-    '/assets/images/apple_splash_2048.jpeg',
-    '/assets/images/apple_splash_1668.jpeg',
-    '/assets/images/apple_splash_1536.jpeg',
-    '/assets/images/apple_splash_1125.jpeg',
-    '/assets/images/apple_splash_1242.jpeg',
-    '/assets/images/apple_splash_750.jpeg',
-    '/assets/images/apple_splash_640.jpeg'
+    '/assets/images/apple_splash_2048.jpg',
+    '/assets/images/apple_splash_1668.jpg',
+    '/assets/images/apple_splash_1536.jpg',
+    '/assets/images/apple_splash_1242.jpg',
+    '/assets/images/apple_splash_1125.jpg',
+    '/assets/images/apple_splash_750.jpg',
+    '/assets/images/apple_splash_640.jpg',
+    '/assets/images/apple_splash_2048.png',
+    '/assets/images/apple_splash_1668.png',
+    '/assets/images/apple_splash_1536.png',
+    '/assets/images/apple_splash_1242.png',
+    '/assets/images/apple_splash_1125.png',
+    '/assets/images/apple_splash_750.png',
+    '/assets/images/apple_splash_640.png'
 ];
 
 // A list of keywords that we do not want to cache for dev purposes
