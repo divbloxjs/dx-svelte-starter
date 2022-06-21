@@ -15,12 +15,14 @@
   let username = "";
   let password = "";
   let passwordConfirm = "";
+  let isProcessingRegistration = false;
 
   onMount(async () => {
     checkAuthentication(null, null, null, "/");
   });
 
-  const doCreateAccount = () => {
+  const doCreateAccount = async () => {
+    isProcessingRegistration = true;
     alert("Coming soon...");
   };
 </script>
@@ -63,9 +65,18 @@
             on:click={routeUtilities.goBack}
             class="btn btn-link text-gray-600 pl-0">Cancel</button
           >
-          <button class="btn btn-primary mr-0" on:click={doCreateAccount}
-            >Register</button
+          <button
+            class:btn-disabled={isProcessingRegistration}
+            class:btn-primary={!isProcessingRegistration}
+            class="btn mr-0"
+            on:click={doCreateAccount}
           >
+            {#if isProcessingRegistration}
+              Working...
+            {:else}
+              Register
+            {/if}
+          </button>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { domainRoot, isAuthenticated, defaultLandingPage } from '../js/stores';
-import {push, pop, replace} from "svelte-spa-router";
+import { push, pop, replace } from "svelte-spa-router";
 
 let isAuthenticatedValue = false;
 
@@ -19,19 +19,23 @@ export const checkAuthentication = (
     isNotAuthenticatedRedirect = "/login",
     isAuthenticatedRedirect = defaultLandingPage) => {
 
-        if (!isAuthenticatedValue) {
-            if (typeof isNotAuthenticatedCallback === "function") {
-                isNotAuthenticatedCallback();
-            } else {
+    if (!isAuthenticatedValue) {
+        if (typeof isNotAuthenticatedCallback === "function") {
+            isNotAuthenticatedCallback();
+        } else {
+            if (isNotAuthenticatedRedirect !== null) {
                 push(isNotAuthenticatedRedirect);
             }
+        }
+    } else {
+        if (typeof isAuthenticatedCallback === "function") {
+            isAuthenticatedCallback();
         } else {
-            if (typeof isAuthenticatedCallback === "function") {
-                isAuthenticatedCallback();
-            } else {
+            if (isAuthenticatedRedirect !== null) {
                 push(isAuthenticatedRedirect);
             }
         }
+    }
 
 }
 
@@ -44,20 +48,20 @@ export const checkAuthentication = (
  * @param {string|null} successRedirect The page to redirect to when authentication succeeds
  */
 export const authenticate = (
-    username, 
-    password, 
-    successCallback, 
+    username,
+    password,
+    successCallback,
     failureCallback,
     successRedirect = defaultLandingPage) => {
 
-        //TODO: Implement this function correctly. For now, this function just sets the isAuthenticated flag to true when called
-        isAuthenticated.set(true);
+    //TODO: Implement this function correctly. For now, this function just sets the isAuthenticated flag to true when called
+    isAuthenticated.set(true);
 
-        if (typeof successCallback === "function"){
-            successCallback();
-        } else {
-            push(successRedirect);
-        }
+    if (typeof successCallback === "function") {
+        successCallback();
+    } else {
+        push(successRedirect);
+    }
 }
 
 /**
@@ -67,16 +71,16 @@ export const authenticate = (
  * @param {string|null} logoutRedirect The page to redirect to when logout succeeds
  */
 export const logout = (
-    logoutCallback, 
+    logoutCallback,
     errorCallback,
     logoutRedirect = "/login") => {
 
-        //TODO: Implement this function properly. For now it just sets the "isAuthenticated" flag to false
-        isAuthenticated.set(false);
+    //TODO: Implement this function properly. For now it just sets the "isAuthenticated" flag to false
+    isAuthenticated.set(false);
 
-        if (typeof logoutCallback === "function"){
-            logoutCallback();
-        } else {
-            replace(logoutRedirect);
-        }
+    if (typeof logoutCallback === "function") {
+        logoutCallback();
+    } else {
+        replace(logoutRedirect);
+    }
 }
