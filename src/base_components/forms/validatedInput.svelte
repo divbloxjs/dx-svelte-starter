@@ -62,13 +62,17 @@
     };
 
     const validateExpression = () => {
-        const regEx = new RegExp(compareValue, 'gi');
+        const regEx = new RegExp(compareValue, "gi");
         return !!value.match(regEx);
     };
 
     const validateComparison = () => {
-        console.log("Value: "+value+"; Comp: "+compareValue);
         return value === compareValue;
+    };
+
+    const validateAsPassword = () => {
+        //TODO: Complete this. We want to give some nice feedback here regarding what is still missing in the password
+        return true;
     };
 </script>
 
@@ -80,6 +84,7 @@
     class:input-error={!isValid && isValidated && !hideValidation}
     class:input-success={isValid && isValidated && !hideValidation}
     on:input={handleInput}
+    on:change={handleInput}
 />
 {#if !isValid && isValidated && !hideValidation}
     <div class="text-red-500 text-xs w-full text-right mt-1">
