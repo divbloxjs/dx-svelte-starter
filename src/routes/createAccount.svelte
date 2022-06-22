@@ -11,11 +11,13 @@
   import { routeUtilities } from "../lib/js/routeUtilities";
   import { onMount } from "svelte";
   import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
+  import ValidatedInput from "../base_components/forms/validatedInput.svelte";
 
   let username = "";
   let password = "";
   let passwordConfirm = "";
   let isProcessingRegistration = false;
+  let isValid = [];
 
   onMount(async () => {
     checkAuthentication(null, null, null, "/");
@@ -23,7 +25,21 @@
 
   const doCreateAccount = async () => {
     isProcessingRegistration = true;
-    alert("Coming soon...");
+    if (testValidation()) {
+      alert("Coming soon...");
+    } else {
+      alert("Coming soon but validation failed...");
+    }
+    isProcessingRegistration = true;
+  };
+
+  const testValidation = () => {
+    for (const key of Object.keys(isValid)) {
+      if (!isValid[key]) {
+        return false;
+      }
+    }
+    return true;
   };
 </script>
 
@@ -41,23 +57,30 @@
         <h2 class="text-xl font-bold text-center">
           Create your {appName} account
         </h2>
-        <input
+        <ValidatedInput
+          placeholder="Email address"
           type="email"
-          placeholder="Email Address"
-          class="input input-bordered w-full"
-          value={username}
+          validateAs="email"
+          validationMessage="Invalid email address"
+          bind:isValid={isValid[0]}
         />
-        <input
-          type="password"
+        <ValidatedInput
           placeholder="Password"
-          class="input input-bordered w-full"
-          value={password}
-        />
-        <input
+          bind:value={password}
           type="password"
-          placeholder="Confirm Password"
-          class="input input-bordered w-full"
-          value={passwordConfirm}
+          validateAs="password"
+          passwordValidationOption="strong"
+          validationMessage="Password too weak"
+          bind:isValid={isValid[1]}
+        />
+        <ValidatedInput
+          placeholder="Confirm password"
+          bind:value={passwordConfirm}
+          type="password"
+          validateAs="comparison"
+          compareValue={password}
+          validationMessage="Passwords do not match"
+          bind:isValid={isValid[2]}
         />
 
         <div class="card-actions justify-between">
