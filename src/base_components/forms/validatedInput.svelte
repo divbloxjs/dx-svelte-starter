@@ -8,12 +8,12 @@
     };
 
     const passwordValidationOptions = {
-        //Minimum 8 characters, at least 1 lowercase letter, 1 uppercase letter and 1 number 
-        "default": /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
-        //Minimum 8 characters, at least 1 lowercase letter, 1 uppercase letter, 1 special character and 1 number 
-        "strong": /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*[@$!%*#?&]).{8,}$/,
-        //Minimum 6 characters, at least 1 letter and 1 number 
-        "relaxed": /^(?=.*\d)(?=.*[a-zA-Z]).{6,}$/
+        //Minimum 8 characters, at least 1 lowercase letter, 1 uppercase letter and 1 number
+        default: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
+        //Minimum 8 characters, at least 1 lowercase letter, 1 uppercase letter, 1 special character and 1 number
+        strong: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*[@$!%*#?&]).{8,}$/,
+        //Minimum 6 characters, at least 1 letter and 1 number
+        relaxed: /^(?=.*\d)(?=.*[a-zA-Z]).{6,}$/,
     };
 
     export let isValidated = false;
@@ -28,7 +28,19 @@
     export let compareValue = "";
     export let hideValidation = false;
     export let passwordValidationOption = "default";
-    
+    $: compareValueLocal = compareValue;
+    $: compareValueLocal, run();
+    let isFirstRun = true;
+
+    function run() {
+        if (isFirstRun) {
+            isFirstRun = false;
+            return;
+        }
+        if (validateAs === validationOptions.comparison) {
+            validate();
+        }
+    }
 
     const handleInput = (e) => {
         value = type.match(/^(number|range)$/)
@@ -77,7 +89,9 @@
     };
 
     const validatePassword = () => {
-        return !!value.match(passwordValidationOptions[passwordValidationOption]);
+        return !!value.match(
+            passwordValidationOptions[passwordValidationOption]
+        );
     };
 </script>
 
