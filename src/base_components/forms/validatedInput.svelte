@@ -8,22 +8,16 @@
     };
 
     const passwordValidationOptions = {
+        //Minimum 8 characters, at least 1 lowercase letter, 1 uppercase letter and 1 number 
         "default": /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
-        //TODO: Figure out why these don't work
-        //Minimum eight characters, at least one letter and one number
-        0: /^(?=.*[A-Za-z])(?=.*d)[A-Za-zd]{8,}$/,
-        //Minimum eight characters, at least one letter, one number and one special character
-        1: /^(?=.*[A-Za-z])(?=.*d)(?=.*[@$!%*#?&])[A-Za-zd@$!%*#?&]{8,}$/,
-        //Minimum eight characters, at least one uppercase letter, one lowercase letter and one number
-        2: /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)[a-zA-Zd]{8,}$/,
-        //Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
-        3: /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,}$/,
-        //Minimum eight and maximum 10 characters, at least one uppercase letter, one lowercase letter, one number and one special character
-        4: /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,10}$/,
+        //Minimum 8 characters, at least 1 lowercase letter, 1 uppercase letter, 1 special character and 1 number 
+        "strong": /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*[@$!%*#?&]).{8,}$/,
+        //Minimum 6 characters, at least 1 letter and 1 number 
+        "relaxed": /^(?=.*\d)(?=.*[a-zA-Z]).{6,}$/
     };
 
-    let isValidated = false;
-    let isValid = false;
+    export let isValidated = false;
+    export let isValid = false;
 
     export let value = "";
     export let type = "text";
@@ -34,6 +28,7 @@
     export let compareValue = "";
     export let hideValidation = false;
     export let passwordValidationOption = "default";
+    
 
     const handleInput = (e) => {
         value = type.match(/^(number|range)$/)
@@ -82,7 +77,6 @@
     };
 
     const validatePassword = () => {
-        console.log("Matching on2: "+passwordValidationOptions[passwordValidationOption].toString());
         return !!value.match(passwordValidationOptions[passwordValidationOption]);
     };
 </script>

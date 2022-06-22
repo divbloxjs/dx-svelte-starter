@@ -5,7 +5,8 @@
     import ValidatedInput from "../forms/validatedInput.svelte";
 
     let inputValue = "";
-    let validatedInput = null;
+    let isValid = [];
+    let validatedInput = [];
 
     $: activeComponentTab = "daisyUiComponents";
 
@@ -14,6 +15,22 @@
 
         activeComponentTab = tabToggleId;
     };
+
+    const prentendSubmit = () => {
+        if (testValidation()) {
+            console.log("Pretended to submit. Validation passed!");
+        } else {
+            console.log("Failed to pretend to submit. Validation failed!");
+        }
+    }
+    const testValidation = () => {
+        for (const key of Object.keys(isValid)) {
+            if (!isValid[key]) {
+                return false;
+            }
+        }
+        return true;
+    }
 </script>
 
 <PageTransitionFade>
@@ -149,31 +166,36 @@
                     </div>
                 </div>
             {:else if activeComponentTab == "customComponents"}
-                <div in:fade={{ duration: 500 }}>
-                    <h4>Validated inputs</h4>
-                    <ValidatedInput
-                        placeholder="Email address"
-                        type="email"
-                        validateAs="email"
-                        validationMessage="Invalid email address"
-                        bind:this={validatedInput}
-                    />
-                    <ValidatedInput
-                        placeholder="Password"
-                        bind:value={inputValue}
-                        type="password"
-                        validateAs="password"
-                        passwordValidationOption="default"
-                        validationMessage="Password too weak"
-                    />
-                    <ValidatedInput
-                        placeholder="Confirm password"
-                        value=""
-                        type="password"
-                        validateAs="comparison"
-                        compareValue={inputValue}
-                        validationMessage="Passwords do not match"
-                    />
+                <div in:fade={{ duration: 500 }} class="flex flex-row">
+                    <div class="basis-3/12">
+                        <h4 class="font-bold text-xl">Validated inputs</h4>
+                        <ValidatedInput
+                            placeholder="Email address"
+                            type="email"
+                            validateAs="email"
+                            validationMessage="Invalid email address"
+                            bind:isValid={isValid[0]}
+                        />
+                        <ValidatedInput
+                            placeholder="Password"
+                            bind:value={inputValue}
+                            type="password"
+                            validateAs="password"
+                            passwordValidationOption="strong"
+                            validationMessage="Password too weak"
+                            bind:isValid={isValid[1]}
+                        />
+                        <ValidatedInput
+                            placeholder="Confirm password"
+                            value=""
+                            type="password"
+                            validateAs="comparison"
+                            compareValue={inputValue}
+                            validationMessage="Passwords do not match"
+                            bind:isValid={isValid[2]}
+                        />
+                        <button class="btn btn-primary mt-2 float-right" on:click={prentendSubmit}>Test</button>
+                    </div>
                 </div>
             {/if}
         </div>
