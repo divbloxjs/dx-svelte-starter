@@ -28,6 +28,7 @@
     export let compareValue = "";
     export let hideValidation = false;
     export let passwordValidationOption = "default";
+    
     $: compareValueLocal = compareValue;
     $: compareValueLocal, run();
     let isFirstRun = true;
