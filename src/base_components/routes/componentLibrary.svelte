@@ -2,6 +2,10 @@
     import RoutingExampleNav from "../navigation/routingExampleNav.svelte";
     import { fade } from "svelte/transition";
     import PageTransitionFade from "../page_transitions/pageTransitionFade.svelte";
+    import ValidatedInput from "../forms/validatedInput.svelte";
+
+    let inputValue = "";
+    let validatedInput = null;
 
     $: activeComponentTab = "daisyUiComponents";
 
@@ -146,7 +150,30 @@
                 </div>
             {:else if activeComponentTab == "customComponents"}
                 <div in:fade={{ duration: 500 }}>
-                    <p>To be completed</p>
+                    <h4>Validated inputs</h4>
+                    <ValidatedInput
+                        placeholder="Email address"
+                        type="email"
+                        validateAs="email"
+                        validationMessage="Invalid email address"
+                        bind:this={validatedInput}
+                    />
+                    <ValidatedInput
+                        placeholder="Password"
+                        bind:value={inputValue}
+                        type="password"
+                        validateAs="password"
+                        passwordValidationOption="default"
+                        validationMessage="Password too weak"
+                    />
+                    <ValidatedInput
+                        placeholder="Confirm password"
+                        value=""
+                        type="password"
+                        validateAs="comparison"
+                        compareValue={inputValue}
+                        validationMessage="Passwords do not match"
+                    />
                 </div>
             {/if}
         </div>

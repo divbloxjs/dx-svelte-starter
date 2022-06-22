@@ -1,10 +1,25 @@
 <script>
-    export const validationOptions = {
+    const validationOptions = {
         email: "email",
         required: "required",
-        regex: "regex",
         comparison: "comparison",
+        password: "password",
         none: "none",
+    };
+
+    const passwordValidationOptions = {
+        "default": /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
+        //TODO: Figure out why these don't work
+        //Minimum eight characters, at least one letter and one number
+        0: /^(?=.*[A-Za-z])(?=.*d)[A-Za-zd]{8,}$/,
+        //Minimum eight characters, at least one letter, one number and one special character
+        1: /^(?=.*[A-Za-z])(?=.*d)(?=.*[@$!%*#?&])[A-Za-zd@$!%*#?&]{8,}$/,
+        //Minimum eight characters, at least one uppercase letter, one lowercase letter and one number
+        2: /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)[a-zA-Zd]{8,}$/,
+        //Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
+        3: /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,}$/,
+        //Minimum eight and maximum 10 characters, at least one uppercase letter, one lowercase letter, one number and one special character
+        4: /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,10}$/,
     };
 
     let isValidated = false;
@@ -18,6 +33,7 @@
     export let validationMessage = "Invalid value";
     export let compareValue = "";
     export let hideValidation = false;
+    export let passwordValidationOption = "default";
 
     const handleInput = (e) => {
         value = type.match(/^(number|range)$/)
@@ -36,8 +52,8 @@
                 isValid = validateRequired();
                 isValidated = true;
                 break;
-            case validationOptions.regex:
-                isValid = validateExpression();
+            case validationOptions.password:
+                isValid = validatePassword();
                 isValidated = true;
                 break;
             case validationOptions.comparison:
@@ -61,18 +77,13 @@
         return value !== undefined && value !== null && value !== "";
     };
 
-    const validateExpression = () => {
-        const regEx = new RegExp(compareValue, "gi");
-        return !!value.match(regEx);
-    };
-
     const validateComparison = () => {
         return value === compareValue;
     };
 
-    const validateAsPassword = () => {
-        //TODO: Complete this. We want to give some nice feedback here regarding what is still missing in the password
-        return true;
+    const validatePassword = () => {
+        console.log("Matching on2: "+passwordValidationOptions[passwordValidationOption].toString());
+        return !!value.match(passwordValidationOptions[passwordValidationOption]);
     };
 </script>
 
