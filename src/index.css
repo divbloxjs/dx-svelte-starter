@@ -15,5 +15,14 @@
             scrollbar-width: none;
             /* Firefox */
         }
+
+        .input {
+            margin-bottom: 0.5rem;
+        }
+
+        .label {
+            padding-bottom: 0;
+            padding-top: 0;
+        }
     }
 }

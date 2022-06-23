@@ -1,4 +1,6 @@
 <script>
+    import { onMount } from "svelte";
+
     const validationOptions = {
         email: "email",
         required: "required",
@@ -19,10 +21,15 @@
     export let isValidated = false;
     export let isValid = false;
 
+    export let label = null;
+    export let addLabelClass = "";
+
     export let value = "";
+    export let name = null;
     export let type = "text";
     export let placeholder = "";
-    export let inputClass = "input input-bordered w-full mt-2";
+
+    export let addInputClass = "";
     export let validateAs = validationOptions.none;
     export let validationMessage = "Invalid value";
     export let compareValue = "";
@@ -47,10 +54,20 @@
         value = type.match(/^(number|range)$/)
             ? +e.target.value
             : e.target.value;
+
         validate();
     };
 
+    const resetValidation = () => {
+        isValid = false;
+        isValidated = false;
+    };
+
     export const validate = () => {
+        if (value.length <= 0) {
+            resetValidation();
+            return;
+        }
         switch (validateAs) {
             case validationOptions.email:
                 isValid = validateEmail();
@@ -69,9 +86,14 @@
                 isValidated = true;
                 break;
             case validationOptions.none:
-            default:
                 isValid = true;
                 isValidated = true;
+                break;
+            default:
+                throw new Error(
+                    `Invalid validation type '${validateAs}' passed. \n\n Allowed types: ` +
+                        JSON.stringify(Object.keys(validationOptions), null, 2)
+                );
         }
     };
 
@@ -94,19 +116,30 @@
             passwordValidationOptions[passwordValidationOption]
         );
     };
+
+    onMount(async () => {
+        if (label !== null && name === null) {
+            name = label;
+        }
+    });
 </script>
 
+{#if label !== null}
+    <label for={name} class="label {addLabelClass}">{label}</label>
+{/if}
 <input
     {value}
+    {name}
     {type}
     {placeholder}
-    class={inputClass}
+    class="input input-bordered w-full {addInputClass}"
     class:input-error={!isValid && isValidated && !hideValidation}
     class:input-success={isValid && isValidated && !hideValidation}
+    {...$$restProps}
     on:input={handleInput}
     on:change={handleInput} />
 {#if !isValid && isValidated && !hideValidation}
-    <div class="text-red-500 text-xs w-full text-right mt-1">
+    <div class="text-red-500 text-xs w-full text-right -mt-1">
         {validationMessage}
     </div>
 {/if}

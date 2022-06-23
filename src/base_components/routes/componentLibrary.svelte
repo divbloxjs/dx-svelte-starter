@@ -4,7 +4,7 @@
     import PageTransitionFade from "../page_transitions/pageTransitionFade.svelte";
     import ValidatedInput from "../forms/validatedInput.svelte";
 
-    let inputValue = "";
+    let passwordValue = "";
     let isValid = [];
     let validatedInput = [];
 
@@ -165,20 +165,22 @@
                     </div>
                 </div>
             {:else if activeComponentTab == "customComponents"}
-                <div in:fade={{ duration: 500 }} class="flex flex-row">
-                    <div class="basis-3/12">
+                <div in:fade={{ duration: 500 }} class="flex flex-row gap-5">
+                    <div class="basis-4/12">
                         <h4 class="font-bold text-xl">Validated inputs</h4>
                         <ValidatedInput
                             placeholder="Email address"
                             type="email"
                             validateAs="email"
+                            label="Email"
                             validationMessage="Invalid email address"
                             bind:isValid={isValid[0]} />
                         <ValidatedInput
                             placeholder="Password"
-                            bind:value={inputValue}
+                            bind:value={passwordValue}
                             type="password"
                             validateAs="password"
+                            label="Password"
                             passwordValidationOption="strong"
                             validationMessage="Password too weak"
                             bind:isValid={isValid[1]} />
@@ -186,8 +188,9 @@
                             placeholder="Confirm password"
                             value=""
                             type="password"
+                            label="Confirm Password"
                             validateAs="comparison"
-                            compareValue={inputValue}
+                            compareValue={passwordValue}
                             validationMessage="Passwords do not match"
                             bind:isValid={isValid[2]} />
                         <button
