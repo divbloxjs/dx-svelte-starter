@@ -1,6 +1,6 @@
 # Divblox + Svelte + tailwindcss + daisyUI + Vite starter project
 
-This project aims to be a starting point for new frontend projects that use divbloxjs as their backend. It contains all the basics such as routing and a solid UI framework. 
+This project aims to be a starting point for new frontend projects that use divbloxjs as their backend. It contains all the basics such as routing and a solid UI framework.
 
 The project will be continuously expanded with new svelte components that we find useful when building frontend solutions on top of divbloxjs. These components will be placed inside the /src/base_components folder. Never edit the components in the /src/base_components folder since you might lose those changes when updating from this master repo.
 
@@ -10,33 +10,44 @@ To use this as a template in a private repository follow these steps:
 
 1. Create your private repository
 2. Create a bare clone of this repository. (This is temporary and will be removed so just do it wherever.)
+
 ```
 git clone --bare https://github.com/divbloxjs/svelte-frontend-starter.git
 ```
+
 3. Mirror-push your bare clone to your new private repository.
+
 ```
 cd svelte-frontend-starter.git
 git push --mirror https://github.com/<your_username>/<your_repo>.git
 ```
+
 4. Remove the temporary local repository you created in step 1.
+
 ```
 cd ..
 rm -rf svelte-frontend-starter.git
 ```
+
 5. Clone your new private repository to your local machine
 6. Add this repo as upstream to your newly created repo:
+
 ```
 git remote add upstream https://github.com/divbloxjs/svelte-frontend-starter.git
 git remote set-url --push upstream DISABLE
 ```
+
 7. You can list all your remotes with git remote -v. You should see:
+
 ```
 origin  https://github.com/<your_username>/<your_repo>.git (fetch)
 origin  https://github.com/<your_username>/<your_repo>.git (push)
 upstream        https://github.com/divbloxjs/svelte-frontend-starter.git (fetch)
 upstream        DISABLE (push)
 ```
+
 8. Fetch the upstream:
+
 ```
 git fetch upstream
 git rebase upstream/main
@@ -45,11 +56,12 @@ git rebase upstream/main
 You should now be able to pull any future changes from this template using the above commands to fetch and rebase.
 
 ## Once you have the template fetched on your local machine
-To get started run: 
+
+To get started run:
 
 `npm install`
 
-Then: 
+Then:
 
 `npm run dev`
 
@@ -70,6 +82,7 @@ For daisyUI theming: https://themes.ionevolve.com/
 https://github.com/Cweili/svelte-fa
 
 ## Customization
+
 You can edit these values in `/lib/js/stores.js` to customize your app's basic info:
 
 ```
@@ -78,6 +91,7 @@ export const appName = "Divblox";
 export const defaultLandingPage = "/";
 export const appLogo = logo;
 ```
+
 You can also edit the values in `/tailwind.config.cjs` to customize your UI
 
 # More details and recommendations
@@ -111,6 +125,6 @@ If you have state that's important to retain within a component, consider creati
 ```js
 // store.js
 // An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+import { writable } from "svelte/store";
+export default writable(0);
 ```

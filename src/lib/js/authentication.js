@@ -1,9 +1,11 @@
-import { domainRoot, isAuthenticated, defaultLandingPage } from '../js/stores';
+import { domainRoot, isAuthenticated, defaultLandingPage } from "../js/stores";
 import { push, pop, replace } from "svelte-spa-router";
 
 let isAuthenticatedValue = false;
 
-const unsubscribe = isAuthenticated.subscribe(val => isAuthenticatedValue = val);
+const unsubscribe = isAuthenticated.subscribe(
+    (val) => (isAuthenticatedValue = val)
+);
 
 /**
  * Checks whether the current user is authenticated and either redirects to a given page or calls a callback function, based
@@ -17,8 +19,8 @@ export const checkAuthentication = (
     isNotAuthenticatedCallback = null,
     isAuthenticatedCallback = null,
     isNotAuthenticatedRedirect = "/login",
-    isAuthenticatedRedirect = defaultLandingPage) => {
-
+    isAuthenticatedRedirect = defaultLandingPage
+) => {
     if (!isAuthenticatedValue) {
         if (typeof isNotAuthenticatedCallback === "function") {
             isNotAuthenticatedCallback();
@@ -36,8 +38,7 @@ export const checkAuthentication = (
             }
         }
     }
-
-}
+};
 
 /**
  * Attempts to authenticate the user with the username and password provided.
@@ -52,8 +53,8 @@ export const authenticate = (
     password,
     successCallback,
     failureCallback,
-    successRedirect = defaultLandingPage) => {
-
+    successRedirect = defaultLandingPage
+) => {
     //TODO: Implement this function correctly. For now, this function just sets the isAuthenticated flag to true when called
     isAuthenticated.set(true);
 
@@ -62,7 +63,7 @@ export const authenticate = (
     } else {
         push(successRedirect);
     }
-}
+};
 
 /**
  * Attempts to logout the current user
@@ -73,8 +74,8 @@ export const authenticate = (
 export const logout = (
     logoutCallback,
     errorCallback,
-    logoutRedirect = "/login") => {
-
+    logoutRedirect = "/login"
+) => {
     //TODO: Implement this function properly. For now it just sets the "isAuthenticated" flag to false
     isAuthenticated.set(false);
 
@@ -83,4 +84,4 @@ export const logout = (
     } else {
         replace(logoutRedirect);
     }
-}
+};

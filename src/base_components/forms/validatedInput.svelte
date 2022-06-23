@@ -28,7 +28,7 @@
     export let compareValue = "";
     export let hideValidation = false;
     export let passwordValidationOption = "default";
-    
+
     $: compareValueLocal = compareValue;
     $: compareValueLocal, run();
     let isFirstRun = true;
@@ -104,8 +104,7 @@
     class:input-error={!isValid && isValidated && !hideValidation}
     class:input-success={isValid && isValidated && !hideValidation}
     on:input={handleInput}
-    on:change={handleInput}
-/>
+    on:change={handleInput} />
 {#if !isValid && isValidated && !hideValidation}
     <div class="text-red-500 text-xs w-full text-right mt-1">
         {validationMessage}

@@ -12,7 +12,6 @@
             push("/");
         }
     };
-    
 </script>
 
 <PageTransitionFade>
@@ -21,10 +20,8 @@
         <h1>This is the example page</h1>
         <p>Input params are: {JSON.stringify(params)}</p>
         <button class="btn" on:click={(event) => doNavigate(event, "back")}
-            >Go back</button
-        >
+            >Go back</button>
         <button class="btn" on:click={(event) => doNavigate(event, "home")}
-            >Go Home</button
-        >
+            >Go Home</button>
     </main>
 </PageTransitionFade>

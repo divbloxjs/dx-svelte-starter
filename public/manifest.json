@@ -1,7 +1,8 @@
 {
     "short_name": "Divblox",
     "name": "Divblox",
-    "icons": [{
+    "icons": [
+        {
             "src": "/assets/images/app_icon_192.png",
             "type": "image/png",
             "sizes": "192x192"

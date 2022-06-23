@@ -16,13 +16,13 @@
         activeComponentTab = tabToggleId;
     };
 
-    const prentendSubmit = () => {
+    const pretendSubmit = () => {
         if (testValidation()) {
             console.log("Pretended to submit. Validation passed!");
         } else {
             console.log("Failed to pretend to submit. Validation failed!");
         }
-    }
+    };
     const testValidation = () => {
         for (const key of Object.keys(isValid)) {
             if (!isValid[key]) {
@@ -30,7 +30,7 @@
             }
         }
         return true;
-    }
+    };
 </script>
 
 <PageTransitionFade>
@@ -42,19 +42,22 @@
                 <p>
                     Base components built on <a
                         href="https://daisyui.com/docs/install/"
-                        target="blank">daisyUI</a
-                    >
+                        target="blank">
+                        daisyUI
+                    </a>
                     and
                     <a
                         href="https://tailwindcss.com/docs/installation"
-                        target="blank">tailwindcss</a
-                    >
+                        target="blank">
+                        tailwindcss
+                    </a>
                 </p>
                 <p>
                     For a full reference, visit <a
                         href="https://daisyui.com/docs/install/"
-                        target="blank">daisyUI</a
-                    >
+                        target="blank">
+                        daisyUI
+                    </a>
                 </p>
             </article>
             <div class="divider" />
@@ -64,15 +67,15 @@
                     class="tab tab-bordered mr-2"
                     class:tab-active={activeComponentTab ===
                         "daisyUiComponents"}
-                    on:click={(event) => tabToggle(event, "daisyUiComponents")}
-                    >DaisyUI Preview</span
-                >
+                    on:click={(event) => tabToggle(event, "daisyUiComponents")}>
+                    DaisyUI Preview
+                </span>
                 <span
                     class="tab tab-bordered"
                     class:tab-active={activeComponentTab === "customComponents"}
-                    on:click={(event) => tabToggle(event, "customComponents")}
-                    >Custom Built</span
-                >
+                    on:click={(event) => tabToggle(event, "customComponents")}>
+                    Custom Built
+                </span>
             </div>
 
             {#if activeComponentTab == "daisyUiComponents"}
@@ -89,8 +92,7 @@
                         <input type="checkbox" class="toggle toggle-primary" />
                         <input
                             type="checkbox"
-                            class="toggle toggle-secondary"
-                        />
+                            class="toggle toggle-secondary" />
                         <input type="checkbox" class="toggle toggle-accent" />
                     </div>
 
@@ -114,8 +116,7 @@
                         <div tabindex="0" class="m-1 btn">Dropdown</div>
                         <ul
                             tabindex="0"
-                            class="p-2 menu dropdown-content bg-neutral text-neutral-content rounded-box w-52"
-                        >
+                            class="p-2 menu dropdown-content bg-neutral text-neutral-content rounded-box w-52">
                             <li><span>Item 1</span></li>
                             <li><span>Item 2</span></li>
                         </ul>
@@ -152,16 +153,14 @@
                         <div class="rounded-full w-24 h-24">
                             <!-- svelte-ignore a11y-missing-attribute -->
                             <img
-                                src="http://daisyui.com/tailwind-css-component-profile-1@94w.png"
-                            />
+                                src="http://daisyui.com/tailwind-css-component-profile-1@94w.png" />
                         </div>
                     </div>
                     <div class="avatar offline m-10">
                         <div class="rounded-full w-24 h-24">
                             <!-- svelte-ignore a11y-missing-attribute -->
                             <img
-                                src="http://daisyui.com/tailwind-css-component-profile-2@94w.png"
-                            />
+                                src="http://daisyui.com/tailwind-css-component-profile-2@94w.png" />
                         </div>
                     </div>
                 </div>
@@ -174,8 +173,7 @@
                             type="email"
                             validateAs="email"
                             validationMessage="Invalid email address"
-                            bind:isValid={isValid[0]}
-                        />
+                            bind:isValid={isValid[0]} />
                         <ValidatedInput
                             placeholder="Password"
                             bind:value={inputValue}
@@ -183,8 +181,7 @@
                             validateAs="password"
                             passwordValidationOption="strong"
                             validationMessage="Password too weak"
-                            bind:isValid={isValid[1]}
-                        />
+                            bind:isValid={isValid[1]} />
                         <ValidatedInput
                             placeholder="Confirm password"
                             value=""
@@ -192,9 +189,10 @@
                             validateAs="comparison"
                             compareValue={inputValue}
                             validationMessage="Passwords do not match"
-                            bind:isValid={isValid[2]}
-                        />
-                        <button class="btn btn-primary mt-2 float-right" on:click={prentendSubmit}>Test</button>
+                            bind:isValid={isValid[2]} />
+                        <button
+                            class="btn btn-primary mt-2 float-right"
+                            on:click={pretendSubmit}>Test</button>
                     </div>
                 </div>
             {/if}
