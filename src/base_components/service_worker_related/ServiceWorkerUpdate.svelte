@@ -1,9 +1,8 @@
 <script>
-    import { fade, fly } from "svelte/transition";
+    import { fly } from "svelte/transition";
     import { onMount } from "svelte";
 
     let newServiceWorker;
-    // let isRefreshing = false;
     let mustShowAppUpdateAvailable = false;
     let serviceWorkerRegistration;
 
@@ -34,11 +33,9 @@
                 newServiceWorker = serviceWorkerRegistration.installing;
 
                 newServiceWorker.addEventListener("statechange", () => {
-                    // Has network.state changed?
                     switch (newServiceWorker.state) {
                         case "installed":
                             if (navigator.serviceWorker.controller) {
-                                // new update available
                                 mustShowAppUpdateAvailable = true;
                             }
                             // No update available
@@ -46,12 +43,6 @@
                     }
                 });
             });
-
-            /*navigator.serviceWorker.addEventListener("controllerchange", () => {
-                if (isRefreshing) return;
-                //window.location.reload();
-                isRefreshing = true;
-            });*/
         }
     });
 </script>
