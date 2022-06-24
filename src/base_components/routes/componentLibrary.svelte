@@ -4,6 +4,8 @@
     import PageTransitionFade from "../page_transitions/pageTransitionFade.svelte";
     import ValidatedInput from "../forms/validatedInput.svelte";
 
+    let validatedInputArray = [];
+
     let passwordValue = "";
     let isValid = [];
     let validatedInput = [];
@@ -16,7 +18,14 @@
         activeComponentTab = tabToggleId;
     };
 
+    const validateForm = () => {
+        validatedInputArray.forEach((inputComponent) => {
+            inputComponent.validate(true);
+        });
+    };
+
     const pretendSubmit = () => {
+        validateForm();
         if (testValidation()) {
             console.log("Pretended to submit. Validation passed!");
         } else {
@@ -174,7 +183,8 @@
                             validateAs="email"
                             label="Email"
                             validationMessage="Invalid email address"
-                            bind:isValid={isValid[0]} />
+                            bind:isValid={isValid[0]}
+                            bind:this={validatedInputArray[0]} />
                         <ValidatedInput
                             placeholder="Password"
                             bind:value={passwordValue}
@@ -183,16 +193,17 @@
                             label="Password"
                             passwordValidationOption="strong"
                             validationMessage="Password too weak"
-                            bind:isValid={isValid[1]} />
+                            bind:isValid={isValid[1]}
+                            bind:this={validatedInputArray[1]} />
                         <ValidatedInput
                             placeholder="Confirm password"
                             value=""
                             type="password"
-                            label="Confirm Password"
                             validateAs="comparison"
                             compareValue={passwordValue}
                             validationMessage="Passwords do not match"
-                            bind:isValid={isValid[2]} />
+                            bind:isValid={isValid[2]}
+                            bind:this={validatedInputArray[2]} />
                         <button
                             class="btn btn-primary mt-2 float-right"
                             on:click={pretendSubmit}>Test</button>
