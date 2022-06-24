@@ -1,16 +1,37 @@
 <script>
-    import { fade } from "svelte/transition";
+    import { fade, fly } from "svelte/transition";
+    import { onMount } from "svelte";
+
     let newServiceWorker;
+    // let isRefreshing = false;
     let mustShowAppUpdateAvailable = false;
+    let serviceWorkerRegistration;
+
     const updateApp = () => {
         newServiceWorker.postMessage({ action: "skipWaiting" });
+        window.location.reload();
     };
 
-    if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/serviceWorker.js").then((reg) => {
-            reg.addEventListener("updatefound", () => {
-                // A wild service worker has appeared in reg.installing!
-                newServiceWorker = reg.installing;
+    onMount(async () => {
+        if ("serviceWorker" in navigator) {
+            try {
+                serviceWorkerRegistration =
+                    await navigator.serviceWorker.register(
+                        "/serviceWorker.js",
+                        {
+                            scope: "/",
+                        }
+                    );
+            } catch (error) {
+                console.error(
+                    `Service working registration failed with ${error}`
+                );
+                return;
+            }
+
+            serviceWorkerRegistration.addEventListener("updatefound", () => {
+                console.log("Update found");
+                newServiceWorker = serviceWorkerRegistration.installing;
 
                 newServiceWorker.addEventListener("statechange", () => {
                     // Has network.state changed?
@@ -25,30 +46,31 @@
                     }
                 });
             });
-        });
 
-        let refreshing;
-        navigator.serviceWorker.addEventListener(
-            "controllerchange",
-            function () {
-                if (refreshing) return;
-                window.location.reload();
-                refreshing = true;
-            }
-        );
-    }
+            /*navigator.serviceWorker.addEventListener("controllerchange", () => {
+                if (isRefreshing) return;
+                //window.location.reload();
+                isRefreshing = true;
+            });*/
+        }
+    });
 </script>
 
 <main>
     {#if mustShowAppUpdateAvailable}
         <div
-            in:fade={{ duration: 500 }}
+            transition:fly={{ y: 50, duration: 200 }}
             class="bg-base-200 shadow-2xl fixed bottom-20 right-0 md:right-5 p-3 px-5 rounded-lg">
-            A new version of the app is available. Click <button
-                class="btn btn-link px-1 text-lg btn-sm leading-none text-base-content underline"
+            A new version of the app is available. <button
+                class="btn btn-link px-1 btn-sm leading-none text-violet-700 dark:text-violet-400"
                 on:click={updateApp}>
-                here
-            </button> to update.
+                REFRESH
+            </button>
+            <button
+                class="btn btn-link text-base-content px-0"
+                on:click={() => {
+                    mustShowAppUpdateAvailable = false;
+                }}>x</button>
         </div>
     {/if}
 </main>
