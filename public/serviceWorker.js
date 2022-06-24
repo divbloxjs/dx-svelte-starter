@@ -1,5 +1,10 @@
-const PRECACHE = "precache-v2022-06-20-1";
-const RUNTIME = "runtime-v2022-06-20-1";
+//////////////////////////////////////////
+// DIVBLOX GENERATED CODE - DO NOT MODIFY!
+const dxBuildTimeStamp = "1656069967883";
+//////////////////////////////////////////
+
+const PRECACHE = "precache-" + dxBuildTimeStamp;
+const RUNTIME = "runtime-" + dxBuildTimeStamp;
 
 // A list of local resources we always want to be cached.
 const PRECACHE_URLS = [
