@@ -1,7 +1,7 @@
 <script>
     import { fade } from "svelte/transition";
     let newServiceWorker;
-    let mustShowAppUpdateAvailable = true;
+    let mustShowAppUpdateAvailable = false;
     const updateApp = () => {
         newServiceWorker.postMessage({ action: "skipWaiting" });
     };
@@ -43,9 +43,9 @@
     {#if mustShowAppUpdateAvailable}
         <div
             in:fade={{ duration: 500 }}
-            class="fixed bottom-5 right-5 w-full h-96">
-            A new version of this app is available. Click <button
-                class="btn btn-link"
+            class="bg-base-200 shadow-2xl fixed bottom-20 right-0 md:right-5 p-3 px-5 rounded-lg">
+            A new version of the app is available. Click <button
+                class="btn btn-link px-1 text-lg btn-sm leading-none text-base-content underline"
                 on:click={updateApp}>
                 here
             </button> to update.
