@@ -25,22 +25,5 @@
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
 </body>
-<script>
-    const registerServiceWorker = async () => {
-        if ('serviceWorker' in navigator) {
-            try {
-                const registration = await navigator.serviceWorker.register(
-                    '/serviceWorker.js', {
-                    scope: '/',
-                }
-                );
-            } catch (error) {
-                console.error(`Service working registration failed with ${error}`);
-            }
-        }
-    };
-
-    // registerServiceWorker();
-</script>
 
 </html>
