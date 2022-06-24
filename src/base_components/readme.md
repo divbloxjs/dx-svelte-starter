@@ -12,13 +12,13 @@ To use this as a template in a private repository follow these steps:
 2. Create a bare clone of this repository. (This is temporary and will be removed so just do it wherever.)
 
 ```
-git clone --bare https://github.com/divbloxjs/svelte-frontend-starter.git
+git clone --bare https://github.com/divbloxjs/dx-svelte-starter.git
 ```
 
 3. Mirror-push your bare clone to your new private repository.
 
 ```
-cd svelte-frontend-starter.git
+cd dx-svelte-starter.git
 git push --mirror https://github.com/<your_username>/<your_repo>.git
 ```
 
@@ -26,14 +26,14 @@ git push --mirror https://github.com/<your_username>/<your_repo>.git
 
 ```
 cd ..
-rm -rf svelte-frontend-starter.git
+rm -rf dx-svelte-starter.git
 ```
 
 5. Clone your new private repository to your local machine
 6. Add this repo as upstream to your newly created repo:
 
 ```
-git remote add upstream https://github.com/divbloxjs/svelte-frontend-starter.git
+git remote add upstream https://github.com/divbloxjs/dx-svelte-starter.git
 git remote set-url --push upstream DISABLE
 ```
 
