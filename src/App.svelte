@@ -8,7 +8,7 @@
     import CreateAccount from "./routes/createAccount.svelte";
     import ForgotPassword from "./routes/forgotPassword.svelte";
     import ResetPassword from "./routes/resetPassword.svelte";
-    import { onMount } from "svelte";
+    import ServiceWorkerUpdate from "./base_components/service_worker_related/ServiceWorkerUpdate.svelte";
 
     /**
      * Update this to suit your needs
@@ -31,4 +31,5 @@
 
 <main>
     <Router {routes} />
+    <ServiceWorkerUpdate />
 </main>
