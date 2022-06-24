@@ -1,6 +1,8 @@
 <script>
+    // This component is used to provide easy validation for basic input fiends
     import { onMount } from "svelte";
 
+    // Configured validation options
     const validationOptions = {
         email: "email",
         required: "required",
@@ -37,19 +39,21 @@
     export let passwordValidationOption = "default";
 
     $: compareValueLocal = compareValue;
-    $: compareValueLocal, run();
-    let isFirstRun = true;
+    $: compareValueLocal, handleCompareValueChanged();
 
-    function run() {
-        if (isFirstRun) {
-            isFirstRun = false;
-            return;
-        }
+    /**
+     * Triggers when the compareValue is changed, and validates only the comparison value
+     */
+    const handleCompareValueChanged = () => {
         if (validateAs === validationOptions.comparison) {
             validate();
         }
-    }
+    };
 
+    /**
+     * Credit: Rich Harris
+     * @param e - the input event triggered
+     */
     const handleInput = (e) => {
         value = type.match(/^(number|range)$/)
             ? +e.target.value
@@ -58,13 +62,21 @@
         validate();
     };
 
+    /**
+     * Resets the state to the component to "unvalidated"
+     */
     const resetValidation = () => {
         isValid = false;
         isValidated = false;
     };
 
-    export const validate = () => {
-        if (value.length <= 0) {
+    /**
+     * Permorms the validation on the specific input type
+     *
+     * @param forceValidate - Forces the validation to bypass the default skipping of empty fields
+     */
+    export const validate = (forceValidate = false) => {
+        if (!forceValidate && value.length <= 0) {
             resetValidation();
             return;
         }
@@ -82,7 +94,8 @@
                 isValidated = true;
                 break;
             case validationOptions.comparison:
-                isValid = validateComparison();
+                isValid = validateRequired();
+                isValid = isValid && validateComparison();
                 isValidated = true;
                 break;
             case validationOptions.none:
@@ -118,28 +131,36 @@
     };
 
     onMount(async () => {
+        // If a label is provided without a name ('name' attribute is used to match the label to it's
+        // corresponding input), the label name is set to the label.
         if (label !== null && name === null) {
             name = label;
         }
     });
 </script>
 
-{#if label !== null}
-    <label for={name} class="label {addLabelClass}">{label}</label>
-{/if}
-<input
-    {value}
-    {name}
-    {type}
-    {placeholder}
-    class="input input-bordered w-full {addInputClass}"
-    class:input-error={!isValid && isValidated && !hideValidation}
-    class:input-success={isValid && isValidated && !hideValidation}
-    {...$$restProps}
-    on:input={handleInput}
-    on:change={handleInput} />
-{#if !isValid && isValidated && !hideValidation}
-    <div class="text-red-500 text-xs w-full text-right -mt-1">
-        {validationMessage}
-    </div>
-{/if}
+<div class="form-control w-full max-w-xs">
+    <label for={name} class="label mb-1">
+        {#if label !== null}
+            <span class={addLabelClass}>{label}</span>
+        {/if}
+        {#if !isValid && isValidated && !hideValidation}
+            <span
+                class:-mb-2={label !== null}
+                class="label-text-alt text-red-500  ml-auto text-xs">
+                {validationMessage}
+            </span>
+        {/if}
+    </label>
+    <input
+        {value}
+        {name}
+        {type}
+        {placeholder}
+        class="input input-bordered w-full {addInputClass}"
+        class:input-error={!isValid && isValidated && !hideValidation}
+        class:input-success={isValid && isValidated && !hideValidation}
+        {...$$restProps}
+        on:input={handleInput}
+        on:change={handleInput} />
+</div>
