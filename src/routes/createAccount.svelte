@@ -16,24 +16,36 @@
     import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
     import ValidatedInput from "../base_components/forms/validatedInput.svelte";
 
-    let username = "";
-    let password = "";
-    let passwordConfirm = "";
     let isProcessingRegistration = false;
+
+    let passwordValue = "";
     let isValid = [];
+    let validatedInputArray = [];
 
     onMount(async () => {
         checkAuthentication(null, null, null, "/");
     });
 
+    const validateForm = () => {
+        let formIsValid = true;
+        validatedInputArray.forEach((inputComponent) => {
+            formIsValid &= inputComponent.validate(true);
+        });
+
+        return formIsValid;
+    };
+
     const doCreateAccount = async () => {
         isProcessingRegistration = true;
+
+        validateForm();
         if (testValidation()) {
             alert("Coming soon...");
         } else {
             alert("Coming soon but validation failed...");
         }
-        isProcessingRegistration = true;
+
+        isProcessingRegistration = false;
     };
 
     const testValidation = () => {
@@ -63,24 +75,30 @@
                     placeholder="Email address"
                     type="email"
                     validateAs="email"
+                    label="Email"
                     validationMessage="Invalid email address"
-                    bind:isValid={isValid[0]} />
+                    bind:isValid={isValid[0]}
+                    bind:this={validatedInputArray[0]} />
                 <ValidatedInput
                     placeholder="Password"
-                    bind:value={password}
+                    bind:value={passwordValue}
                     type="password"
                     validateAs="password"
+                    label="Password"
                     passwordValidationOption="strong"
                     validationMessage="Password too weak"
-                    bind:isValid={isValid[1]} />
+                    bind:isValid={isValid[1]}
+                    bind:this={validatedInputArray[1]} />
                 <ValidatedInput
                     placeholder="Confirm password"
-                    bind:value={passwordConfirm}
+                    value=""
                     type="password"
                     validateAs="comparison"
-                    compareValue={password}
+                    label="Confirm Password"
+                    compareValue={passwordValue}
                     validationMessage="Passwords do not match"
-                    bind:isValid={isValid[2]} />
+                    bind:isValid={isValid[2]}
+                    bind:this={validatedInputArray[2]} />
 
                 <div class="card-actions justify-between">
                     <button

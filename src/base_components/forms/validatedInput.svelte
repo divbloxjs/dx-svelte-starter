@@ -108,6 +108,8 @@
                         JSON.stringify(Object.keys(validationOptions), null, 2)
                 );
         }
+
+        return isValid;
     };
 
     const validateEmail = () => {
@@ -139,7 +141,7 @@
     });
 </script>
 
-<div class="form-control w-full max-w-xs">
+<div class="form-control w-full">
     <label for={name} class="label mb-1">
         {#if label !== null}
             <span class={addLabelClass}>{label}</span>
