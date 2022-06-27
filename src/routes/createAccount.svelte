@@ -19,7 +19,6 @@
     let isProcessingRegistration = false;
 
     let passwordValue = "";
-    let isValid = [];
     let validatedInputArray = [];
 
     onMount(async () => {
@@ -38,23 +37,13 @@
     const doCreateAccount = async () => {
         isProcessingRegistration = true;
 
-        validateForm();
-        if (testValidation()) {
+        if (validateForm()) {
             alert("Coming soon...");
         } else {
             alert("Coming soon but validation failed...");
         }
 
         isProcessingRegistration = false;
-    };
-
-    const testValidation = () => {
-        for (const key of Object.keys(isValid)) {
-            if (!isValid[key]) {
-                return false;
-            }
-        }
-        return true;
     };
 </script>
 
@@ -77,7 +66,6 @@
                     validateAs="email"
                     label="Email"
                     validationMessage="Invalid email address"
-                    bind:isValid={isValid[0]}
                     bind:this={validatedInputArray[0]} />
                 <ValidatedInput
                     placeholder="Password"
@@ -87,7 +75,6 @@
                     label="Password"
                     passwordValidationOption="strong"
                     validationMessage="Password too weak"
-                    bind:isValid={isValid[1]}
                     bind:this={validatedInputArray[1]} />
                 <ValidatedInput
                     placeholder="Confirm password"
@@ -97,7 +84,6 @@
                     label="Confirm Password"
                     compareValue={passwordValue}
                     validationMessage="Passwords do not match"
-                    bind:isValid={isValid[2]}
                     bind:this={validatedInputArray[2]} />
 
                 <div class="card-actions justify-between">
