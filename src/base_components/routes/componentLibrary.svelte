@@ -4,6 +4,7 @@
     import PageTransitionFade from "../page_transitions/pageTransitionFade.svelte";
     import ValidatedInput from "../forms/validatedInput.svelte";
     import ValidatedSelectInput from "../forms/validatedSelectInput.svelte";
+    import ValidatedInputBase from "../forms/validatedInputBase.svelte";
 
     let validatedInputArray = [];
 
@@ -21,19 +22,32 @@
 
     const validateForm = () => {
         let isFormValid = true;
-        validatedInputArray.forEach((inputComponent) => {
-            isFormValid &= inputComponent.validate(true);
-        });
+        validatedInputArray
+            .filter((inputComponent, index) => {
+                return index !== 4;
+            })
+            .forEach((inputComponent) => {
+                isFormValid &= inputComponent.validate(true);
+            });
 
         return isFormValid;
     };
 
-    const pretendSubmit = () => {
-        if (validateForm()) {
-            console.log("Pretended to submit. Validation passed!");
-        } else {
-            console.log("Failed to pretend to submit. Validation failed!");
-        }
+    const toggleValidationError = () => {
+        validatedInputArray["validatedInputBase"].toggleValidationState(
+            false,
+            "Invalid things",
+            true
+        );
+    };
+    const toggleValidationSuccess = () => {
+        validatedInputArray["validatedInputBase"].toggleValidationState(
+            true,
+            "Good things"
+        );
+    };
+    const resetValidation = () => {
+        validatedInputArray["validatedInputBase"].resetValidationState();
     };
 
     let values = {
@@ -185,6 +199,10 @@
                 <div in:fade={{ duration: 500 }} class="flex flex-row gap-5">
                     <div class="basis-4/12">
                         <h4 class="font-bold text-xl">Validated inputs</h4>
+                        <ValidatedInputBase
+                            bind:this={validatedInputArray[
+                                "validatedInputBase"
+                            ]} />
                         <ValidatedSelectInput
                             bind:values
                             validationMessage="Invalid selection"
@@ -222,7 +240,19 @@
                             bind:this={validatedInputArray[2]} />
                         <button
                             class="btn btn-primary mt-2 float-right"
-                            on:click={pretendSubmit}>Test</button>
+                            on:click={toggleValidationError}>
+                            Toggle Validation Error
+                        </button>
+                        <button
+                            class="btn btn-primary mt-2 float-right"
+                            on:click={toggleValidationSuccess}>
+                            Toggle Validation Success
+                        </button>
+                        <button
+                            class="btn btn-primary mt-2 float-right"
+                            on:click={resetValidation}>
+                            Reset validation
+                        </button>
                     </div>
                 </div>
             {/if}
