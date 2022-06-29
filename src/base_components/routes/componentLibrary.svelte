@@ -4,7 +4,7 @@
     import PageTransitionFade from "../page_transitions/pageTransitionFade.svelte";
     import ValidatedInput from "../forms/validatedInput.svelte";
     import ValidatedSelectInput from "../forms/validatedSelectInput.svelte";
-
+    import Cropper from "../utilities/cropper.svelte";
     let validatedInputArray = [];
 
     let passwordValue = "";
@@ -52,6 +52,7 @@
 
 <PageTransitionFade>
     <RoutingExampleNav />
+    <Cropper />
     <main class="mt-5 mb-16">
         <div class="container mx-auto px-5">
             <article class="prose">
