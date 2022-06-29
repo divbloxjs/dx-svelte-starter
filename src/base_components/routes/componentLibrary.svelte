@@ -3,6 +3,7 @@
     import { fade } from "svelte/transition";
     import PageTransitionFade from "../page_transitions/pageTransitionFade.svelte";
     import ValidatedInput from "../forms/validatedInput.svelte";
+    import ValidatedSelectInput from "../forms/validatedSelectInput.svelte";
 
     let validatedInputArray = [];
 
@@ -19,26 +20,33 @@
     };
 
     const validateForm = () => {
+        let isFormValid = true;
         validatedInputArray.forEach((inputComponent) => {
-            inputComponent.validate(true);
+            isFormValid &= inputComponent.validate(true);
         });
+
+        return isFormValid;
     };
 
     const pretendSubmit = () => {
-        validateForm();
-        if (testValidation()) {
+        if (validateForm()) {
             console.log("Pretended to submit. Validation passed!");
         } else {
             console.log("Failed to pretend to submit. Validation failed!");
         }
     };
-    const testValidation = () => {
-        for (const key of Object.keys(isValid)) {
-            if (!isValid[key]) {
-                return false;
-            }
-        }
-        return true;
+
+    let values = {
+        defaultValue: {
+            notSelected: "-Please Select-",
+        },
+        options: {
+            "Star Wars": "Star Wars",
+            "Harry Potter": "Harry Potter",
+            "Lord of the Rings": "Lord of the Rings",
+            "Planet of the Apes": "Planet of the Apes",
+            "Star Trek": "Star Trek",
+        },
     };
 </script>
 
@@ -177,12 +185,20 @@
                 <div in:fade={{ duration: 500 }} class="flex flex-row gap-5">
                     <div class="basis-4/12">
                         <h4 class="font-bold text-xl">Validated inputs</h4>
+                        <ValidatedSelectInput
+                            bind:values
+                            validationMessage="Invalid selection"
+                            label="Movies"
+                            requiredLabel="(Required)"
+                            bind:isValid={isValid[3]}
+                            bind:this={validatedInputArray[3]} />
                         <ValidatedInput
                             placeholder="Email address"
                             type="email"
                             validateAs="email"
-                            label="Email"
                             validationMessage="Invalid email address"
+                            label="Email Address"
+                            requiredLabel="(Required)"
                             bind:isValid={isValid[0]}
                             bind:this={validatedInputArray[0]} />
                         <ValidatedInput

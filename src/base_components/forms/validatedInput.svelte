@@ -25,6 +25,8 @@
 
     export let label = null;
     export let addLabelClass = "";
+    export let requiredLabel = "";
+    export let addRequiredLabelClass = "";
 
     export let value = "";
     export let name = null;
@@ -74,6 +76,7 @@
      * Permorms the validation on the specific input type
      *
      * @param forceValidate - Forces the validation to bypass the default skipping of empty fields
+     * @return {boolean} - True if all validation is passed
      */
     export const validate = (forceValidate = false) => {
         if (!forceValidate && value.length <= 0) {
@@ -108,6 +111,8 @@
                         JSON.stringify(Object.keys(validationOptions), null, 2)
                 );
         }
+
+        return isValid;
     };
 
     const validateEmail = () => {
@@ -139,7 +144,7 @@
     });
 </script>
 
-<div class="form-control w-full max-w-xs">
+<div class="form-control w-full">
     <label for={name} class="label mb-1">
         {#if label !== null}
             <span class={addLabelClass}>{label}</span>
@@ -149,6 +154,12 @@
                 class:-mb-2={label !== null}
                 class="label-text-alt text-red-500  ml-auto text-xs">
                 {validationMessage}
+            </span>
+        {:else if !isValidated && requiredLabel !== null && requiredLabel !== undefined && requiredLabel.length > 0}
+            <span
+                class:-mb-2={label !== null}
+                class="label-text-alt text-red-500  ml-auto text-xs {addRequiredLabelClass}">
+                {requiredLabel}
             </span>
         {/if}
     </label>
