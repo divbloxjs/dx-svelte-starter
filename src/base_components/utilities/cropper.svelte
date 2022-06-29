@@ -12,7 +12,6 @@
         console.log("image loaded", img.complete);
         img.addEventListener("load", initCropper);
         // Listen for submit events
-        form.addEventListener("submit", handleSubmit);
     });
 
     let cropperLoaded = false;
@@ -20,8 +19,7 @@
     const initCropper = () => {
         console.log("initCropper: img loaded ", img.complete);
         cropper = new Cropper(img, {
-            // aspectRatio: 16 / 9,
-            // viewMode: 3,
+            aspectRatio: 16 / 9,
             crop(event) {
                 console.log(event.detail);
                 console.log(event.detail.y);
@@ -35,69 +33,24 @@
 
         cropperLoaded = true;
     };
-
     let postVar;
     let fileVar;
 
-    function submitForm() {
-        event.preventDefault();
-
-        const dataArray = new FormData();
-        dataArray.append("superHeroName", postVar);
-        dataArray.append("uploadFile", fileVar);
-
-        fetch("api_url_here", {
-            method: "POST",
-            headers: [["Content-Type", "multipart/form-data"]],
-            body: dataArray,
-        })
-            .then((response) => {
-                // Successfully uploaded
-            })
-            .catch((error) => {
-                // Upload failed
-            });
+    let files;
+    $: if (files) {
+        isModalOpen = true;
+        // Note that `files` is of type `FileList`, not an Array:
+        // https://developer.mozilla.org/en-US/docs/Web/API/FileList
+        for (const file of files) {
+            // console.log(`${file.name}: ${file.size} bytes`);
+        }
     }
 
-    // Get the form and file field
-    // let form = document.querySelector("#upload");
-    // let file = document.querySelector("#file");
-    // let app = document.querySelector("#app");
+    let isModalOpen = false;
 
-    /**
-     * Log the uploaded file to the console
-     * @param {event} event The file loaded event
-     */
-    function logFile(event) {
-        let str = event.target.result;
-        let img = document.createElement("img");
-        img.src = str;
-        app.append(img);
-        console.log(str);
-    }
-
-    /**
-     * Handle submit events
-     * @param  {Event} event The event object
-     */
-    function handleSubmit(event) {
-        // Stop the form from reloading the page
-        event.preventDefault();
-
-        // If there's no file, do nothing
-        if (!file.value.length) return;
-
-        // Create a new FileReader() object
-        let reader = new FileReader();
-
-        // Setup the callback event to run when the file is read
-        reader.onload = logFile;
-
-        // Read the file
-        reader.readAsDataURL(file.files[0]);
-    }
-
-    let form;
+    const handleFileUpload = () => {
+        console.log("haldned");
+    };
 </script>
 
 <svelte:head>
@@ -106,33 +59,58 @@
 
 <h1>File Upload</h1>
 
-<div id="app" />
+<label for="avatar">Upload a picture:</label>
+<input
+    accept="image/png, image/jpeg, image/jpg"
+    bind:files
+    on:change={handleFileUpload}
+    id="avatar"
+    name="avatar"
+    type="file" />
 
-<form id="upload" bind:this={form}>
-    <label for="file">File to upload</label>
-    <input type="file" id="file" accept="image/*" />
+<!-- The button to open modal -->
+<label for="my-modal" class="btn modal-button">open modal</label>
 
-    <button>Upload</button>
-</form>
-<div>
-    <form on:submit={submitForm}>
-        <input
-            type="text"
-            bind:value={postVar}
-            placeholder={"Superhero Name"} />
-        <br />
-        <input type="file" bind:files={fileVar} />
-        <br />
-        <input type="submit" />
-    </form>
+<!-- Put this part before </body> tag -->
+<input
+    type="checkbox"
+    id="my-modal"
+    class="modal-toggle"
+    bind:checked={isModalOpen} />
+<div class="modal" on:click|self={() => (isModalOpen = false)}>
+    <div class="modal-box ">
+        <h3 class="font-bold text-lg">
+            Congratulations you uploaded an image!
+        </h3>
+        <p class="py-4">
+            You've been selected for a chance to get one year of subscription to
+            use Wikipedia for free!
+        </p>
+        <div class="card">
+            <img bind:this={img} src={imgPath} alt="Image" />
+        </div>
+
+        <div class="modal-action">
+            <button
+                for="my-modal"
+                class="btn btn-primary"
+                on:click={() => {
+                    isModalOpen = !isModalOpen;
+                }}>
+                Close!
+            </button>
+        </div>
+    </div>
 </div>
-<button class="btn btn-primary" on:click={() => console.log({ cropperLoaded })}>
-    CLick</button>
 
+{#if files}
+    <h2>Selected files:</h2>
+    {#each Array.from(files) as file}
+        <p>{file.name} ({file.size} bytes)</p>
+    {/each}
+{/if}
 <!-- Wrap the image or canvas element with a block element (container) -->
-<div class="card m-5">
-    <img bind:this={img} src={imgPath} alt="Image" style="" />
-</div>
+<div class="card m-5" />
 
 <style>
     img {
@@ -140,8 +118,4 @@
         /* This rule is very important, please don't ignore this */
         max-width: 100%;
     }
-
-    /* .cropper-container {
-        max-width: 100%;
-    } */
 </style>
