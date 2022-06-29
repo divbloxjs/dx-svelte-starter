@@ -51,10 +51,13 @@
                     <a href="#/">Page 2</a>
                 </li>
                 <li>
-                    <span class="justify-between">
+                    <!-- <span class="justify-between"> -->
+                    <a href="#/profile" class="justify-between">
                         Profile
                         <span class="badge">New</span>
-                    </span>
+                    </a>
+
+                    <!-- </span> -->
                 </li>
                 <li><span>Settings</span></li>
                 <li><span on:click={doLogout}>Logout</span></li>
@@ -91,7 +94,7 @@
                 class="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52">
                 <li>
                     <span class="justify-between">
-                        Profile
+                        <a href="#/profile">Profile</a>
                         <span class="badge">New</span>
                     </span>
                 </li>

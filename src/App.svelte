@@ -8,6 +8,7 @@
     import CreateAccount from "./routes/createAccount.svelte";
     import ForgotPassword from "./routes/forgotPassword.svelte";
     import ResetPassword from "./routes/resetPassword.svelte";
+    import Profile from "./routes/profile.svelte";
     import ServiceWorkerUpdate from "./base_components/service_worker_related/ServiceWorkerUpdate.svelte";
 
     /**
@@ -24,6 +25,7 @@
         "/routing-example": RoutingExample,
         "/routing-example/:id": RoutingExample,
         "/component-library": ComponentLibrary,
+        "/profile": Profile,
 
         "*": NotFound,
     };
