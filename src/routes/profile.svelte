@@ -5,67 +5,97 @@
     import { routeUtilities } from "../lib/js/routeUtilities";
     import ValidatedInput from "../base_components/forms/validatedInput.svelte";
     import { fade } from "svelte/transition";
-    import { onMount } from "svelte";
     import { logout } from "../lib/js/authentication";
-    import * as FilePond from "filepond";
-    import { accordion } from "../base_components/animations/accordion";
+
+    let validatedDetailInputs = [];
+    let validatedPasswordInputs = [];
+    let groupedInputComponents = {
+        details: validatedDetailInputs,
+        password: validatedPasswordInputs,
+    };
+
+    const validateInputs = (groupedInputComponents) => {
+        let isInputValid = true;
+        Object.entries(groupedInputComponents).forEach((entry) => {
+            const [sectionName, inputComponent] = entry;
+            isInputValid &= inputComponent.validate(true);
+        });
+
+        return isInputValid;
+    };
 
     let tabs = {
         details: "Details",
         password: "Password",
     };
 
-    onMount(async () => {});
+    const updateProfile = (sectionName) => {
+        if (validateInputs(groupedInputComponents[sectionName])) {
+            console.log("Pretended to submit. Validation passed!");
+        } else {
+            console.log("Failed to pretend to submit. Validation failed!");
+        }
+    };
 
     $: activeTab = Object.keys(tabs)[0];
 </script>
 
 <PageTransitionFade>
     <MainNav />
-    <div class="card sm:card-side bg-base-100 shadow-xl m-10 hidden sm:flex">
-        <div class="tabs tabs-boxed p-2 bg-base-200">
+    <div
+        class="card sm:card-side flex flex-col sm:flex-row bg-base-200 shadow-xl m-5 sm:mx-auto max-w-xl ">
+        <div
+            class="tabs flex flex-row sm:flex-col tabs-boxed p-2 bg-base-300 rounded-r-none">
             {#each Object.entries(tabs) as [tabName, tabTitle]}
                 <button
-                    class="tab mx-auto w-full"
+                    class="tab sm:mt-2 mx-auto"
                     class:tab-active={activeTab === tabName}
                     on:click={() => (activeTab = tabName)}
                     >{tabTitle}
                 </button>
             {/each}
-            <button
-                class="tab mx-auto w-full"
-                on:click={() => logout(null, null)}>
+            <button class="tab mx-auto" on:click={() => logout(null, null)}>
                 Logout
             </button>
         </div>
         {#if activeTab === "details"}
-            <div class="card-body" in:fade={{ duration: 500 }}>
+            <div class="card-body p-5 sm:p-10" in:fade={{ duration: 500 }}>
                 <h2 class="text-xl font-bold text-center">Profile here</h2>
                 <div class="card-actions justify-between">
                     <ValidatedInput
                         label="First Name"
                         placeHolder="First Name"
-                        type="text" />
+                        type="text"
+                        validateAs="required"
+                        validationMessage="Please provide a First Name"
+                        bind:this={validatedDetailInputs[0]} />
                     <ValidatedInput
                         label="Middle Name(s)"
                         placeHolder="Middle Name"
-                        type="text" />
+                        type="text"
+                        bind:this={validatedDetailInputs[1]} />
                     <ValidatedInput
                         label="Last Name(s)"
                         placeHolder="Last Name"
-                        type="text" />
+                        type="text"
+                        validationMessage="Please provide a Last Name"
+                        validateAs="required"
+                        bind:this={validatedDetailInputs[2]} />
                     <ValidatedInput
                         label="Email Address"
                         placeHolder="Email Address"
                         type="email"
                         validationMessage="Invalid Email"
-                        validateAs="email" />
+                        validateAs="email"
+                        bind:this={validatedDetailInputs[3]} />
                     <button
                         on:click={routeUtilities.goBack}
-                        class="btn btn-link text-gray-400 mt-2 pl-0">
+                        class="btn btn-link text-gray-400 mt-2 -ml-1">
                         Cancel
                     </button>
-                    <button class="btn btn-primary mt-2 float-right">
+                    <button
+                        class="btn btn-primary mt-2 float-right"
+                        on:click={() => updateProfile("details")}>
                         Save
                     </button>
                 </div>
@@ -79,115 +109,28 @@
                         placeHolder="Password"
                         type="password"
                         validationMessage="Password too short"
-                        validateAs="password" />
+                        validateAs="password"
+                        bind:this={validatedPasswordInputs[0]} />
                     <ValidatedInput
                         placeHolder="Confirm Password"
                         type="password"
                         validationMessage="Passwords do not match"
-                        validateAs="password" />
+                        validateAs="password"
+                        bind:this={validatedPasswordInputs[1]} />
                     <button
                         on:click={routeUtilities.goBack}
-                        class="btn btn-link text-gray-400 mt-2 pl-0">
+                        class="btn btn-link text-gray-400 mt-2 -ml-1">
                         Cancel
                     </button>
-                    <button class="btn btn-primary mt-2 float-right">
+                    <button
+                        class="btn btn-primary mt-2 float-right"
+                        on:click={() => updateProfile("password")}>
                         Save
                     </button>
                 </div>
             </div>
         {/if}
     </div>
-
-    <div class="w-100 sm:hidden">
-        <div class="text-center mt-4">
-            <ul class="menu menu-horizontal bg-base-200 rounded-box">
-                <li>
-                    <a
-                        class:bg-primary={activeTab === "details"}
-                        on:click={() => (activeTab = "details")}>
-                        Details
-                    </a>
-                </li>
-                <li>
-                    <a
-                        class:bg-primary={activeTab === "password"}
-                        on:click={() => (activeTab = "password")}>
-                        Password
-                    </a>
-                </li>
-                <li>
-                    <a on:click={() => logout(null, null)}>Logout</a>
-                </li>
-            </ul>
-        </div>
-        <div class="container -mt-5">
-            {#if activeTab === "details"}
-                <div class="card-body" in:fade={{ duration: 500 }}>
-                    <div class="card-actions justify-between">
-                        <ValidatedInput
-                            label="First Name"
-                            placeHolder="First Name"
-                            type="text" />
-                        <ValidatedInput
-                            label="Middle Name(s)"
-                            placeHolder="Middle Name"
-                            type="text" />
-                        <ValidatedInput
-                            label="Last Name(s)"
-                            placeHolder="Last Name"
-                            type="text" />
-                        <ValidatedInput
-                            label="Email Address"
-                            placeHolder="Email Address"
-                            type="email"
-                            validationMessage="Invalid Email"
-                            validateAs="email" />
-                        <button
-                            on:click={routeUtilities.goBack}
-                            class="btn btn-link text-gray-400 mt-2 pl-0">
-                            Cancel
-                        </button>
-                        <button class="btn btn-primary mt-2 float-right">
-                            Save
-                        </button>
-                    </div>
-                </div>
-            {:else if activeTab === "password"}
-                <div class="card-body" in:fade={{ duration: 500 }}>
-                    <div class="card-actions justify-between">
-                        <ValidatedInput
-                            label="Password"
-                            placeHolder="Password"
-                            type="password"
-                            validationMessage="Password too short"
-                            validateAs="password" />
-                        <ValidatedInput
-                            placeHolder="Confirm Password"
-                            type="password"
-                            validationMessage="Passwords do not match"
-                            validateAs="password" />
-                        <button
-                            on:click={routeUtilities.goBack}
-                            class="btn btn-link text-gray-400 mt-2 pl-0">
-                            Cancel
-                        </button>
-                        <button class="btn btn-primary mt-2 float-right">
-                            Save
-                        </button>
-                    </div>
-                </div>
-            {/if}
-        </div>
-    </div>
 </PageTransitionFade>
 
 <MainFooter />
-
-<style>
-    .tabs {
-        display: flex;
-        flex-direction: column;
-        flex-wrap: wrap;
-        align-items: flex-start;
-    }
-</style>
