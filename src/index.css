@@ -25,5 +25,9 @@
             padding-bottom: 0;
             padding-top: 0;
         }
+
+        .divblox-bottom-banner-space {
+            margin-bottom: 54px;
+        }
     }
 }
