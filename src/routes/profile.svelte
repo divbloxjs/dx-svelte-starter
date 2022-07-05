@@ -65,10 +65,10 @@
             class="flex flex-grow justify-center content-center items-center divblox-bottom-banner-space"
         >
             <div
-                class="card sm:card-side flex flex-col sm:flex-row bg-base-200 shadow-xl m-5 sm:mx-auto max-w-xl align-center justify-center"
+                class="card sm:card-side flex flex-col sm:flex-row bg-base-200 shadow-xl m-5 mb-[calc(1.25rem+54px)] sm:mx-auto max-w-xl md:max-w-2xl align-center justify-center"
             >
                 <div
-                    class="tabs flex flex-row sm:flex-col tabs-boxed p-2 bg-base-300 rounded-r-none"
+                    class="tabs flex flex-row sm:flex-col sm:w-64 tabs-boxed p-2 bg-base-300 rounded-r-none"
                 >
                     {#each Object.entries(tabs) as [tabName, tabTitle]}
                         <button
@@ -93,6 +93,7 @@
                     >
                         <SingleImageUploader
                             maxHeight="150px"
+                            uploadEndpoint="https://api.beta.divblox.app/api/dxApiPing/echo"
                             displayAsCircle={true}
                             defaultImagePath={profilePictureDefault}
                             bind:displayImagePath={profilePicturePath}

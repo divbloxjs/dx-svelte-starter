@@ -12,8 +12,10 @@
     export let displayAsCircle = false;
     export let maxHeight = "300px";
     export let imageName = "Divblox Image";
+    export let uploadEndpoint;
 
     let isEditing = false;
+    let isSubmitting = false;
     let fileUploader;
     let imageEditorPath = defaultImagePath;
     let displayedImageEl;
@@ -40,6 +42,33 @@
     const handleFileUpload = () => {
         isEditing = true;
         imageEditorPath = URL.createObjectURL(fileUploader.files[0]);
+    };
+
+    const submitFile = async () => {
+        isSubmitting = true;
+        if (uploadEndpoint === undefined) {
+            throw new Error("uploadEndpoint has not been defined");
+        }
+
+        let formData = new FormData();
+        formData.append("file", fileUploader.files[0]);
+        try {
+            const uploadResponse = await fetch(uploadEndpoint, {
+                method: "POST",
+                mode: "no-cors",
+                body: formData,
+            });
+            console.log(uploadResponse);
+
+            if (uploadResponse.status !== 200) {
+                alert("Failed to save changes. Please try again.");
+            } else {
+                isEditing = false;
+            }
+        } catch (error) {
+            console.error(error);
+        }
+        isSubmitting = false;
     };
 
     afterUpdate(() => {
@@ -82,12 +111,13 @@
     };
 
     const handleCropConfirm = () => {
-        // Crop
-        modifiedCanvas = cropper.getCroppedCanvas();
-
-        // Round
-        if (displayAsCircle) {
-            modifiedCanvas = getRoundedCanvas(modifiedCanvas);
+        if (modifiedCanvas === undefined) {
+            // Crop
+            modifiedCanvas = cropper.getCroppedCanvas();
+            // Round
+            if (displayAsCircle) {
+                modifiedCanvas = getRoundedCanvas(modifiedCanvas);
+            }
         }
 
         // convert to Blob (async)
@@ -100,44 +130,44 @@
         });
 
         // Show
-        isEditing = false;
+        submitFile();
     };
 </script>
 
-{#if !isEditing}
-    <div class="max-w-full mx-auto" style="max-height: {maxHeight}">
-        <div class="avatar">
-            <div
-                style="aspect-ratio: {aspectRatio}; max-height: {maxHeight}"
-                class:rounded-full={displayAsCircle}
-                class:rounded-lg={!displayAsCircle}>
-                <img
-                    bind:this={displayedImageEl}
-                    src={imagePath}
-                    alt={imageName} />
-            </div>
+<div class="max-w-full mx-auto" style="max-height: {maxHeight}">
+    <div class="avatar">
+        <div
+            style="aspect-ratio: {aspectRatio}; max-height: {maxHeight}"
+            class:rounded-full={displayAsCircle}
+            class:rounded-lg={!displayAsCircle}
+        >
+            <img bind:this={displayedImageEl} src={imagePath} alt={imageName} />
         </div>
     </div>
+</div>
 
-    <div class="file-input mx-auto">
-        <input
-            type="file"
-            bind:this={fileUploader}
-            on:change={handleFileUpload}
-            id="file"
-            class="file" />
-        <label for="file" class="btn btn-link -mt-5 text-base-content">
-            Edit
-            <Fa icon={faPencil} size="xs" translateY={0} translateX={0.5} />
-            <p class="file-name" />
-        </label>
-    </div>
-{:else}
+<div class="file-input mx-auto">
+    <input
+        type="file"
+        bind:this={fileUploader}
+        on:change={handleFileUpload}
+        id="file"
+        class="file"
+    />
+    <label for="file" class="btn btn-link -mt-5 text-base-content">
+        Edit
+        <Fa icon={faPencil} size="xs" translateY={0} translateX={0.5} />
+        <p class="file-name" />
+    </label>
+</div>
+{#if isEditing}
     <div
         transition:fade={{ duration: 200 }}
-        class="fixed z-50 w-screen h-screen bg-base-200 top-0 left-0">
+        class="fixed z-50 w-screen h-screen bg-base-200 top-0 left-0"
+    >
         <div
-            class="w-11/12 mt-[2rem] max-w-[90vw] max-h-[calc(100vh-6rem)] m-auto">
+            class="w-11/12 mt-[2rem] max-w-[90vw] max-h-[calc(100vh-6rem)] m-auto"
+        >
             <img bind:this={image} src={imageEditorPath} alt="Edited" />
         </div>
         <div class="w-11/12 max-w-[90vw] mx-auto text-center">
@@ -146,14 +176,18 @@
                 class="btn btn-link text-base-content mt-2"
                 on:click={() => {
                     isEditing = false;
-                }}>
+                }}
+            >
                 Cancel
             </button>
             <button
                 type="button"
                 class="btn btn-primary mt-2"
-                on:click={handleCropConfirm}>
-                Save Changes
+                class:loading={isSubmitting}
+                on:click={handleCropConfirm}
+            >
+                <span class:hidden={!isSubmitting}>Saving...</span>
+                <span class:hidden={isSubmitting}>Save Changes</span>
             </button>
         </div>
     </div>
