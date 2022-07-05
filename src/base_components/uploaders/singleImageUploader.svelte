@@ -16,15 +16,12 @@
 
     let isEditing = false;
     let isSubmitting = false;
-    let fileUploader;
+    let fileUploaderEl;
     let imageEditorPath = defaultImagePath;
     let displayedImageEl;
     let cropper;
-    let image;
-    let result;
-    let croppedCanvas;
+    let imageEditorEl;
     let modifiedCanvas;
-    let roundedImage;
     let imagePath;
 
     let aspectRatio = displayAsCircle ? 1 : aspect.x / aspect.y;
@@ -39,26 +36,25 @@
                 : defaultImagePath;
     };
 
-    const handleFileUpload = () => {
+    const handleFileSelected = () => {
         isEditing = true;
-        imageEditorPath = URL.createObjectURL(fileUploader.files[0]);
+        imageEditorPath = URL.createObjectURL(fileUploaderEl.files[0]);
     };
 
-    const submitFile = async () => {
+    const handleFileUpload = async () => {
         isSubmitting = true;
         if (uploadEndpoint === undefined) {
             throw new Error("uploadEndpoint has not been defined");
         }
 
         let formData = new FormData();
-        formData.append("file", fileUploader.files[0]);
+        formData.append("file", fileUploaderEl.files[0]);
+
         try {
             const uploadResponse = await fetch(uploadEndpoint, {
                 method: "POST",
-                mode: "no-cors",
                 body: formData,
             });
-            console.log(uploadResponse);
 
             if (uploadResponse.status !== 200) {
                 alert("Failed to save changes. Please try again.");
@@ -66,14 +62,16 @@
                 isEditing = false;
             }
         } catch (error) {
+            alert("Failed to save changes. Please try again.");
             console.error(error);
         }
+
         isSubmitting = false;
     };
 
     afterUpdate(() => {
         if (isEditing) {
-            cropper = new Cropper(image, {
+            cropper = new Cropper(imageEditorEl, {
                 aspectRatio: displayAsCircle ? 1 : NaN,
                 viewMode: 1,
                 dragMode: "move",
@@ -110,12 +108,12 @@
         return canvas;
     };
 
-    const handleCropConfirm = () => {
+    const handleConfirmCrop = () => {
         if (modifiedCanvas === undefined) {
             // Crop
             modifiedCanvas = cropper.getCroppedCanvas();
-            // Round
             if (displayAsCircle) {
+                // Round
                 modifiedCanvas = getRoundedCanvas(modifiedCanvas);
             }
         }
@@ -125,12 +123,10 @@
             const file = new File([blob], "mycanvas.png");
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
-            fileUploader.files = dataTransfer.files;
-            console.log(fileUploader.files);
+            fileUploaderEl.files = dataTransfer.files;
         });
 
-        // Show
-        submitFile();
+        handleFileUpload();
     };
 </script>
 
@@ -149,8 +145,8 @@
 <div class="file-input mx-auto">
     <input
         type="file"
-        bind:this={fileUploader}
-        on:change={handleFileUpload}
+        bind:this={fileUploaderEl}
+        on:change={handleFileSelected}
         id="file"
         class="file"
     />
@@ -168,7 +164,7 @@
         <div
             class="w-11/12 mt-[2rem] max-w-[90vw] max-h-[calc(100vh-6rem)] m-auto"
         >
-            <img bind:this={image} src={imageEditorPath} alt="Edited" />
+            <img bind:this={imageEditorEl} src={imageEditorPath} alt="Edited" />
         </div>
         <div class="w-11/12 max-w-[90vw] mx-auto text-center">
             <button
@@ -184,7 +180,7 @@
                 type="button"
                 class="btn btn-primary mt-2"
                 class:loading={isSubmitting}
-                on:click={handleCropConfirm}
+                on:click={handleConfirmCrop}
             >
                 <span class:hidden={!isSubmitting}>Saving...</span>
                 <span class:hidden={isSubmitting}>Save Changes</span>

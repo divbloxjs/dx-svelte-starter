@@ -93,7 +93,7 @@
                     >
                         <SingleImageUploader
                             maxHeight="150px"
-                            uploadEndpoint="https://api.beta.divblox.app/api/dxApiPing/echo"
+                            uploadEndpoint="https://api.beta.divblox.app/api/dxApiPing/postExample"
                             displayAsCircle={true}
                             defaultImagePath={profilePictureDefault}
                             bind:displayImagePath={profilePicturePath}
