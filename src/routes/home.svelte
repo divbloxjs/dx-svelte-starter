@@ -2,7 +2,7 @@
     import MainNav from "../lib/navigation/mainNav.svelte";
     import MainFooter from "../lib/navigation/mainFooter.svelte";
     import { push, pop, replace } from "svelte-spa-router";
-    import { checkAuthentication } from "../lib/js/authentication";
+    import { checkAuthentication } from "../lib/js/stores/authentication";
     import { onMount } from "svelte";
     import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
 
@@ -27,7 +27,8 @@
                     </p>
                     <button
                         class="btn btn-primary"
-                        on:click={openComponentLibrary}>
+                        on:click={openComponentLibrary}
+                    >
                         See Component Library
                     </button>
                 </div>

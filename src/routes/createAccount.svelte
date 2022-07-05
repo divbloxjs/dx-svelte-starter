@@ -1,17 +1,17 @@
 <script>
     import MainFooter from "../lib/navigation/mainFooter.svelte";
     import {
-        domainRoot,
         isAuthenticated,
+        checkAuthentication,
+        authenticate,
+    } from "../lib/js/stores/authentication";
+    import {
+        domainRoot,
         appLogo,
         appName,
         defaultLandingPage,
-    } from "../lib/js/stores";
-    import {
-        checkAuthentication,
-        authenticate,
-    } from "../lib/js/authentication";
-    import { routeUtilities } from "../lib/js/routeUtilities";
+    } from "../lib/js/stores/configurations";
+    import { routeUtilities } from "../lib/js/utilities/routeUtilities";
     import { onMount } from "svelte";
     import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
     import ValidatedInput from "../base_components/forms/validatedInput.svelte";
@@ -26,7 +26,7 @@
     });
 
     const validateForm = () => {
-        let formIsValid = true;
+        let formIsValid = 1;
         validatedInputArray.forEach((inputComponent) => {
             formIsValid &= inputComponent.validate(true);
         });
@@ -50,7 +50,8 @@
 <PageTransitionFade>
     <main class="flex flex-col h-screen">
         <div
-            class="flex flex-grow justify-center items-center divblox-bottom-banner-space">
+            class="flex flex-grow justify-center items-center divblox-bottom-banner-space"
+        >
             <div class="card w-11/12 max-w-md bg-base-200 shadow-2xl">
                 <figure>
                     <a href={domainRoot} class="w-3/12 mt-10 mb-0">
@@ -67,7 +68,8 @@
                         validateAs="email"
                         label="Email"
                         validationMessage="Invalid email address"
-                        bind:this={validatedInputArray[0]} />
+                        bind:this={validatedInputArray[0]}
+                    />
                     <ValidatedInput
                         placeholder="Password"
                         bind:value={passwordValue}
@@ -76,7 +78,8 @@
                         label="Password"
                         passwordValidationOption="strong"
                         validationMessage="Password too weak"
-                        bind:this={validatedInputArray[1]} />
+                        bind:this={validatedInputArray[1]}
+                    />
                     <ValidatedInput
                         placeholder="Confirm password"
                         value=""
@@ -85,19 +88,22 @@
                         label="Confirm Password"
                         compareValue={passwordValue}
                         validationMessage="Passwords do not match"
-                        bind:this={validatedInputArray[2]} />
+                        bind:this={validatedInputArray[2]}
+                    />
 
                     <div class="card-actions justify-between">
                         <button
                             on:click={routeUtilities.goBack}
-                            class="btn btn-link text-gray-600 pl-0">
+                            class="btn btn-link text-gray-600 pl-0"
+                        >
                             Cancel
                         </button>
                         <button
                             class:btn-disabled={isProcessingRegistration}
                             class:btn-primary={!isProcessingRegistration}
                             class="btn mr-0"
-                            on:click={doCreateAccount}>
+                            on:click={doCreateAccount}
+                        >
                             {#if isProcessingRegistration}
                                 Working...
                             {:else}

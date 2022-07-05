@@ -1,9 +1,12 @@
 <script>
-    import { domainRoot, appLogo, appName } from "../../lib/js/stores";
+    import { logout } from "../js/stores/authentication";
+    import { profilePicturePath } from "../../lib/js/stores/userData";
+    import {
+        domainRoot,
+        appLogo,
+        appName,
+    } from "../../lib/js/stores/configurations";
     import { push, pop, replace } from "svelte-spa-router";
-    import Fa from "svelte-fa";
-    import { faCircleUser } from "@fortawesome/free-solid-svg-icons";
-    import { logout } from "../js/authentication";
 
     const doNavigate = (event, page) => {
         push("/" + page);
@@ -20,7 +23,8 @@
             on:click={(event) => doNavigate(event, "home")}
             src={appLogo}
             alt="{appName} Logo"
-            class="max-h-10 px-3 hover:cursor-pointer" />
+            class="max-h-10 px-3 hover:cursor-pointer"
+        />
     </div>
 
     <div class="flex-none lg:hidden">
@@ -32,18 +36,21 @@
                     class="h-5 w-5"
                     fill="none"
                     viewBox="0 0 24 24"
-                    stroke="currentColor">
+                    stroke="currentColor"
+                >
                     <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
                         stroke-width="2"
-                        d="M4 6h16M4 12h8m-8 6h16" />
+                        d="M4 6h16M4 12h8m-8 6h16"
+                    />
                 </svg>
             </label>
 
             <ul
                 tabindex="0"
-                class="mt-3 p-1 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-80">
+                class="mt-3 p-1 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-80"
+            >
                 <li>
                     <a href="#/">Page 1</a>
                 </li>
@@ -80,18 +87,13 @@
             <label tabindex="0" class="btn btn-ghost btn-circle avatar">
                 <div class="w-10 rounded-full">
                     <!-- svelte-ignore a11y-missing-attribute -->
-                    <Fa
-                        icon={faCircleUser}
-                        size="2x"
-                        fw
-                        translateY={0.2}
-                        translateX={0.1} />
-                    <!-- <img src="https://api.lorem.space/image/face?hash=33791"> -->
+                    <img src={$profilePicturePath} alt="Profile Picture" />
                 </div>
             </label>
             <ul
                 tabindex="0"
-                class="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52">
+                class="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52"
+            >
                 <li>
                     <span class="justify-between">
                         <a href="#/profile">Profile</a>
