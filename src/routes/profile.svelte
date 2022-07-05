@@ -81,8 +81,7 @@
                         </h2>
                         <SingleImageUploader
                             maxHeight="300px"
-                            displayAsCircle={true}
-                            displayImagePath={profilePictureDefault}
+                            displayAsCircle={false}
                         />
 
                         <div class="card-actions justify-between">
