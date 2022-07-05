@@ -1,10 +1,14 @@
-import { domainRoot, isAuthenticated, defaultLandingPage } from "../js/stores";
+import { writable, get } from "svelte/store";
+import { defaultLandingPage } from "./configurations";
+import { updateProfilePicturePath } from "./userData";
 import { push, pop, replace } from "svelte-spa-router";
 
-let isAuthenticatedValue = false;
+export const isAuthenticated = writable(
+    JSON.parse(localStorage.getItem("isAuthenticated")) || false
+);
 
-const unsubscribe = isAuthenticated.subscribe(
-    (val) => (isAuthenticatedValue = val)
+isAuthenticated.subscribe((val) =>
+    localStorage.setItem("isAuthenticated", JSON.stringify(val))
 );
 
 /**
@@ -21,7 +25,7 @@ export const checkAuthentication = (
     isNotAuthenticatedRedirect = "/login",
     isAuthenticatedRedirect = defaultLandingPage
 ) => {
-    if (!isAuthenticatedValue) {
+    if (!get(isAuthenticated)) {
         if (typeof isNotAuthenticatedCallback === "function") {
             isNotAuthenticatedCallback();
         } else {
@@ -55,8 +59,12 @@ export const authenticate = (
     failureCallback,
     successRedirect = defaultLandingPage
 ) => {
-    //TODO: Implement this function correctly. For now, this function just sets the isAuthenticated flag to true when called
+    // TODO: Implement this function correctly.
+    // For now, this function just sets the isAuthenticated flag to true when called
     isAuthenticated.set(true);
+
+    // This updates the profilePicturePath store upon authentication to ensure synchronicity with server
+    updateProfilePicturePath();
 
     if (typeof successCallback === "function") {
         successCallback();

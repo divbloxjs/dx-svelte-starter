@@ -10,6 +10,8 @@
     import ResetPassword from "./routes/resetPassword.svelte";
     import Profile from "./routes/profile.svelte";
     import ServiceWorkerUpdate from "./base_components/service_worker_related/ServiceWorkerUpdate.svelte";
+    import { onMount } from "svelte";
+    import { updateProfilePicturePath } from "./lib/js/stores/userData";
 
     /**
      * Update this to suit your needs
@@ -29,6 +31,11 @@
 
         "*": NotFound,
     };
+
+    onMount(async () => {
+        // This updates the profilePicturePath store upon authentication to ensure synchronicity with server
+        updateProfilePicturePath();
+    });
 </script>
 
 <main>

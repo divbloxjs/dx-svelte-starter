@@ -1,13 +1,17 @@
 <script>
+    import {
+        profilePicturePath,
+        updateProfilePicturePath,
+    } from "../lib/js/stores/userData";
     import profilePictureDefault from "../assets/images/dx_profile_placeholder.svg";
 
     import MainNav from "../lib/navigation/mainNav.svelte";
     import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
     import MainFooter from "../lib/navigation/mainFooter.svelte";
-    import { routeUtilities } from "../lib/js/routeUtilities";
+    import { routeUtilities } from "../lib/js/utilities/routeUtilities";
     import ValidatedInput from "../base_components/forms/validatedInput.svelte";
     import { fade } from "svelte/transition";
-    import { logout } from "../lib/js/authentication";
+    import { logout } from "../lib/js/stores/authentication";
     import SingleImageUploader from "../base_components/uploaders/singleImageUploader.svelte";
     import { onMount } from "svelte";
 
@@ -22,7 +26,7 @@
         let isInputValid = true;
         Object.entries(groupedInputComponents).forEach((entry) => {
             const [sectionName, inputComponent] = entry;
-            isInputValid &&= inputComponent.validate(true);
+            isInputValid &= inputComponent.validate(true);
         });
 
         return isInputValid;
@@ -43,18 +47,8 @@
 
     $: activeTab = Object.keys(tabs)[0];
 
-    let profilePicturePath;
-
-    const loadProfilePicture = async () => {
-        //TODO: Update this function to load the profile picture. Here we just simulate a data fetch.
-        setTimeout(() => {
-            profilePicturePath =
-                "https://assets.divblox.com/images/dx-product-overview.jpg";
-        }, 2000);
-    };
-
     onMount(async () => {
-        await loadProfilePicture();
+        await updateProfilePicturePath();
     });
 </script>
 
@@ -96,7 +90,7 @@
                             uploadEndpoint="https://api.beta.divblox.app/api/dxApiPing/postExample"
                             displayAsCircle={true}
                             defaultImagePath={profilePictureDefault}
-                            bind:displayImagePath={profilePicturePath}
+                            bind:displayImagePath={$profilePicturePath}
                         />
 
                         <div class="card-actions justify-between">

@@ -2,15 +2,15 @@
     import MainFooter from "../lib/navigation/mainFooter.svelte";
     import {
         domainRoot,
-        isAuthenticated,
         appLogo,
         appName,
         defaultLandingPage,
-    } from "../lib/js/stores";
+    } from "../lib/js/stores/configurations";
     import {
         checkAuthentication,
         authenticate,
-    } from "../lib/js/authentication";
+        isAuthenticated,
+    } from "../lib/js/stores/authentication";
     import { onMount } from "svelte";
     import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
 
@@ -18,7 +18,7 @@
     let password = "";
 
     onMount(async () => {
-        checkAuthentication();
+        checkAuthentication(() => {});
     });
 
     const doAuthentication = () => {
@@ -29,7 +29,8 @@
 <PageTransitionFade>
     <main class="flex flex-col h-screen">
         <div
-            class="flex flex-grow justify-center items-center divblox-bottom-banner-space">
+            class="flex flex-grow justify-center items-center divblox-bottom-banner-space"
+        >
             <div class="card w-11/12 max-w-md bg-base-200 shadow-2xl">
                 <figure>
                     <a href={domainRoot} class="w-3/12 mt-10 mb-0">
@@ -45,22 +46,26 @@
                         type="email"
                         placeholder="Username or email"
                         class="input input-bordered w-full"
-                        value={username} />
+                        value={username}
+                    />
                     <input
                         type="password"
                         placeholder="Password"
                         class="input input-bordered w-full"
-                        value={password} />
+                        value={password}
+                    />
 
                     <div class="card-actions justify-between">
                         <a
                             href="#/forgot-password"
-                            class="btn btn-link text-gray-600 pl-0">
+                            class="btn btn-link text-gray-600 pl-0"
+                        >
                             Forgot Password?
                         </a>
                         <button
                             class="btn btn-primary"
-                            on:click={doAuthentication}>
+                            on:click={doAuthentication}
+                        >
                             Sign in
                         </button>
                         <div class="alert flex-col justify-center">
@@ -69,7 +74,8 @@
                             </span>
                             <a
                                 href="#/create-account"
-                                class="flex-shrink btn btn-outline">
+                                class="flex-shrink btn btn-outline"
+                            >
                                 Create your account now
                             </a>
                         </div>
