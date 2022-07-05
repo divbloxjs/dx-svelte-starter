@@ -1,39 +1,53 @@
 <script>
     import defaultImage from "../../assets/images/no_image.svg";
     import { fade } from "svelte/transition";
-    export let defaultImagePath = defaultImage;
-    export let displayImagePath;
-    export let aspect = { x: 4, y: 3 };
-    export let displayAsCircle = false;
-    export let maxHeight = "300px";
     import Fa from "svelte-fa";
     import { faPencil } from "@fortawesome/free-solid-svg-icons";
     import Cropper from "cropperjs";
     import { onMount, afterUpdate } from "svelte";
 
+    export let defaultImagePath = defaultImage;
+    export let displayImagePath;
+    export let aspect = { x: 4, y: 3 };
+    export let displayAsCircle = false;
+    export let maxHeight = "300px";
     export let imageName = "Divblox Image";
 
     let isEditing = false;
     let fileUploader;
     let imageEditorPath = defaultImagePath;
     let displayedImageEl;
+    let cropper;
+    let image;
+    let result;
+    let croppedCanvas;
+    let modifiedCanvas;
+    let roundedImage;
+    let imagePath;
+
+    let aspectRatio = displayAsCircle ? 1 : aspect.x / aspect.y;
+
+    $: displayImagePathLocal = displayImagePath;
+    $: displayImagePathLocal, handleDisplayImagePathChanged();
+
+    const handleDisplayImagePathChanged = () => {
+        imagePath =
+            displayImagePath !== undefined
+                ? displayImagePath
+                : defaultImagePath;
+    };
+
     const handleFileUpload = () => {
         isEditing = true;
         imageEditorPath = URL.createObjectURL(fileUploader.files[0]);
     };
 
-    onMount(() => {
-        // cropper = new Cropper(image, {
-        //     aspectRatio: 1,
-        //     viewMode: 1,
-        // });
-    });
-
     afterUpdate(() => {
         if (isEditing) {
             cropper = new Cropper(image, {
-                aspectRatio: 1,
+                aspectRatio: displayAsCircle ? 1 : NaN,
                 viewMode: 1,
+                dragMode: "move",
             });
         } else {
             if (modifiedCanvas !== undefined) {
@@ -42,11 +56,6 @@
             }
         }
     });
-
-    let imagePath =
-        displayImagePath !== undefined ? displayImagePath : defaultImagePath;
-
-    let aspectRatio = displayAsCircle ? 1 : aspect.x / aspect.y;
 
     const getRoundedCanvas = (sourceCanvas) => {
         const canvas = document.createElement("canvas");
@@ -72,13 +81,6 @@
         return canvas;
     };
 
-    let cropper;
-    let image;
-    let result;
-    let croppedCanvas;
-    let modifiedCanvas;
-    let roundedImage;
-
     const handleCropConfirm = () => {
         // Crop
         modifiedCanvas = cropper.getCroppedCanvas();
@@ -99,11 +101,6 @@
 
         // Show
         isEditing = false;
-
-        // roundedImage = document.createElement("img");
-        // roundedImage.src = modifiedCanvas.toDataURL();
-        // result.innerHTML = "";
-        // result.appendChild(roundedImage);
     };
 </script>
 
@@ -111,16 +108,13 @@
     <div class="max-w-full mx-auto" style="max-height: {maxHeight}">
         <div class="avatar">
             <div
-                style="aspect-ratio: {aspectRatio}; 
-            max-height: {maxHeight}"
+                style="aspect-ratio: {aspectRatio}; max-height: {maxHeight}"
                 class:rounded-full={displayAsCircle}
-                class:rounded={!displayAsCircle}
-            >
+                class:rounded-lg={!displayAsCircle}>
                 <img
                     bind:this={displayedImageEl}
                     src={imagePath}
-                    alt={imageName}
-                />
+                    alt={imageName} />
             </div>
         </div>
     </div>
@@ -131,53 +125,60 @@
             bind:this={fileUploader}
             on:change={handleFileUpload}
             id="file"
-            class="file"
-        />
-        <label for="file" class="btn btn-link text-base-content">
+            class="file" />
+        <label for="file" class="btn btn-link -mt-5 text-base-content">
             Edit
-            <Fa icon={faPencil} size="0.8x" translateY={0} translateX={0.5} />
+            <Fa icon={faPencil} size="xs" translateY={0} translateX={0.5} />
             <p class="file-name" />
         </label>
     </div>
 {:else}
-    <div class="container">
-        <h1>Crop a round image</h1>
-        <div>
-            <img bind:this={image} src={imageEditorPath} alt="Picture" />
+    <div
+        transition:fade={{ duration: 200 }}
+        class="fixed z-50 w-screen h-screen bg-base-200 top-0 left-0">
+        <div
+            class="w-11/12 mt-[2rem] max-w-[90vw] max-h-[calc(100vh-6rem)] m-auto">
+            <img bind:this={image} src={imageEditorPath} alt="Edited" />
         </div>
-        <h3>Result</h3>
-        <button
-            type="button"
-            class="btn btn-primary"
-            on:click={handleCropConfirm}
-        >
-            Crop
-        </button>
-        <div bind:this={result} />
-    </div>{/if}
+        <div class="w-11/12 max-w-[90vw] mx-auto text-center">
+            <button
+                type="button"
+                class="btn btn-link text-base-content mt-2"
+                on:click={() => {
+                    isEditing = false;
+                }}>
+                Cancel
+            </button>
+            <button
+                type="button"
+                class="btn btn-primary mt-2"
+                on:click={handleCropConfirm}>
+                Save Changes
+            </button>
+        </div>
+    </div>
+{/if}
+
+<svelte:head>
+    {#if displayAsCircle}
+        <style>
+            .cropper-view-box,
+            .cropper-face {
+                border-radius: 50%;
+            }
+        </style>
+    {/if}
+</svelte:head>
 
 <style>
     @import "cropperjs/dist/cropper.css";
 
-    :global(.cropper-view-box, .cropper-face) {
-        border-radius: 50%;
-    }
     .file-name {
         position: absolute;
         bottom: -35px;
         left: 10px;
         font-size: 0.85rem;
         color: #555;
-    }
-
-    input:focus + label {
-        outline: 1px solid #000;
-        outline: -webkit-focus-ring-color auto 2px;
-    }
-
-    input:hover + label,
-    input:focus + label {
-        transform: scale(1.02);
     }
 
     .file {

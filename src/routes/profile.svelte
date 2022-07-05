@@ -9,6 +9,7 @@
     import { fade } from "svelte/transition";
     import { logout } from "../lib/js/authentication";
     import SingleImageUploader from "../base_components/uploaders/singleImageUploader.svelte";
+    import { onMount } from "svelte";
 
     let validatedDetailInputs = [];
     let validatedPasswordInputs = [];
@@ -21,7 +22,7 @@
         let isInputValid = true;
         Object.entries(groupedInputComponents).forEach((entry) => {
             const [sectionName, inputComponent] = entry;
-            isInputValid &= inputComponent.validate(true);
+            isInputValid &&= inputComponent.validate(true);
         });
 
         return isInputValid;
@@ -41,6 +42,20 @@
     };
 
     $: activeTab = Object.keys(tabs)[0];
+
+    let profilePicturePath;
+
+    const loadProfilePicture = async () => {
+        //TODO: Update this function to load the profile picture. Here we just simulate a data fetch.
+        setTimeout(() => {
+            profilePicturePath =
+                "https://assets.divblox.com/images/dx-product-overview.jpg";
+        }, 2000);
+    };
+
+    onMount(async () => {
+        await loadProfilePicture();
+    });
 </script>
 
 <PageTransitionFade>
@@ -76,12 +91,11 @@
                         class="card-body p-5 sm:p-10"
                         in:fade={{ duration: 500 }}
                     >
-                        <h2 class="text-xl font-bold text-center">
-                            Profile here
-                        </h2>
                         <SingleImageUploader
-                            maxHeight="300px"
-                            displayAsCircle={false}
+                            maxHeight="150px"
+                            displayAsCircle={true}
+                            defaultImagePath={profilePictureDefault}
+                            bind:displayImagePath={profilePicturePath}
                         />
 
                         <div class="card-actions justify-between">
@@ -117,7 +131,7 @@
                             />
                             <button
                                 on:click={routeUtilities.goBack}
-                                class="btn btn-link text-gray-400 mt-2 -ml-1"
+                                class="btn btn-link text-base-content mt-2 -ml-1"
                             >
                                 Cancel
                             </button>
@@ -160,7 +174,7 @@
                             />
                             <button
                                 on:click={routeUtilities.goBack}
-                                class="btn btn-link text-gray-400 mt-2 -ml-1"
+                                class="btn btn-link text-base-content mt-2 -ml-1"
                             >
                                 Cancel
                             </button>
