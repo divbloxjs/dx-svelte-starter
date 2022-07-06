@@ -1,6 +1,6 @@
 {
     "name": "divblox-svelte-starter",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -32,7 +32,7 @@
         "@fortawesome/free-solid-svg-icons": "^6.0.0",
         "cropperjs": "^1.5.12",
         "daisyui": "^2.17.0",
-        "dx-utils": "github:divbloxjs/dx-utils",
+        "dx-utilities": "^1.0.0",
         "svelte-fa": "^2.4.0",
         "svelte-spa-router": "^3.2.0"
     }

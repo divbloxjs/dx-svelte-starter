@@ -3,7 +3,7 @@
 const fs = require("fs");
 const fsAsync = require("fs").promises;
 const path = require("path");
-const dxUtils = require("dx-utils");
+const dxUtils = require("dx-utilities");
 const PUBLIC_DIR = path.join(__dirname, ".", "public");
 const serviceWorkerFilePath = PUBLIC_DIR + "/serviceWorker.js";
 
