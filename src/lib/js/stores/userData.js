@@ -14,4 +14,7 @@ export const updateProfilePicturePath = async () => {
     // TODO Add functionality to update profile picture path from server
     // Remember to update the store with the newly received server profile picture path
     // profilePicturePath.set("/my.new/path.jpg");
+
+    // If no profile picture is retrieved from the server, set the default one
+    profilePicturePath.set(profilePictureDefault);
 };
