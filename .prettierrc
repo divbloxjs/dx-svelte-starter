@@ -2,5 +2,7 @@
     "tabWidth": 4,
     "useTabs": false,
     "bracketSameLine": true,
-    "html.format.wrapAttributes": "force-aligned"
+    "html.format.wrapAttributes": "force-aligned",
+    "svelteBracketNewLine": false,
+    "printWidth": 120
 }

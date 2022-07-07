@@ -1,16 +1,7 @@
 <script>
     import MainFooter from "../lib/navigation/mainFooter.svelte";
-    import {
-        isAuthenticated,
-        checkAuthentication,
-        authenticate,
-    } from "../lib/js/stores/authentication";
-    import {
-        domainRoot,
-        appLogo,
-        appName,
-        defaultLandingPage,
-    } from "../lib/js/stores/configurations";
+    import { isAuthenticated, checkAuthentication, authenticate } from "../lib/js/stores/authentication";
+    import { domainRoot, appLogo, appName, defaultLandingPage } from "../lib/js/stores/configurations";
     import { routeUtilities } from "../lib/js/utilities/routeUtilities";
     import { onMount } from "svelte";
     import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
@@ -48,18 +39,16 @@
 </script>
 
 <PageTransitionFade>
-    <main class="flex flex-col h-screen">
-        <div
-            class="flex flex-grow justify-center items-center divblox-bottom-banner-space"
-        >
+    <main class="flex h-screen flex-col">
+        <div class="divblox-bottom-banner-space flex flex-grow items-center justify-center">
             <div class="card w-11/12 max-w-md bg-base-200 shadow-2xl">
                 <figure>
-                    <a href={domainRoot} class="w-3/12 mt-10 mb-0">
+                    <a href={domainRoot} class="mt-10 mb-0 w-3/12">
                         <img src={appLogo} alt="{appName} Logo" />
                     </a>
                 </figure>
                 <div class="card-body">
-                    <h2 class="text-xl font-bold text-center">
+                    <h2 class="text-center text-xl font-bold">
                         Create your {appName} account
                     </h2>
                     <ValidatedInput
@@ -68,8 +57,7 @@
                         validateAs="email"
                         label="Email"
                         validationMessage="Invalid email address"
-                        bind:this={validatedInputArray[0]}
-                    />
+                        bind:this={validatedInputArray[0]} />
                     <ValidatedInput
                         placeholder="Password"
                         bind:value={passwordValue}
@@ -78,8 +66,7 @@
                         label="Password"
                         passwordValidationOption="strong"
                         validationMessage="Password too weak"
-                        bind:this={validatedInputArray[1]}
-                    />
+                        bind:this={validatedInputArray[1]} />
                     <ValidatedInput
                         placeholder="Confirm password"
                         value=""
@@ -88,22 +75,17 @@
                         label="Confirm Password"
                         compareValue={passwordValue}
                         validationMessage="Passwords do not match"
-                        bind:this={validatedInputArray[2]}
-                    />
+                        bind:this={validatedInputArray[2]} />
 
                     <div class="card-actions justify-between">
-                        <button
-                            on:click={routeUtilities.goBack}
-                            class="btn btn-link text-gray-600 pl-0"
-                        >
+                        <button on:click={routeUtilities.goBack} class="btn btn-link pl-0 text-gray-600">
                             Cancel
                         </button>
                         <button
                             class:btn-disabled={isProcessingRegistration}
                             class:btn-primary={!isProcessingRegistration}
                             class="btn mr-0"
-                            on:click={doCreateAccount}
-                        >
+                            on:click={doCreateAccount}>
                             {#if isProcessingRegistration}
                                 Working...
                             {:else}
