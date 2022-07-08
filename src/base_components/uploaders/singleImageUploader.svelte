@@ -30,10 +30,7 @@
     $: displayImagePathLocal, handleDisplayImagePathChanged();
 
     const handleDisplayImagePathChanged = () => {
-        imagePath =
-            displayImagePath !== undefined
-                ? displayImagePath
-                : defaultImagePath;
+        imagePath = displayImagePath !== undefined ? displayImagePath : defaultImagePath;
     };
 
     const handleFileSelected = () => {
@@ -54,6 +51,7 @@
             const uploadResponse = await fetch(uploadEndpoint, {
                 method: "POST",
                 body: formData,
+                // credentials: "include",
             });
 
             if (uploadResponse.status !== 200) {
@@ -96,14 +94,7 @@
         context.drawImage(sourceCanvas, 0, 0, width, height);
         context.globalCompositeOperation = "destination-in";
         context.beginPath();
-        context.arc(
-            width / 2,
-            height / 2,
-            Math.min(width, height) / 2,
-            0,
-            2 * Math.PI,
-            true
-        );
+        context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
         context.fill();
         return canvas;
     };
@@ -130,26 +121,19 @@
     };
 </script>
 
-<div class="max-w-full mx-auto" style="max-height: {maxHeight}">
+<div class="mx-auto max-w-full" style="max-height: {maxHeight}">
     <div class="avatar">
         <div
             style="aspect-ratio: {aspectRatio}; max-height: {maxHeight}"
             class:rounded-full={displayAsCircle}
-            class:rounded-lg={!displayAsCircle}
-        >
+            class:rounded-lg={!displayAsCircle}>
             <img bind:this={displayedImageEl} src={imagePath} alt={imageName} />
         </div>
     </div>
 </div>
 
 <div class="file-input mx-auto">
-    <input
-        type="file"
-        bind:this={fileUploaderEl}
-        on:change={handleFileSelected}
-        id="file"
-        class="file"
-    />
+    <input type="file" bind:this={fileUploaderEl} on:change={handleFileSelected} id="file" class="file" />
     <label for="file" class="btn btn-link -mt-5 text-base-content">
         Edit
         <Fa icon={faPencil} size="xs" translateY={0} translateX={0.5} />
@@ -157,31 +141,24 @@
     </label>
 </div>
 {#if isEditing}
-    <div
-        transition:fade={{ duration: 200 }}
-        class="fixed z-50 w-screen h-screen bg-base-200 top-0 left-0"
-    >
-        <div
-            class="w-11/12 mt-[2rem] max-w-[90vw] max-h-[calc(100vh-6rem)] m-auto"
-        >
+    <div transition:fade={{ duration: 200 }} class="fixed top-0 left-0 z-50 h-screen w-screen bg-base-200">
+        <div class="m-auto mt-[2rem] max-h-[calc(100vh-6rem)] w-11/12 max-w-[90vw]">
             <img bind:this={imageEditorEl} src={imageEditorPath} alt="Edited" />
         </div>
-        <div class="w-11/12 max-w-[90vw] mx-auto text-center">
+        <div class="mx-auto w-11/12 max-w-[90vw] text-center">
             <button
                 type="button"
-                class="btn btn-link text-base-content mt-2"
+                class="btn btn-link mt-2 text-base-content"
                 on:click={() => {
                     isEditing = false;
-                }}
-            >
+                }}>
                 Cancel
             </button>
             <button
                 type="button"
                 class="btn btn-primary mt-2"
                 class:loading={isSubmitting}
-                on:click={handleConfirmCrop}
-            >
+                on:click={handleConfirmCrop}>
                 <span class:hidden={!isSubmitting}>Saving...</span>
                 <span class:hidden={isSubmitting}>Save Changes</span>
             </button>
