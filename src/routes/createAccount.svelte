@@ -1,7 +1,16 @@
 <script>
     import MainFooter from "../lib/navigation/mainFooter.svelte";
-    import { isAuthenticated, checkAuthentication, authenticate } from "../lib/js/stores/authentication";
-    import { domainRoot, appLogo, appName, defaultLandingPage } from "../lib/js/stores/configurations";
+    import {
+        isAuthenticated,
+        checkAuthentication,
+        authenticate,
+    } from "../lib/js/stores/authentication";
+    import {
+        domainRoot,
+        appLogo,
+        appName,
+        defaultLandingPage,
+    } from "../lib/js/stores/configurations";
     import { routeUtilities } from "../lib/js/utilities/routeUtilities";
     import { onMount } from "svelte";
     import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
@@ -78,7 +87,9 @@
                         bind:this={validatedInputArray[2]} />
 
                     <div class="card-actions justify-between">
-                        <button on:click={routeUtilities.goBack} class="btn btn-link pl-0 text-gray-600">
+                        <button
+                            on:click={routeUtilities.goBack}
+                            class="btn btn-link pl-0 text-gray-600">
                             Cancel
                         </button>
                         <button

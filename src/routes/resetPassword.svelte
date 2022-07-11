@@ -31,8 +31,7 @@
 <PageTransitionFade>
     <main class="">
         <div
-            class="card w-11/12 max-w-md bg-base-200 shadow-2xl mr-auto ml-auto mt-10"
-        >
+            class="card w-11/12 max-w-md bg-base-200 shadow-2xl mr-auto ml-auto mt-10">
             <figure>
                 <a href={domainRoot} class="w-3/12 mt-10 mb-0">
                     <img src={appLogo} alt="{appName} Logo" />
@@ -46,26 +45,22 @@
                     type="password"
                     placeholder="Password"
                     class="input input-bordered w-full"
-                    value={password}
-                />
+                    value={password} />
                 <input
                     type="password"
                     placeholder="Confirm Password"
                     class="input input-bordered w-full"
-                    value={passwordConfirm}
-                />
+                    value={passwordConfirm} />
 
                 <div class="card-actions justify-between">
                     <button
                         on:click={routeUtilities.goBack}
-                        class="btn btn-link text-gray-600 pl-0"
-                    >
+                        class="btn btn-link text-gray-600 pl-0">
                         Cancel
                     </button>
                     <button
                         class="btn btn-primary mr-0"
-                        on:click={doResetPassword}
-                    >
+                        on:click={doResetPassword}>
                         Reset Password
                     </button>
                 </div>

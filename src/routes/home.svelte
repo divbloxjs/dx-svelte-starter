@@ -27,8 +27,7 @@
                     </p>
                     <button
                         class="btn btn-primary"
-                        on:click={openComponentLibrary}
-                    >
+                        on:click={openComponentLibrary}>
                         See Component Library
                     </button>
                 </div>

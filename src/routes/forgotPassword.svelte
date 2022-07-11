@@ -25,8 +25,7 @@
 <PageTransitionFade>
     <main class="">
         <div
-            class="card w-11/12 max-w-md bg-base-200 shadow-2xl mr-auto ml-auto mt-10"
-        >
+            class="card w-11/12 max-w-md bg-base-200 shadow-2xl mr-auto ml-auto mt-10">
             <figure>
                 <a href={domainRoot} class="w-3/12 mt-10 mb-0">
                     <img src={appLogo} alt="{appName} Logo" />
@@ -41,20 +40,17 @@
                     type="email"
                     placeholder="Username or email"
                     class="input input-bordered w-full"
-                    value={username}
-                />
+                    value={username} />
 
                 <div class="card-actions justify-between">
                     <button
                         on:click={routeUtilities.goBack}
-                        class="btn btn-link text-gray-600 pl-0"
-                    >
+                        class="btn btn-link text-gray-600 pl-0">
                         Cancel
                     </button>
                     <button
                         class="btn btn-primary"
-                        on:click={doSendPasswordResetLink}
-                    >
+                        on:click={doSendPasswordResetLink}>
                         Confirm
                     </button>
                 </div>
