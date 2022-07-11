@@ -1,8 +1,5 @@
 <script>
-    import {
-        profilePicturePath,
-        updateProfilePicturePath,
-    } from "../lib/js/stores/userData";
+    import { profilePicturePath, updateProfilePicturePath } from "../lib/js/stores/userData";
     import profilePictureDefault from "../assets/images/dx_profile_placeholder.svg";
 
     import MainNav from "../lib/navigation/mainNav.svelte";
@@ -53,35 +50,31 @@
 </script>
 
 <PageTransitionFade>
-    <div class="flex flex-col h-screen">
+    <div class="flex h-screen flex-col">
         <MainNav />
         <div
-            class="flex flex-grow justify-center content-center items-center divblox-bottom-banner-space">
+            class="divblox-bottom-banner-space flex flex-grow content-center items-center justify-center">
             <div
-                class="card sm:card-side flex flex-col sm:flex-row bg-base-200 shadow-xl m-5 mb-[calc(1.25rem+54px)] sm:mx-auto max-w-xl md:max-w-2xl align-center justify-center">
+                class="align-center card m-5 mb-[calc(1.25rem+54px)] flex max-w-xl flex-col justify-center bg-base-200 shadow-xl sm:card-side sm:mx-auto sm:flex-row md:max-w-2xl">
                 <div
-                    class="tabs flex flex-row sm:flex-col sm:w-64 tabs-boxed p-2 bg-base-300 rounded-r-none">
+                    class="tabs tabs-boxed flex flex-row rounded-r-none bg-base-300 p-2 sm:w-64 sm:flex-col">
                     {#each Object.entries(tabs) as [tabName, tabTitle]}
                         <button
-                            class="tab sm:mt-2 mx-auto"
+                            class="tab mx-auto sm:mt-2"
                             class:tab-active={activeTab === tabName}
                             on:click={() => (activeTab = tabName)}>
                             {tabTitle}
                         </button>
                     {/each}
-                    <button
-                        class="tab sm:mt-2 mx-auto"
-                        on:click={() => logout(null, null)}>
+                    <button class="tab mx-auto sm:mt-2" on:click={() => logout(null, null)}>
                         Logout
                     </button>
                 </div>
                 {#if activeTab === "details"}
-                    <div
-                        class="card-body p-5 sm:p-10"
-                        in:fade={{ duration: 500 }}>
+                    <div class="card-body p-5 sm:p-10" in:fade={{ duration: 500 }}>
                         <SingleImageUploader
                             maxHeight="150px"
-                            uploadEndpoint="https://api.beta.divblox.app/api/dxApiPing/postExample"
+                            uploadEndpoint="http://localhost:4000/api/dxUserManagement/uploadProfilePicture"
                             displayAsCircle={true}
                             defaultImagePath={profilePictureDefault}
                             bind:displayImagePath={$profilePicturePath} />
@@ -115,11 +108,11 @@
                                 bind:this={validatedDetailInputs[3]} />
                             <button
                                 on:click={routeUtilities.goBack}
-                                class="btn btn-link text-base-content mt-2 -ml-1">
+                                class="btn btn-link mt-2 -ml-1 text-base-content">
                                 Cancel
                             </button>
                             <button
-                                class="btn btn-primary mt-2 float-right"
+                                class="btn btn-primary float-right mt-2"
                                 on:click={() => updateProfile("details")}>
                                 Save
                             </button>
@@ -127,9 +120,7 @@
                     </div>
                 {:else if activeTab === "password"}
                     <div class="card-body" in:fade={{ duration: 500 }}>
-                        <h2 class="text-xl font-bold text-center">
-                            Profile here
-                        </h2>
+                        <h2 class="text-center text-xl font-bold">Profile here</h2>
                         <div class="card-actions justify-between">
                             <ValidatedInput
                                 label="Old Password"
@@ -153,11 +144,11 @@
                                 bind:this={validatedPasswordInputs[2]} />
                             <button
                                 on:click={routeUtilities.goBack}
-                                class="btn btn-link text-base-content mt-2 -ml-1">
+                                class="btn btn-link mt-2 -ml-1 text-base-content">
                                 Cancel
                             </button>
                             <button
-                                class="btn btn-primary mt-2 float-right"
+                                class="btn btn-primary float-right mt-2"
                                 on:click={() => updateProfile("password")}>
                                 Save
                             </button>
