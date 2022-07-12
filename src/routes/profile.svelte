@@ -12,6 +12,22 @@
     import SingleImageUploader from "../base_components/uploaders/singleImageUploader.svelte";
     import { onMount } from "svelte";
 
+    // $: displayImagePathLocal = displayImagePath;
+    // $: displayImagePathLocal, handleDisplayImagePathChanged();
+
+    let profilePictureUploadResponse = {};
+    $: profilePictureUploadResponse, onProfilePictureUploaded();
+    const onProfilePictureUploaded = () => {
+        console.dir(profilePictureUploadResponse);
+        if (
+            profilePictureUploadResponse !== {} &&
+            profilePictureUploadResponse.uploadError === "undefined"
+        ) {
+            // TODO Interogate profilePictureUploadResponse for file static path or error, if needed
+            updateProfilePicturePath();
+        }
+    };
+
     let validatedDetailInputs = [];
     let validatedPasswordInputs = [];
     let groupedInputComponents = {
@@ -77,6 +93,7 @@
                             uploadEndpoint="http://localhost:4000/api/dxUserManagement/uploadProfilePicture"
                             displayAsCircle={true}
                             defaultImagePath={profilePictureDefault}
+                            bind:uploadResponse={profilePictureUploadResponse}
                             bind:displayImagePath={$profilePicturePath} />
 
                         <div class="card-actions justify-between">
