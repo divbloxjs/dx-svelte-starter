@@ -30,7 +30,6 @@
                     <h2 class="text-center text-xl font-bold">
                         Sign in to {appName}
                     </h2>
-                    <!-- <p>{isAuthenticatedValue}</p> -->
                     <input
                         type="email"
                         placeholder="Username or email"

@@ -12,6 +12,19 @@
     import SingleImageUploader from "../base_components/uploaders/singleImageUploader.svelte";
     import { onMount } from "svelte";
 
+    // $: displayImagePathLocal = displayImagePath;
+    // $: displayImagePathLocal, handleDisplayImagePathChanged();
+
+    let profilePictureUploadResponse = {};
+    $: profilePictureUploadResponse, onProfilePictureUploaded();
+    const onProfilePictureUploaded = () => {
+        console.dir(profilePictureUploadResponse);
+        if (profilePictureUploadResponse !== {} && profilePictureUploadResponse.uploadError === "undefined") {
+            // TODO Interogate profilePictureUploadResponse for file static path or error, if needed
+            updateProfilePicturePath();
+        }
+    };
+
     let validatedDetailInputs = [];
     let validatedPasswordInputs = [];
     let groupedInputComponents = {
@@ -64,7 +77,7 @@
                             {tabTitle}
                         </button>
                     {/each}
-                    <button class="tab mx-auto sm:mt-2" on:click={async () => await logout()}> Logout </button>
+                    <button class="tab mx-auto sm:mt-2" on:click={() => logout(null, null)}> Logout </button>
                 </div>
                 {#if activeTab === "details"}
                     <div class="card-body p-5 sm:p-10" in:fade={{ duration: 500 }}>
@@ -73,6 +86,7 @@
                             uploadEndpoint="http://localhost/"
                             displayAsCircle={true}
                             defaultImagePath={profilePictureDefault}
+                            bind:uploadResponse={profilePictureUploadResponse}
                             bind:displayImagePath={$profilePicturePath} />
 
                         <div class="card-actions justify-between">

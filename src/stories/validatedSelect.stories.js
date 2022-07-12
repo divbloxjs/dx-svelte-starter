@@ -1,60 +1,55 @@
-import ValidatedSelectInput from '../base_components/forms/validatedSelectInput.svelte';
-
+import ValidatedSelectInput from "../base_components/forms/validatedSelectInput.svelte";
 
 export default {
-  title: 'Base/Forms/ValidatedSelectInput',
-  component: ValidatedSelectInput,
-  argTypes: {
-    label: { control: 'text' },
-    addLabelClass: { control: 'text' },
-  },
+    title: "Base/Forms/ValidatedSelectInput",
+    component: ValidatedSelectInput,
+    argTypes: {
+        label: { control: "text" },
+        addLabelClass: { control: "text" },
+    },
 };
 
 const Template = (args) => ({
-  Component: ValidatedSelectInput,
-  props: args,
+    Component: ValidatedSelectInput,
+    props: args,
 });
 
 export const Default = Template.bind({});
-Default.args = {
-};
+Default.args = {};
 
 export const CustomLabel = Template.bind({});
 CustomLabel.args = {
-    label: 'Custom Label',
+    label: "Custom Label",
 };
 
 export const CustomPlaceholder = Template.bind({});
 CustomPlaceholder.args = {
-    placeholder: 'Custom Placeholder',
+    placeholder: "Custom Placeholder",
 };
 
 export const ValidatedValid = Template.bind({});
 ValidatedValid.args = {
     isValidated: true,
-    isValid: true
+    isValid: true,
 };
 
 export const ValidatedInvalid = Template.bind({});
 ValidatedInvalid.args = {
     isValidated: true,
-    isValid: false
+    isValid: false,
 };
 
 export const ValidatedInvalidWithMessage = Template.bind({});
 ValidatedInvalidWithMessage.args = {
     isValidated: true,
     isValid: false,
-    validationMessage: 'Custom Message!'
+    validationMessage: "Custom Message!",
 };
 
 export const CustomValues = Template.bind({});
 CustomValues.args = {
     values: {
-      defaultValue: { notSelected: "Choose one" },
-      options: [
-        'Option 1',
-        'Option 2'
-      ]
-    }
+        defaultValue: { notSelected: "Choose one" },
+        options: ["Option 1", "Option 2"],
+    },
 };

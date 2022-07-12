@@ -8,11 +8,13 @@
 
     export let defaultImagePath = defaultImage;
     export let displayImagePath;
+    export let uploadResponse = {};
     export let aspect = { x: 4, y: 3 };
     export let displayAsCircle = false;
     export let maxHeight = "300px";
     export let imageName = "Divblox Image";
     export let uploadEndpoint;
+    export let credentials = "include";
 
     let isEditing = false;
     let isSubmitting = false;
@@ -39,6 +41,7 @@
     };
 
     const handleFileUpload = async () => {
+        uploadResponse = {};
         isSubmitting = true;
         if (uploadEndpoint === undefined) {
             throw new Error("uploadEndpoint has not been defined");
@@ -48,20 +51,24 @@
         formData.append("file", fileUploaderEl.files[0]);
 
         try {
-            const uploadResponse = await fetch(uploadEndpoint, {
+            const uploadResult = await fetch(uploadEndpoint, {
                 method: "POST",
                 body: formData,
-                credentials: "include",
+                // @ts-ignore
+                credentials: credentials,
             });
 
-            if (uploadResponse.status !== 200) {
+            if (uploadResult.status !== 200) {
                 alert("Failed to save changes. Please try again.");
+                uploadResponse = { uploadError: uploadResult };
             } else {
                 isEditing = false;
+                uploadResponse = await uploadResult.json();
             }
         } catch (error) {
             alert("Failed to save changes. Please try again.");
             console.error(error);
+            uploadResponse = { uploadError: error };
         }
 
         isSubmitting = false;
@@ -100,24 +107,24 @@
     };
 
     const handleConfirmCrop = () => {
-        if (modifiedCanvas === undefined) {
-            // Crop
-            modifiedCanvas = cropper.getCroppedCanvas();
-            if (displayAsCircle) {
-                // Round
-                modifiedCanvas = getRoundedCanvas(modifiedCanvas);
-            }
+        modifiedCanvas = undefined;
+
+        // Crop
+        modifiedCanvas = cropper.getCroppedCanvas();
+        if (displayAsCircle) {
+            // Round
+            modifiedCanvas = getRoundedCanvas(modifiedCanvas);
         }
 
         // convert to Blob (async)
         modifiedCanvas.toBlob((blob) => {
-            const file = new File([blob], "mycanvas.png");
+            const fileName = fileUploaderEl.files[0].name;
+            const file = new File([blob], fileName);
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
             fileUploaderEl.files = dataTransfer.files;
+            handleFileUpload();
         });
-
-        handleFileUpload();
     };
 </script>
 
