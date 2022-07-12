@@ -1,6 +1,6 @@
 //////////////////////////////////////////
 // DIVBLOX GENERATED CODE - DO NOT MODIFY!
-const dxBuildTimeStamp = "1656069967883";
+const dxBuildTimeStamp = "12jul2022a";
 //////////////////////////////////////////
 
 const PRECACHE = "precache-" + dxBuildTimeStamp;
@@ -71,9 +71,7 @@ self.addEventListener("activate", (event) => {
         caches
             .keys()
             .then((cacheNames) => {
-                return cacheNames.filter(
-                    (cacheName) => !currentCaches.includes(cacheName)
-                );
+                return cacheNames.filter((cacheName) => !currentCaches.includes(cacheName));
             })
             .then((cachesToDelete) => {
                 return Promise.all(
@@ -92,10 +90,7 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
     // Skip cross-origin requests, like those for Google Analytics.
     let req = event.request.clone();
-    if (
-        req.clone().url.startsWith(self.location.origin) &&
-        req.clone().method == "GET"
-    ) {
+    if (req.clone().url.startsWith(self.location.origin) && req.clone().method == "GET") {
         event.respondWith(
             caches.match(event.request).then((cachedResponse) => {
                 if (cachedResponse) {
@@ -106,11 +101,9 @@ self.addEventListener("fetch", (event) => {
                     return fetch(event.request).then((response) => {
                         if (!matchNonCacheKeywords(event.request.url)) {
                             // Put a copy of the response in the runtime cache.
-                            return cache
-                                .put(event.request, response.clone())
-                                .then(() => {
-                                    return response;
-                                });
+                            return cache.put(event.request, response.clone()).then(() => {
+                                return response;
+                            });
                         } else {
                             return response;
                         }

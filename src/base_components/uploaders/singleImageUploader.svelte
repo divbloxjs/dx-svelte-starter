@@ -51,7 +51,7 @@
             const uploadResponse = await fetch(uploadEndpoint, {
                 method: "POST",
                 body: formData,
-                // credentials: "include",
+                credentials: "include",
             });
 
             if (uploadResponse.status !== 200) {

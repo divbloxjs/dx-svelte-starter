@@ -13,7 +13,7 @@
     let validatedInputArray = [];
 
     onMount(async () => {
-        checkAuthentication(null, null, null, "/");
+        await checkAuthentication(null, "/");
     });
 
     const validateForm = () => {
