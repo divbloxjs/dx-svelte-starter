@@ -27,6 +27,7 @@
 
     export let defaultImagePath = defaultImage;
     export let displayImagePath;
+    export let uploadResponse = {};
     export let aspect = { x: 4, y: 3 };
     export let displayAsCircle = false;
     export let maxHeight = "300px";
@@ -59,6 +60,7 @@
     };
 
     const handleFileUpload = async () => {
+        uploadResponse = {};
         isSubmitting = true;
         if (uploadEndpoint === undefined) {
             throw new Error("uploadEndpoint has not been defined");
@@ -68,20 +70,24 @@
         formData.append("file", fileUploaderEl.files[0]);
 
         try {
-            const uploadResponse = await fetch(uploadEndpoint, {
+            const uploadResult = await fetch(uploadEndpoint, {
                 method: "POST",
                 body: formData,
+                // @ts-ignore
                 credentials: credentials,
             });
 
-            if (uploadResponse.status !== 200) {
+            if (uploadResult.status !== 200) {
                 alert("Failed to save changes. Please try again.");
+                uploadResponse = { uploadError: uploadResult };
             } else {
                 isEditing = false;
+                uploadResponse = await uploadResult.json();
             }
         } catch (error) {
             alert("Failed to save changes. Please try again.");
             console.error(error);
+            uploadResponse = { uploadError: error };
         }
 
         isSubmitting = false;
