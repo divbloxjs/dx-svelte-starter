@@ -77,7 +77,7 @@
                             {tabTitle}
                         </button>
                     {/each}
-                    <button class="tab mx-auto sm:mt-2" on:click={() => logout(null, null)}> Logout </button>
+                    <button class="tab mx-auto sm:mt-2" on:click={async () => logout()}> Logout </button>
                 </div>
                 {#if activeTab === "details"}
                     <div class="card-body p-5 sm:p-10" in:fade={{ duration: 500 }}>

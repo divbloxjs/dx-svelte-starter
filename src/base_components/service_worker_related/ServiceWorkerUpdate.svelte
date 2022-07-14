@@ -14,17 +14,11 @@
     onMount(async () => {
         if ("serviceWorker" in navigator) {
             try {
-                serviceWorkerRegistration =
-                    await navigator.serviceWorker.register(
-                        "/serviceWorker.js",
-                        {
-                            scope: "/",
-                        }
-                    );
+                serviceWorkerRegistration = await navigator.serviceWorker.register("/serviceWorker.js", {
+                    scope: "/",
+                });
             } catch (error) {
-                console.error(
-                    `Service working registration failed with ${error}`
-                );
+                console.error(`Service working registration failed with ${error}`);
                 return;
             }
 
@@ -51,17 +45,17 @@
     {#if mustShowAppUpdateAvailable}
         <div
             transition:fly={{ y: 50, duration: 200 }}
-            class="bg-base-200 shadow-2xl fixed bottom-20 right-0 md:right-5 p-3 px-5 rounded-lg">
-            A new version of the app is available. <button
-                class="btn btn-link px-1 btn-sm leading-none text-violet-700 dark:text-violet-400"
-                on:click={updateApp}>
-                REFRESH
-            </button>
-            <button
-                class="btn btn-link text-base-content px-0"
-                on:click={() => {
-                    mustShowAppUpdateAvailable = false;
-                }}>x</button>
+            class="fixed bottom-[54px] right-0 mx-5 my-5 rounded-lg bg-gray-300 px-5 py-3 text-center leading-none text-[#474759] shadow-2xl">
+            A new version of the app is available. <span class="inline-block"
+                ><button class="btn btn-link btn-sm px-1 leading-none text-violet-700" on:click={updateApp}>
+                    REFRESH
+                </button>
+                <button
+                    class="btn btn-link btn-sm p-0 text-[#474759]"
+                    on:click={() => {
+                        mustShowAppUpdateAvailable = false;
+                    }}>x</button
+                ></span>
         </div>
     {/if}
 </main>
