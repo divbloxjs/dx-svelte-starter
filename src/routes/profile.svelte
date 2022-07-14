@@ -14,6 +14,9 @@
 
     let profilePictureUploadResponse = {};
     $: profilePictureUploadResponse, onProfilePictureUploaded();
+
+    let isUpdating = false;
+
     const onProfilePictureUploaded = () => {
         console.dir(profilePictureUploadResponse);
         if (profilePictureUploadResponse !== {} && profilePictureUploadResponse.uploadError === "undefined") {
@@ -47,11 +50,13 @@
     };
 
     const updateProfile = () => {
+        isUpdating = true;
         if (validateInputs(groupedInputComponents[activeTab])) {
             console.log("Pretended to submit. Validation passed!");
         } else {
             console.log("Failed to pretend to submit. Validation failed!");
         }
+        isUpdating = false;
     };
 
     $: activeTab = Object.keys(tabs)[0];
@@ -130,8 +135,15 @@
                             <button on:click={routeUtilities.goBack} class="btn btn-link mt-2 -ml-1 text-base-content">
                                 Cancel
                             </button>
-                            <button class="btn btn-primary float-right mt-2" on:click={() => updateProfile()}>
-                                Save
+                            <button
+                                class:loading={isUpdating}
+                                class="btn btn-primary float-right mt-2"
+                                on:click={() => updateProfile()}>
+                                {#if isUpdating}
+                                    Saving...
+                                {:else}
+                                    Save
+                                {/if}
                             </button>
                         </div>
                     </div>
@@ -161,8 +173,15 @@
                             <button on:click={routeUtilities.goBack} class="btn btn-link mt-2 -ml-1 text-base-content">
                                 Cancel
                             </button>
-                            <button class="btn btn-primary float-right mt-2" on:click={() => updateProfile()}>
-                                Save
+                            <button
+                                class:loading={isUpdating}
+                                class="btn btn-primary float-right mt-2"
+                                on:click={() => updateProfile()}>
+                                {#if isUpdating}
+                                    Saving...
+                                {:else}
+                                    Save
+                                {/if}
                             </button>
                         </div>
                     </div>

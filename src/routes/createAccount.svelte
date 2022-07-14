@@ -93,12 +93,11 @@
                             Cancel
                         </button>
                         <button
-                            class:btn-disabled={isProcessingRegistration}
-                            class:btn-primary={!isProcessingRegistration}
-                            class="btn mr-0"
+                            class:loading={isProcessingRegistration}
+                            class="btn btn-primary mr-0"
                             on:click={doCreateAccount}>
                             {#if isProcessingRegistration}
-                                Working...
+                                Registering...
                             {:else}
                                 Register
                             {/if}
