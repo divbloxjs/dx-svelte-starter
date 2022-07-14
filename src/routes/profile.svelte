@@ -87,7 +87,7 @@
                     <button class="tab mx-auto sm:mt-2" on:click={async () => logout()}> Logout </button>
                 </div>
                 {#if activeTab === "details"}
-                    <div class="card-body w-screen max-w-xs p-5 sm:p-10 md:max-w-lg" in:fade={{ duration: 500 }}>
+                    <div class="card-body w-full p-5 sm:p-10" in:fade={{ duration: 500 }}>
                         <SingleImageUploader
                             maxHeight="150px"
                             uploadEndpoint="http://localhost/"
@@ -136,7 +136,7 @@
                         </div>
                     </div>
                 {:else if activeTab === "password"}
-                    <div class="card-body w-screen max-w-xs p-5 sm:p-10 md:max-w-lg" in:fade={{ duration: 500 }}>
+                    <div class="card-body w-full p-5 sm:p-10" in:fade={{ duration: 500 }}>
                         <div class="card-actions justify-between">
                             <ValidatedInput
                                 bind:keypress
