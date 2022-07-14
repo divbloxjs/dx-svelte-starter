@@ -15,6 +15,12 @@
     const doAuthentication = async () => {
         await authenticate(username, password);
     };
+
+    const handleKeypress = (event) => {
+        if (event.keyCode === 13) {
+            doAuthentication();
+        }
+    };
 </script>
 
 <PageTransitionFade>
@@ -31,11 +37,13 @@
                         Sign in to {appName}
                     </h2>
                     <input
+                        on:keypress={(event) => handleKeypress(event)}
                         type="email"
                         placeholder="Username or email"
                         class="input input-bordered w-full"
                         value={username} />
                     <input
+                        on:keypress={(event) => handleKeypress(event)}
                         type="password"
                         placeholder="Password"
                         class="input input-bordered w-full"

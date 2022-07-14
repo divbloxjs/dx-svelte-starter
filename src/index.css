@@ -29,5 +29,13 @@
         .divblox-bottom-banner-space {
             margin-bottom: 54px;
         }
+
+        .btn-link:focus-visible {
+            outline: none;
+        }
+
+        .btn-outline:focus-visible {
+            outline: 2px solid white;
+        }
     }
 }

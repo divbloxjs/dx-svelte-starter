@@ -12,9 +12,6 @@
     import SingleImageUploader from "../base_components/uploaders/singleImageUploader.svelte";
     import { onMount } from "svelte";
 
-    // $: displayImagePathLocal = displayImagePath;
-    // $: displayImagePathLocal, handleDisplayImagePathChanged();
-
     let profilePictureUploadResponse = {};
     $: profilePictureUploadResponse, onProfilePictureUploaded();
     const onProfilePictureUploaded = () => {
@@ -25,6 +22,7 @@
         }
     };
 
+    let passwordValue;
     let validatedDetailInputs = [];
     let validatedPasswordInputs = [];
     let groupedInputComponents = {
@@ -36,6 +34,7 @@
         let isInputValid = true;
         Object.entries(groupedInputComponents).forEach((entry) => {
             const [sectionName, inputComponent] = entry;
+            // @ts-ignore
             isInputValid &= inputComponent.validate(true);
         });
 
@@ -47,8 +46,8 @@
         password: "Password",
     };
 
-    const updateProfile = (sectionName) => {
-        if (validateInputs(groupedInputComponents[sectionName])) {
+    const updateProfile = () => {
+        if (validateInputs(groupedInputComponents[activeTab])) {
             console.log("Pretended to submit. Validation passed!");
         } else {
             console.log("Failed to pretend to submit. Validation failed!");
@@ -60,12 +59,20 @@
     onMount(async () => {
         await updateProfilePicturePath();
     });
+
+    $: keypress = null;
+    $: keypress, handleKeypress();
+    const handleKeypress = () => {
+        if (keypress === 13) {
+            updateProfile();
+        }
+    };
 </script>
 
 <PageTransitionFade>
     <div class="flex h-screen flex-col">
         <MainNav />
-        <div class="divblox-bottom-banner-space flex flex-grow content-center items-center justify-center">
+        <div class="divblox-bottom-banner-space flex flex-grow content-center justify-center">
             <div
                 class="align-center card m-5 mb-[calc(1.25rem+54px)] flex max-w-xl flex-col justify-center bg-base-200 shadow-xl sm:card-side sm:mx-auto sm:flex-row md:max-w-2xl">
                 <div class="tabs tabs-boxed flex flex-row rounded-r-none bg-base-300 p-2 sm:w-64 sm:flex-col">
@@ -80,7 +87,7 @@
                     <button class="tab mx-auto sm:mt-2" on:click={async () => logout()}> Logout </button>
                 </div>
                 {#if activeTab === "details"}
-                    <div class="card-body p-5 sm:p-10" in:fade={{ duration: 500 }}>
+                    <div class="card-body w-screen max-w-xs p-5 sm:p-10 md:max-w-lg" in:fade={{ duration: 500 }}>
                         <SingleImageUploader
                             maxHeight="150px"
                             uploadEndpoint="http://localhost/"
@@ -91,6 +98,7 @@
 
                         <div class="card-actions justify-between">
                             <ValidatedInput
+                                bind:keypress
                                 label="First Name"
                                 placeHolder="First Name"
                                 type="text"
@@ -98,11 +106,13 @@
                                 validationMessage="Please provide a First Name"
                                 bind:this={validatedDetailInputs[0]} />
                             <ValidatedInput
+                                bind:keypress
                                 label="Middle Name(s)"
                                 placeHolder="Middle Name"
                                 type="text"
                                 bind:this={validatedDetailInputs[1]} />
                             <ValidatedInput
+                                bind:keypress
                                 label="Last Name(s)"
                                 placeHolder="Last Name"
                                 type="text"
@@ -110,6 +120,7 @@
                                 validateAs="required"
                                 bind:this={validatedDetailInputs[2]} />
                             <ValidatedInput
+                                bind:keypress
                                 label="Email Address"
                                 placeHolder="Email Address"
                                 type="email"
@@ -119,39 +130,38 @@
                             <button on:click={routeUtilities.goBack} class="btn btn-link mt-2 -ml-1 text-base-content">
                                 Cancel
                             </button>
-                            <button class="btn btn-primary float-right mt-2" on:click={() => updateProfile("details")}>
+                            <button class="btn btn-primary float-right mt-2" on:click={() => updateProfile()}>
                                 Save
                             </button>
                         </div>
                     </div>
                 {:else if activeTab === "password"}
-                    <div class="card-body" in:fade={{ duration: 500 }}>
-                        <h2 class="text-center text-xl font-bold">Profile here</h2>
+                    <div class="card-body w-screen max-w-xs p-5 sm:p-10 md:max-w-lg" in:fade={{ duration: 500 }}>
                         <div class="card-actions justify-between">
                             <ValidatedInput
-                                label="Old Password"
-                                placeHolder="Old Password"
+                                bind:keypress
+                                placeholder="Password"
+                                bind:value={passwordValue}
                                 type="password"
-                                validationMessage="Please provide your old password"
-                                validateAs="required"
+                                validateAs="password"
+                                label="Password"
+                                passwordValidationOption="strong"
+                                validationMessage="Password too weak"
                                 bind:this={validatedPasswordInputs[0]} />
                             <ValidatedInput
-                                label="Password"
-                                placeHolder="Password"
+                                bind:keypress
+                                placeholder="Confirm Password"
+                                value=""
                                 type="password"
-                                validationMessage="Password too short"
-                                validateAs="password"
-                                bind:this={validatedPasswordInputs[1]} />
-                            <ValidatedInput
-                                placeHolder="Confirm Password"
-                                type="password"
+                                validateAs="comparison"
+                                label="Confirm Password"
+                                compareValue={passwordValue}
                                 validationMessage="Passwords do not match"
-                                validateAs="password"
-                                bind:this={validatedPasswordInputs[2]} />
+                                bind:this={validatedPasswordInputs[1]} />
                             <button on:click={routeUtilities.goBack} class="btn btn-link mt-2 -ml-1 text-base-content">
                                 Cancel
                             </button>
-                            <button class="btn btn-primary float-right mt-2" on:click={() => updateProfile("password")}>
+                            <button class="btn btn-primary float-right mt-2" on:click={() => updateProfile()}>
                                 Save
                             </button>
                         </div>

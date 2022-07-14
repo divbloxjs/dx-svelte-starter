@@ -5,11 +5,24 @@
     import { routeUtilities } from "../lib/js/utilities/routeUtilities";
     import { onMount } from "svelte";
     import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
+    import ValidatedInput from "../base_components/forms/validatedInput.svelte";
 
-    let username = "";
+    let emailAddress = "";
+    let isValid = false;
+    let isSubmitting = false;
 
     const doSendPasswordResetLink = () => {
+        isSubmitting = true;
         alert("Coming soon...");
+        isSubmitting = false;
+    };
+
+    $: keypress = null;
+    $: keypress, handleKeypress();
+    const handleKeypress = () => {
+        if (keypress === 13) {
+            doSendPasswordResetLink();
+        }
     };
 </script>
 
@@ -26,11 +39,16 @@
                     Reset your {appName} password
                 </h2>
                 <!-- <p>{isAuthenticatedValue}</p> -->
-                <input
+                <ValidatedInput
+                    bind:keypress
+                    placeholder="Email address"
                     type="email"
-                    placeholder="Username or email"
-                    class="input input-bordered w-full"
-                    value={username} />
+                    validateAs="email"
+                    bind:value={emailAddress}
+                    validationMessage="Invalid email address"
+                    label="Email Address"
+                    requiredLabel="(Required)"
+                    bind:isValid />
 
                 <div class="card-actions justify-between">
                     <button on:click={routeUtilities.goBack} class="btn btn-link pl-0 text-gray-600"> Cancel </button>

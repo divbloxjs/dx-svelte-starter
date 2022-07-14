@@ -1,16 +1,7 @@
 <script>
     import MainFooter from "../lib/navigation/mainFooter.svelte";
-    import {
-        isAuthenticated,
-        checkAuthentication,
-        authenticate,
-    } from "../lib/js/stores/authentication";
-    import {
-        domainRoot,
-        appLogo,
-        appName,
-        defaultLandingPage,
-    } from "../lib/js/stores/configurations";
+    import { isAuthenticated, checkAuthentication, authenticate } from "../lib/js/stores/authentication";
+    import { domainRoot, appLogo, appName, defaultLandingPage } from "../lib/js/stores/configurations";
     import { routeUtilities } from "../lib/js/utilities/routeUtilities";
     import { onMount } from "svelte";
     import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
@@ -45,6 +36,14 @@
 
         isProcessingRegistration = false;
     };
+
+    $: keypress = null;
+    $: keypress, handleKeypress();
+    const handleKeypress = () => {
+        if (keypress === 13) {
+            doCreateAccount();
+        }
+    };
 </script>
 
 <PageTransitionFade>
@@ -61,6 +60,7 @@
                         Create your {appName} account
                     </h2>
                     <ValidatedInput
+                        bind:keypress
                         placeholder="Email address"
                         type="email"
                         validateAs="email"
@@ -68,6 +68,7 @@
                         validationMessage="Invalid email address"
                         bind:this={validatedInputArray[0]} />
                     <ValidatedInput
+                        bind:keypress
                         placeholder="Password"
                         bind:value={passwordValue}
                         type="password"
@@ -77,7 +78,8 @@
                         validationMessage="Password too weak"
                         bind:this={validatedInputArray[1]} />
                     <ValidatedInput
-                        placeholder="Confirm password"
+                        bind:keypress
+                        placeholder="Confirm Password"
                         value=""
                         type="password"
                         validateAs="comparison"
@@ -87,9 +89,7 @@
                         bind:this={validatedInputArray[2]} />
 
                     <div class="card-actions justify-between">
-                        <button
-                            on:click={routeUtilities.goBack}
-                            class="btn btn-link pl-0 text-gray-600">
+                        <button on:click={routeUtilities.goBack} class="btn btn-link pl-0 text-gray-600">
                             Cancel
                         </button>
                         <button

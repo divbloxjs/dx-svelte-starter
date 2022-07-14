@@ -39,6 +39,7 @@
     export let compareValue = "";
     export let hideValidation = false;
     export let passwordValidationOption = "default";
+    export let keypress = "none";
 
     $: compareValueLocal = compareValue;
     $: compareValueLocal, handleCompareValueChanged();
@@ -57,9 +58,7 @@
      * @param e - the input event triggered
      */
     const handleInput = (e) => {
-        value = type.match(/^(number|range)$/)
-            ? +e.target.value
-            : e.target.value;
+        value = type.match(/^(number|range)$/) ? +e.target.value : e.target.value;
 
         validate();
     };
@@ -67,7 +66,7 @@
     /**
      * Resets the state to the component to "unvalidated"
      */
-    const resetValidation = () => {
+    export const resetValidation = () => {
         isValid = false;
         isValidated = false;
     };
@@ -130,9 +129,11 @@
     };
 
     const validatePassword = () => {
-        return !!value.match(
-            passwordValidationOptions[passwordValidationOption]
-        );
+        return !!value.match(passwordValidationOptions[passwordValidationOption]);
+    };
+
+    const handleKeypress = (event) => {
+        keypress = event.keyCode;
     };
 
     onMount(async () => {
@@ -150,15 +151,13 @@
             <span class={addLabelClass}>{label}</span>
         {/if}
         {#if !isValid && isValidated && !hideValidation}
-            <span
-                class:-mb-2={label !== null}
-                class="label-text-alt text-red-500  ml-auto text-xs">
+            <span class:-mb-2={label !== null} class="label-text-alt ml-auto  text-xs text-red-500">
                 {validationMessage}
             </span>
         {:else if !isValidated && requiredLabel !== null && requiredLabel !== undefined && requiredLabel.length > 0}
             <span
                 class:-mb-2={label !== null}
-                class="label-text-alt text-red-500  ml-auto text-xs {addRequiredLabelClass}">
+                class="label-text-alt ml-auto  text-xs text-red-500 {addRequiredLabelClass}">
                 {requiredLabel}
             </span>
         {/if}
@@ -173,5 +172,6 @@
         class:input-success={isValid && isValidated && !hideValidation}
         {...$$restProps}
         on:input={handleInput}
-        on:change={handleInput} />
+        on:change={handleInput}
+        on:keypress={(event) => handleKeypress(event)} />
 </div>
