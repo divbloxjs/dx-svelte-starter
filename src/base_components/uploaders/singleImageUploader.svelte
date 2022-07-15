@@ -58,17 +58,17 @@
                 credentials: credentials,
             });
 
+            const uploadResultJson = await uploadResult.json();
+            uploadResponse = uploadResultJson;
+
             if (uploadResult.status !== 200) {
-                alert("Failed to save changes. Please try again.");
-                uploadResponse = { uploadError: uploadResult };
+                uploadResponse.uploadError = uploadResult;
             } else {
                 isEditing = false;
-                uploadResponse = await uploadResult.json();
             }
         } catch (error) {
-            alert("Failed to save changes. Please try again.");
             console.error(error);
-            uploadResponse = { uploadError: error };
+            uploadResponse.uploadError = error;
         }
 
         isSubmitting = false;

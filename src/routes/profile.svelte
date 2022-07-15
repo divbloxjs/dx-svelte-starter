@@ -23,6 +23,12 @@
             // TODO Interogate profilePictureUploadResponse for file static path or error, if needed
             updateProfilePicturePath();
         }
+
+        if ("uploadError" in profilePictureUploadResponse) {
+            // TODO handle error as needed
+            console.log(profilePictureUploadResponse.message);
+            return;
+        }
     };
 
     let passwordValue;
