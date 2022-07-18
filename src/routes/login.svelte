@@ -4,6 +4,7 @@
     import { checkAuthentication, authenticate, isAuthenticated } from "../lib/js/stores/authentication";
     import { onMount } from "svelte";
     import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
+    import ValidatedInput from "../base_components/forms/validatedInput.svelte";
 
     let username = "";
     let password = "";
@@ -12,12 +13,28 @@
         await checkAuthentication();
     });
 
+    let validatedInputArray = [];
+
+    const validateForm = () => {
+        let formIsValid = 1;
+        validatedInputArray.forEach((inputComponent) => {
+            formIsValid &= inputComponent.validate(true);
+        });
+
+        return formIsValid;
+    };
+
     const doAuthentication = async () => {
+        if (!validateForm()) {
+            return;
+        }
         await authenticate(username, password);
     };
 
-    const handleKeypress = (event) => {
-        if (event.keyCode === 13) {
+    $: keypress = null;
+    $: keypress, handleKeypress();
+    const handleKeypress = () => {
+        if (keypress === 13) {
             doAuthentication();
         }
     };
@@ -36,19 +53,24 @@
                     <h2 class="text-center text-xl font-bold">
                         Sign in to {appName}
                     </h2>
-                    <input
-                        on:keypress={(event) => handleKeypress(event)}
-                        type="email"
-                        placeholder="Username or email"
-                        class="input input-bordered w-full"
-                        value={username} />
-                    <input
-                        on:keypress={(event) => handleKeypress(event)}
-                        type="password"
+                    <ValidatedInput
+                        bind:keypress
+                        placeholder="Username or Email"
+                        type="text"
+                        bind:value={username}
+                        validateAs="required"
+                        label="Username or Email"
+                        validationMessage="Required"
+                        bind:this={validatedInputArray[0]} />
+                    <ValidatedInput
+                        bind:keypress
                         placeholder="Password"
-                        class="input input-bordered w-full"
-                        value={password} />
-
+                        bind:value={password}
+                        type="password"
+                        validateAs="required"
+                        label="Password"
+                        validationMessage="Required"
+                        bind:this={validatedInputArray[1]} />
                     <div class="card-actions justify-between">
                         <a href="#/forgot-password" class="btn btn-link pl-0 text-gray-600"> Forgot Password? </a>
                         <button class="btn btn-primary" on:click={doAuthentication}> Sign in </button>
