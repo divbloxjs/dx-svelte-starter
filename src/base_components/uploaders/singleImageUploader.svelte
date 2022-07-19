@@ -18,6 +18,7 @@
 
     let isEditing = false;
     let isSubmitting = false;
+    let uploadSuccessful = false;
     let fileUploaderEl;
     let imageEditorPath = defaultImagePath;
     let displayedImageEl;
@@ -36,8 +37,12 @@
     };
 
     const handleFileSelected = () => {
+        uploadSuccessful = false;
         isEditing = true;
         imageEditorPath = URL.createObjectURL(fileUploaderEl.files[0]);
+        setTimeout(() => {
+            initCropper();
+        }, 300);
     };
 
     const handleFileUpload = async () => {
@@ -58,34 +63,40 @@
                 credentials: credentials,
             });
 
-            const uploadResultJson = await uploadResult.json();
-            uploadResponse = uploadResultJson;
-
             if (uploadResult.status !== 200) {
                 uploadResponse.uploadError = uploadResult;
             } else {
+                uploadResponse = await uploadResult.json();
                 isEditing = false;
+                isSubmitting = false;
+                uploadSuccessful = true;
+                return true;
             }
         } catch (error) {
             console.error(error);
             uploadResponse.uploadError = error;
         }
-
         isSubmitting = false;
+        return false;
+    };
+
+    const initCropper = async () => {
+        if (cropper !== undefined && cropper !== null) {
+            cropper.destroy();
+        }
+
+        cropper = undefined;
+        cropper = new Cropper(imageEditorEl, {
+            aspectRatio: displayAsCircle ? 1 : NaN,
+            viewMode: 1,
+            dragMode: "move",
+        });
     };
 
     afterUpdate(() => {
-        if (isEditing) {
-            cropper = new Cropper(imageEditorEl, {
-                aspectRatio: displayAsCircle ? 1 : NaN,
-                viewMode: 1,
-                dragMode: "move",
-            });
-        } else {
-            if (modifiedCanvas !== undefined) {
-                displayedImageEl.src = modifiedCanvas.toDataURL();
-                displayedImageEl.innerHTML = "";
-            }
+        if (!isEditing && uploadSuccessful) {
+            displayedImageEl.src = modifiedCanvas.toDataURL();
+            displayedImageEl.innerHTML = "";
         }
     });
 
@@ -106,13 +117,13 @@
         return canvas;
     };
 
-    const handleConfirmCrop = () => {
-        modifiedCanvas = undefined;
-
+    const handleConfirmCrop = async () => {
         // Crop
-        modifiedCanvas = cropper.getCroppedCanvas();
+        if (modifiedCanvas === undefined || modifiedCanvas === null) {
+            modifiedCanvas = cropper.getCroppedCanvas();
+        }
+
         if (displayAsCircle) {
-            // Round
             modifiedCanvas = getRoundedCanvas(modifiedCanvas);
         }
 
