@@ -19,6 +19,7 @@
     let isEditing = false;
     let isSubmitting = false;
     let uploadSuccessful = false;
+    let isCropperInitialised = false;
     let fileUploaderEl;
     let imageEditorPath = defaultImagePath;
     let displayedImageEl;
@@ -40,9 +41,6 @@
         uploadSuccessful = false;
         isEditing = true;
         imageEditorPath = URL.createObjectURL(fileUploaderEl.files[0]);
-        setTimeout(() => {
-            initCropper();
-        }, 300);
     };
 
     const handleFileUpload = async () => {
@@ -80,7 +78,7 @@
         return false;
     };
 
-    const initCropper = async () => {
+    const initCropper = () => {
         if (cropper !== undefined && cropper !== null) {
             cropper.destroy();
         }
@@ -91,12 +89,22 @@
             viewMode: 1,
             dragMode: "move",
         });
+
+        isCropperInitialised = true;
     };
 
     afterUpdate(() => {
-        if (!isEditing && uploadSuccessful) {
-            displayedImageEl.src = modifiedCanvas.toDataURL();
-            displayedImageEl.innerHTML = "";
+        if (!isEditing) {
+            if (uploadSuccessful) {
+                displayedImageEl.src = modifiedCanvas.toDataURL();
+                displayedImageEl.innerHTML = "";
+            }
+
+            isCropperInitialised = false;
+        }
+
+        if (isEditing && !isCropperInitialised) {
+            initCropper();
         }
     });
 
@@ -118,12 +126,9 @@
     };
 
     const handleConfirmCrop = async () => {
-        // Crop
-        if (modifiedCanvas === undefined || modifiedCanvas === null) {
-            modifiedCanvas = cropper.getCroppedCanvas();
-        }
-
+        modifiedCanvas = cropper.getCroppedCanvas(); // Crop
         if (displayAsCircle) {
+            // Round
             modifiedCanvas = getRoundedCanvas(modifiedCanvas);
         }
 
@@ -158,6 +163,7 @@
         <p class="file-name" />
     </label>
 </div>
+
 {#if isEditing}
     <div transition:fade={{ duration: 200 }} class="fixed top-0 left-0 z-50 h-screen w-screen bg-base-200">
         <div class="m-auto mt-[2rem] max-h-[calc(100vh-6rem)] w-11/12 max-w-[90vw]">
@@ -167,9 +173,8 @@
             <button
                 type="button"
                 class="btn btn-link mt-2 text-base-content"
-                on:click={() => {
-                    isEditing = false;
-                }}>
+                class:btn-disabled={isSubmitting}
+                on:click={() => (isEditing = false)}>
                 Cancel
             </button>
             <button
