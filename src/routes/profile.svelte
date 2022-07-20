@@ -4,13 +4,14 @@
 
     import MainNav from "../lib/navigation/mainNav.svelte";
     import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
-    import MainFooter from "../lib/navigation/mainFooter.svelte";
+    import BottomNav from "../lib/navigation/bottomNav.svelte";
     import { routeUtilities } from "../lib/js/utilities/routeUtilities";
     import ValidatedInput from "../base_components/forms/validatedInput.svelte";
     import { fade } from "svelte/transition";
     import { checkAuthentication, logout } from "../lib/js/stores/authentication";
     import SingleImageUploader from "../base_components/uploaders/singleImageUploader.svelte";
     import { onMount } from "svelte";
+    import { push } from "svelte-spa-router";
 
     let profilePictureUploadResponse = {};
     $: profilePictureUploadResponse, onProfilePictureUploaded();
@@ -68,7 +69,7 @@
     $: activeTab = Object.keys(tabs)[0];
 
     onMount(async () => {
-        await checkAuthentication();
+        await checkAuthentication("/login", null);
         await updateProfilePicturePath();
     });
 
@@ -78,6 +79,16 @@
         if (keypress === 13) {
             updateProfile();
         }
+    };
+
+    let isActive = [];
+
+    const setActiveTab = (activeIndex) => {
+        isActive.forEach((value, index) => {
+            isActive[index] = false;
+        });
+
+        isActive[activeIndex] = true;
     };
 </script>
 
@@ -198,4 +209,17 @@
     </div>
 </PageTransitionFade>
 
-<MainFooter />
+<BottomNav />
+
+<style>
+    .dot {
+        position: relative;
+        top: -70%;
+        width: 70%;
+        height: 0;
+        padding-bottom: 70%;
+        background-color: #bbb;
+        border-radius: 50%;
+        display: inline-block;
+    }
+</style>
