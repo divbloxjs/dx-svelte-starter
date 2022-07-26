@@ -8,7 +8,7 @@
     import { routeUtilities } from "../lib/js/utilities/routeUtilities";
     import ValidatedInput from "../base_components/forms/validatedInput.svelte";
     import { fade } from "svelte/transition";
-    import { logout } from "../lib/js/stores/authentication";
+    import { checkAuthentication, logout } from "../lib/js/stores/authentication";
     import SingleImageUploader from "../base_components/uploaders/singleImageUploader.svelte";
     import { onMount } from "svelte";
 
@@ -68,6 +68,7 @@
     $: activeTab = Object.keys(tabs)[0];
 
     onMount(async () => {
+        await checkAuthentication();
         await updateProfilePicturePath();
     });
 

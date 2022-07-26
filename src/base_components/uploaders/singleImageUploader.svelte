@@ -18,6 +18,8 @@
 
     let isEditing = false;
     let isSubmitting = false;
+    let uploadSuccessful = false;
+    let isCropperInitialised = false;
     let fileUploaderEl;
     let imageEditorPath = defaultImagePath;
     let displayedImageEl;
@@ -36,6 +38,7 @@
     };
 
     const handleFileSelected = () => {
+        uploadSuccessful = false;
         isEditing = true;
         imageEditorPath = URL.createObjectURL(fileUploaderEl.files[0]);
     };
@@ -58,34 +61,50 @@
                 credentials: credentials,
             });
 
-            const uploadResultJson = await uploadResult.json();
-            uploadResponse = uploadResultJson;
-
             if (uploadResult.status !== 200) {
                 uploadResponse.uploadError = uploadResult;
             } else {
+                uploadResponse = await uploadResult.json();
                 isEditing = false;
+                isSubmitting = false;
+                uploadSuccessful = true;
+                return true;
             }
         } catch (error) {
             console.error(error);
             uploadResponse.uploadError = error;
         }
-
         isSubmitting = false;
+        return false;
+    };
+
+    const initCropper = () => {
+        if (cropper !== undefined && cropper !== null) {
+            cropper.destroy();
+        }
+
+        cropper = undefined;
+        cropper = new Cropper(imageEditorEl, {
+            aspectRatio: displayAsCircle ? 1 : NaN,
+            viewMode: 1,
+            dragMode: "move",
+        });
+
+        isCropperInitialised = true;
     };
 
     afterUpdate(() => {
-        if (isEditing) {
-            cropper = new Cropper(imageEditorEl, {
-                aspectRatio: displayAsCircle ? 1 : NaN,
-                viewMode: 1,
-                dragMode: "move",
-            });
-        } else {
-            if (modifiedCanvas !== undefined) {
+        if (!isEditing) {
+            if (uploadSuccessful) {
                 displayedImageEl.src = modifiedCanvas.toDataURL();
                 displayedImageEl.innerHTML = "";
             }
+
+            isCropperInitialised = false;
+        }
+
+        if (isEditing && !isCropperInitialised) {
+            initCropper();
         }
     });
 
@@ -106,11 +125,8 @@
         return canvas;
     };
 
-    const handleConfirmCrop = () => {
-        modifiedCanvas = undefined;
-
-        // Crop
-        modifiedCanvas = cropper.getCroppedCanvas();
+    const handleConfirmCrop = async () => {
+        modifiedCanvas = cropper.getCroppedCanvas(); // Crop
         if (displayAsCircle) {
             // Round
             modifiedCanvas = getRoundedCanvas(modifiedCanvas);
@@ -147,6 +163,7 @@
         <p class="file-name" />
     </label>
 </div>
+
 {#if isEditing}
     <div transition:fade={{ duration: 200 }} class="fixed top-0 left-0 z-50 h-screen w-screen bg-base-200">
         <div class="m-auto mt-[2rem] max-h-[calc(100vh-6rem)] w-11/12 max-w-[90vw]">
@@ -156,9 +173,8 @@
             <button
                 type="button"
                 class="btn btn-link mt-2 text-base-content"
-                on:click={() => {
-                    isEditing = false;
-                }}>
+                class:btn-disabled={isSubmitting}
+                on:click={() => (isEditing = false)}>
                 Cancel
             </button>
             <button

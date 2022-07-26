@@ -63,10 +63,19 @@ export const authenticate = async (username, password, successRedirect = default
  */
 export const logout = async (logoutRedirect = "/login") => {
     //TODO: Implement this function properly. For now it just sets the "isAuthenticated" flag to false
-    isAuthenticated.set(false);
 
+    handleAfterLogout(logoutRedirect);
+
+    return !get(isAuthenticated);
+};
+
+/**
+ * Handles the after logout action
+ * @param {string|null} logoutRedirect The page to redirect to after logout. If set to null, no redirect will happen
+ */
+export const handleAfterLogout = (logoutRedirect = "/login") => {
+    isAuthenticated.set(false);
     if (logoutRedirect !== null) {
         replace(logoutRedirect);
     }
-    return !get(isAuthenticated);
 };
