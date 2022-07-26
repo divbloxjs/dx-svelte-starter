@@ -68,7 +68,7 @@
     $: activeTab = Object.keys(tabs)[0];
 
     onMount(async () => {
-        await checkAuthentication();
+        await checkAuthentication("/login", null);
         await updateProfilePicturePath();
     });
 

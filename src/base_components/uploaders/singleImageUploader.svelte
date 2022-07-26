@@ -1,12 +1,12 @@
 <script>
-    import defaultImage from "../../assets/images/no_image.svg";
+    import { defaultImagePath } from "../../lib/js/utilities/helpers.js";
     import { fade } from "svelte/transition";
     import Fa from "svelte-fa";
     import { faPencil } from "@fortawesome/free-solid-svg-icons";
     import Cropper from "cropperjs";
     import { onMount, afterUpdate } from "svelte";
 
-    export let defaultImagePath = defaultImage;
+    export let localDefaultImagePath = defaultImagePath;
     export let displayImagePath;
     export let uploadResponse = {};
     export let aspect = { x: 4, y: 3 };
@@ -21,7 +21,7 @@
     let uploadSuccessful = false;
     let isCropperInitialised = false;
     let fileUploaderEl;
-    let imageEditorPath = defaultImagePath;
+    let imageEditorPath = localDefaultImagePath;
     let displayedImageEl;
     let cropper;
     let imageEditorEl;
@@ -34,7 +34,7 @@
     $: displayImagePathLocal, handleDisplayImagePathChanged();
 
     const handleDisplayImagePathChanged = () => {
-        imagePath = displayImagePath !== undefined ? displayImagePath : defaultImagePath;
+        imagePath = displayImagePath !== undefined ? displayImagePath : localDefaultImagePath;
     };
 
     const handleFileSelected = () => {
@@ -150,7 +150,11 @@
             style="aspect-ratio: {aspectRatio}; max-height: {maxHeight}"
             class:rounded-full={displayAsCircle}
             class:rounded-lg={!displayAsCircle}>
-            <img bind:this={displayedImageEl} src={imagePath} alt={imageName} />
+            <img
+                bind:this={displayedImageEl}
+                on:error={() => (imagePath = defaultImagePath)}
+                src={imagePath}
+                alt={imageName} />
         </div>
     </div>
 </div>
@@ -167,7 +171,11 @@
 {#if isEditing}
     <div transition:fade={{ duration: 200 }} class="fixed top-0 left-0 z-50 h-screen w-screen bg-base-200">
         <div class="m-auto mt-[2rem] max-h-[calc(100vh-6rem)] w-11/12 max-w-[90vw]">
-            <img bind:this={imageEditorEl} src={imageEditorPath} alt="Edited" />
+            <img
+                bind:this={imageEditorEl}
+                src={imageEditorPath}
+                on:error={() => (imageEditorPath = localDefaultImagePath)}
+                alt="Edited" />
         </div>
         <div class="mx-auto w-11/12 max-w-[90vw] text-center">
             <button
