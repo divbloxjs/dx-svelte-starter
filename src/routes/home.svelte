@@ -1,7 +1,7 @@
 <script>
     import MainNav from "../lib/navigation/mainNav.svelte";
-    import MainFooter from "../lib/navigation/mainFooter.svelte";
     import { push, pop, replace } from "svelte-spa-router";
+    import QuickActionsMenu from "../lib/navigation/quickActionsMenu.svelte";
     import { checkAuthentication } from "../lib/js/stores/authentication";
     import { onMount } from "svelte";
     import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
@@ -28,6 +28,5 @@
             </div>
         </div>
     </main>
+    <QuickActionsMenu />
 </PageTransitionFade>
-
-<MainFooter />
