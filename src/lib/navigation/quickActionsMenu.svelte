@@ -20,7 +20,7 @@
     let isClicked = false;
 </script>
 
-<div class="fixed bottom-6 right-0">
+<div class="fixed bottom-6 right-0 md:hidden">
     <div class="dropdown-end dropdown-top dropdown">
         <div
             bind:this={dropDownEl}
@@ -63,7 +63,6 @@
                     Dashboard
                 </a>
             </li>
-
             <li>
                 <span on:click={async () => logout()}>
                     <div class="flex h-6 w-6 items-center justify-center rounded-full bg-base-300 p-3 shadow-lg  ">
