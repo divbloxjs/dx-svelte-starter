@@ -4,7 +4,7 @@
 
     import MainNav from "../lib/navigation/mainNav.svelte";
     import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
-    import MainFooter from "../lib/navigation/mainFooter.svelte";
+    import QuickActionsMenu from "../lib/navigation/quickActionsMenu.svelte";
     import { routeUtilities } from "../lib/js/utilities/routeUtilities";
     import ValidatedInput from "../base_components/forms/validatedInput.svelte";
     import { fade } from "svelte/transition";
@@ -196,6 +196,5 @@
             </div>
         </div>
     </div>
+    <QuickActionsMenu />
 </PageTransitionFade>
-
-<MainFooter />
