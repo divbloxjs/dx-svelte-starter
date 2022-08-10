@@ -1,11 +1,11 @@
 <script>
-    import MainFooter from "../lib/navigation/mainFooter.svelte";
-    import { domainRoot, appLogo, appName, defaultLandingPage } from "../lib/js/stores/configurations";
-    import { checkAuthentication, authenticate, isAuthenticated } from "../lib/js/stores/authentication";
-    import { routeUtilities } from "../lib/js/utilities/routeUtilities";
+    import MainFooter from "$navigation/mainFooter.svelte";
+    import { domainRoot, appLogo, appName, defaultLandingPage } from "$stores/configurations";
+    import { checkAuthentication, authenticate, isAuthenticated } from "$stores/authentication";
+    import { routeUtilities } from "$utilities/routeUtilities";
     import { onMount } from "svelte";
-    import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
-    import ValidatedInput from "../base_components/forms/validatedInput.svelte";
+    import PageTransitionFade from "$base_components/page_transitions/pageTransitionFade.svelte";
+    import ValidatedInput from "$base_components/forms/validatedInput.svelte";
 
     let isValid = false;
     let isSubmitting = false;

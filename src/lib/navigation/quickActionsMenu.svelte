@@ -1,18 +1,6 @@
 <script>
     import Fa from "svelte-fa";
-    import FaLayers from "svelte-fa";
-    import {
-        faChartLine,
-        faCogs,
-        faDashboard,
-        faEllipsisV,
-        faGrip,
-        faListCheck,
-        faPeopleArrows,
-        faPeopleGroup,
-        faPowerOff,
-        faProjectDiagram,
-    } from "@fortawesome/free-solid-svg-icons/index.es";
+    import { faEllipsisV, faGrip, faPowerOff } from "@fortawesome/free-solid-svg-icons/index.es";
     import { profilePicturePath } from "../../lib/js/stores/userData";
     import { logout } from "../js/stores/authentication";
     let dropDownEl;
