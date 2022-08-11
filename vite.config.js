@@ -5,7 +5,7 @@ import path from "path";
 // https://vitejs.dev/config/
 /** @type {import('vite').UserConfig} */
 export default defineConfig({
-    plugins: [svelte({ useVitePreprocess: true, typescript: true })],
+    plugins: [svelte({ useVitePreprocess: true })],
     resolve: {
         alias: {
             $src: path.resolve("./src"),

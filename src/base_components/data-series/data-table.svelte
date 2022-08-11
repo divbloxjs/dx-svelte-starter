@@ -1,47 +1,8 @@
-<script lang="ts" context="module">
-    export interface filterTextOption {
-        userInput: string;
-        placeholder: string;
-        defaultValue: string;
-    }
-    export interface filterNumberOption {
-        userInput: string;
-        placeholder: string;
-        defaultValue: string;
-    }
-    export interface filterDropdownOption {
-        userInput: string;
-        placeholder: string;
-        defaultOptions: [];
-    }
-
-    export interface filterDateOption {
-        userInput: Date;
-        label: Date;
-        placeholder: Date;
-        defaultValue: Date;
-    }
-
-    type filter = "fromDate" | "toDate" | "filterDropdown" | "filterText" | "filterNumber";
-
-    export interface filterOption {
-        [propName: string]: filterDateOption | filterDropdownOption | filterNumberOption | filterTextOption;
-    }
-
-    export interface tableColumn {
-        width: string;
-        sortBy: boolean;
-        isSortAscending: boolean;
-        filterBy?: filterOption;
-        [propName: string]: any;
-    }
-
-    export interface tableColumns {
-        [propName: string]: tableColumn;
-    }
-</script>
-
-<script lang="ts">
+<script>
+    import { onMount, beforeUpdate } from "svelte";
+    import { disableNonNumericInput, sleep } from "$src/lib/js/utilities/helpers";
+    import Dropdown from "$base_components/data-series/ui-elements/dropdown.svelte";
+    import { createEventDispatcher } from "svelte";
     import Fa from "svelte-fa";
     import {
         faAngleDown,
@@ -50,63 +11,35 @@
         faTrash,
         faCheck,
         faMagnifyingGlass,
-        faRefresh,
         faTimes,
         faFileCsv,
         faFileExcel,
         faFileText,
         faBars,
     } from "@fortawesome/free-solid-svg-icons/index.es";
-    import { onMount, beforeUpdate } from "svelte";
-    import { disableNonNumericInput, sleep } from "$src/lib/js/utilities/helpers";
-    import Dropdown from "$base_components/data-series/ui-elements/dropdown.svelte";
-    import { createEventDispatcher } from "svelte";
-    // import type { tableColumns } from "./table.model";
+
+    export let dataSource;
+    export let itemsPerPage = 10;
+    export let pageNumber = 0;
+
+    export let enableMultiSelect = true;
+    export let enableGlobalSearch = true;
+    export let enableRefresh = true;
+    export let enableFilters = false;
+    export let showFilters = false;
+    export let clickableColumn = undefined;
+
+    export let columns = undefined;
+    export let customActions = {};
+    export let multiSelectActions = [];
 
     const dispatch = createEventDispatcher();
     const actionTriggered = (params) => {
         dispatch("actionTriggered", params);
     };
 
-    // interface tableColumn {
-    //     width: string;
-    //     sortBy: boolean;
-    //     isSortAscending: boolean;
-    //     filterBy?: object;
-    //     [propName: string]: any;
-    // }
-
-    let a = {
-        width: "25%",
-        sortBy: true,
-        isSortAscending: true,
-        filterBy: {
-            filterText: {
-                userInput: "Joeys",
-                placeholder: "First Name",
-                defaultValue: "Joeys",
-            },
-        },
-    };
-
-    export let dataSource: string;
-    export let itemsPerPage: number = 10;
-    export let pageNumber = 0;
-    export let enableMultiSelect: boolean = true;
-    export let enableGlobalSearch: boolean = true;
-    export let clickableColumn: string = undefined;
-    export let enableRefresh: boolean = true;
-    export let enableFilters: boolean = false;
-
-    export let columns: tableColumns = undefined;
-
-    export let customActions = {};
-
-    export let multiSelectActions = [];
-
     let postBody = {};
 
-    // TODO figure out how to add filterStates here dynamically
     const requestPendingStates = {
         globalSearch: false,
         editLimit: false,
@@ -114,7 +47,59 @@
         filters: {}, // Populated dynamically based on incoming data
     };
 
+    onMount(async () => {
+        await refreshDataTable();
+    });
+
+    let initComplete = false;
+    beforeUpdate(async () => {
+        if (!initComplete) {
+            initComplete = true;
+            await initPostBody();
+        }
+    });
+
+    const initPostBody = async () => {
+        if (dataSource === undefined) {
+            throw Error("dataSource has not been provided");
+        }
+        if (columns === undefined) {
+            throw Error("dataSource has not been provided");
+        }
+        postBody.limit = itemsPerPage;
+        postBody.pageNumber = pageNumber;
+        postBody.columns = {};
+
+        for (const [columnName, columnInfo] of Object.entries(columns)) {
+            postBody.columns[columnName] = {};
+            postBody.columns[columnName].isSortAscending = columnInfo.isSortAscending;
+            postBody.columns[columnName].sortBy = columnInfo.sortBy;
+
+            requestPendingStates.filters[columnName] = {};
+
+            postBody.columns[columnName].filterBy = {};
+            if (columnInfo.hasOwnProperty("filterBy")) {
+                for (const [filterName, filterByInfo] of Object.entries(columnInfo.filterBy)) {
+                    postBody.columns[columnName].filterBy[filterName] = filterByInfo.userInput;
+
+                    requestPendingStates.filters[columnName][filterName] = false;
+                }
+            }
+        }
+
+        if (!enableFilters) {
+            showFilters = false;
+        }
+    };
+
+    onMount(async () => {
+        await refreshDataTable();
+    });
+
     const handleGeneralStates = async (type) => {
+        if (isLoading) {
+            return;
+        }
         requestPendingStates[type] = true;
         await refreshDataTable();
         requestPendingStates[type] = false;
@@ -172,7 +157,6 @@
         isLoading = false;
     };
 
-    export let showFilters = false;
     let editingLimit = false;
 
     let sortBy;
@@ -192,25 +176,6 @@
         });
     };
 
-    let values = ["hahaha", "hahaha", "hahaha", "hahaha"];
-    onMount(async () => {
-        await refreshDataTable();
-    });
-
-    const updateValues = () => {
-        values.forEach((element, index) => {
-            values[index] = element + "hahah";
-        });
-    };
-
-    let initComplete = false;
-    beforeUpdate(async () => {
-        if (!initComplete) {
-            initComplete = true;
-            await initPostBody();
-        }
-    });
-
     const resetPostBody = async () => {
         sortBy = undefined;
         isSortAscending = true;
@@ -222,40 +187,6 @@
             for (const [filterByName, filterByInfo] of Object.entries(columnInfo.filterBy)) {
                 postBody.columns[columnName].filterBy[filterByName] = filterByInfo.userInput;
             }
-        }
-    };
-
-    const initPostBody = async () => {
-        if (dataSource === undefined) {
-            throw Error("dataSource has not been provided");
-        }
-        if (columns === undefined) {
-            throw Error("dataSource has not been provided");
-        }
-        postBody.limit = itemsPerPage;
-        postBody.pageNumber = pageNumber;
-        postBody.columns = {};
-
-        for (const [columnName, columnInfo] of Object.entries(columns)) {
-            console.log(columnName);
-            postBody.columns[columnName] = {};
-            postBody.columns[columnName].isSortAscending = columnInfo.isSortAscending;
-            postBody.columns[columnName].sortBy = columnInfo.sortBy;
-
-            requestPendingStates.filters[columnName] = {};
-
-            postBody.columns[columnName].filterBy = {};
-            if (columnInfo.hasOwnProperty("filterBy")) {
-                for (const [filterName, filterByInfo] of Object.entries(columnInfo.filterBy)) {
-                    postBody.columns[columnName].filterBy[filterName] = filterByInfo.userInput;
-
-                    requestPendingStates.filters[columnName][filterName] = false;
-                }
-            }
-        }
-
-        if (!enableFilters) {
-            showFilters = false;
         }
     };
 
@@ -351,17 +282,11 @@
                     type="text"
                     bind:value={postBody.globalSearchText}
                     on:keypress={async (event) => {
-                        if (isLoading) {
-                            return;
-                        }
                         if (event.keyCode === 13) {
                             await handleGeneralStates("globalSearch");
                         }
                     }}
                     on:change={async () => {
-                        if (isLoading) {
-                            return;
-                        }
                         await handleGeneralStates("globalSearch");
                     }}
                     on:focus={(event) => event.target.select()}
@@ -371,9 +296,6 @@
                     class:loading={requestPendingStates.globalSearch}
                     class="btn btn-primary btn-sm absolute top-0 right-0 mr-0 rounded-l-none"
                     on:click={async () => {
-                        if (isLoading) {
-                            return;
-                        }
                         await handleGeneralStates("globalSearch");
                     }}>
                     <span class:hidden={requestPendingStates.globalSearch}>

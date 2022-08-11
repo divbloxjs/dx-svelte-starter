@@ -6,16 +6,9 @@
     import { onMount } from "svelte";
     import PageTransitionFade from "$base_components/page_transitions/pageTransitionFade.svelte";
     import DataTable from "$base_components/data-series/data-table.svelte";
+    import DataTableTest from "$base_components/data-series/data-table-test.svelte";
 
-    import {
-        faEdit,
-        faEye,
-        faTrashAlt,
-        faFileExcel,
-        faFileCsv,
-        faFileText,
-        faTrash,
-    } from "@fortawesome/free-solid-svg-icons/index.es";
+    import { faFileExcel, faFileCsv, faFileText, faTrash } from "@fortawesome/free-solid-svg-icons/index.es";
     const openComponentLibrary = () => {
         push("/component-library");
     };
@@ -25,7 +18,8 @@
     });
     let columns = {
         name: {
-            width: "25%",
+            width: 25,
+            minWidth: "100px",
             sortBy: true,
             isSortAscending: true,
             filterBy: {
@@ -37,7 +31,8 @@
             },
         },
         date: {
-            width: "25%",
+            width: 25,
+            minWidth: "100px",
             sortBy: false,
             isSortAscending: true,
             filterBy: {
@@ -51,7 +46,8 @@
             },
         },
         category: {
-            width: "25%",
+            width: 10,
+            minWidth: "100px",
             sortBy: false,
             isSortAscending: true,
             filterBy: {
@@ -63,7 +59,8 @@
             },
         },
         age: {
-            width: "25%",
+            width: 10,
+            minWidth: "100px",
             sortBy: false,
             isSortAscending: true,
             filterBy: {
@@ -136,24 +133,27 @@
     const handleActionTriggered = async (params) => {
         console.log(params.detail);
     };
+
+    let cols = 4;
 </script>
 
 <PageTransitionFade>
     <MainNav />
 
     <div class="container mx-auto mt-10">
-        <DataTable
+        <!-- <DataTable -->
+        <DataTableTest
             dataSource="data.json"
             {columns}
             enableGlobalSearch={true}
             enableFilters={true}
             enableRefresh={true}
             showFilters={true}
-            itemsPerPage={7}
+            itemsPerPage={3}
             enableMultiSelect={true}
-            pageNumber={1}
-            {multiSelectActions}
+            pageNumber={0}
             {customActions}
+            {multiSelectActions}
             on:actionTriggered={async (params) => handleActionTriggered(params)} />
     </div>
     <!-- <main class="mt-5 mb-16 pl-5 pr-5">

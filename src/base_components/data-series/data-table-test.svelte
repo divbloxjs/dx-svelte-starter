@@ -1,5 +1,6 @@
 <script>
     import Fa from "svelte-fa";
+    import { fly } from "svelte/transition";
     import {
         faAngleDown,
         faEdit,
@@ -142,6 +143,7 @@
     beforeUpdate(async () => {
         if (!initComplete) {
             initComplete = true;
+            handleColWidths();
             await initPostBody();
         }
     });
@@ -240,11 +242,69 @@
         console.log(`${event.detail.clickEvent}: `, selectedRowIds);
     };
     //endregion
+
+    let cols = {
+        a: {
+            width: 10,
+        },
+        b: {
+            width: 10,
+        },
+        c: {
+            width: 25,
+        },
+        d: {},
+    };
+
+    const handleColWidths = () => {
+        let takenUpWidth = 0;
+        if (enableMultiSelect) {
+            takenUpWidth += 3;
+        }
+        if (customActions) {
+            takenUpWidth += 9;
+        }
+        let colsWithDefinedWidthCount = 0;
+        for (const [columnName, columnInfo] of Object.entries(columns)) {
+            if (columnInfo.hasOwnProperty("width")) {
+                colsWithDefinedWidthCount++;
+                takenUpWidth += columnInfo.width;
+            }
+        }
+
+        if (takenUpWidth >= 100) {
+            throw Error(
+                "Width of columns exceeds 100. Note that 12% may be reserved for multiActions and custom actions column"
+            );
+        }
+        console.log("takenUpWidth: ", takenUpWidth);
+
+        let colsWithoutDefinedWidth = Object.entries(cols).length - colsWithDefinedWidthCount;
+        if (colsWithoutDefinedWidth === 0) {
+            return;
+        }
+        let equalRemainder = (100 - takenUpWidth) / colsWithoutDefinedWidth;
+        console.log("unWidthedCols: ", colsWithoutDefinedWidth);
+        console.log("equalRemainder: ", equalRemainder);
+        for (const [columnName, columnInfo] of Object.entries(cols)) {
+            if (!columnInfo.hasOwnProperty("width")) {
+                cols[columnName].width = equalRemainder;
+            }
+
+            if (!columnInfo.hasOwnProperty("minWidth")) {
+                cols[columnName].minWidth = "100px";
+            }
+        }
+
+        console.log(cols);
+    };
+    let equalWidth = Math.round(((100 - Object.keys(cols).length) * 100) / Object.keys(cols).length) / 100;
+    let visible = false;
 </script>
 
-<button on:click={updateValues}>a</button>
-<div class="w-full">
-    <table class="w-full">
+<button on:click={updateValues} class="btn btn-primary">Update</button>
+<div class="w-full overflow-x-auto">
+    <table class="test-table">
         <thead>
             <tr>
                 <th>
@@ -257,9 +317,10 @@
                             class="checkbox checkbox-sm" />
                     </label>
                 </th>
-                <th>Header 1</th>
+                <th>Header 1 Header 1 Header 1</th>
                 <th>Header 2</th>
                 <th>Header 3</th>
+                <th>Header 4</th>
                 <th>
                     <span class="inline-block">
                         <span class="mr-2 inline-block align-middle">
@@ -281,14 +342,13 @@
                             class="checkbox checkbox-sm" />
                     </label>
                 </td>
-                <td class="ellipsis first"><span>{values[3]}</span></td>
-                <td class="ellipsis second"><span>{values[0]}</span></td>
-                <td class="ellipsis"><span>{values[1]}</span></td>
+                <td class="ellipsis first" style="width: {equalWidth}%;"><span>{values[3]}</span></td>
+                <td class="ellipsis second" style="width: {equalWidth}%;"><span>{values[0]}</span></td>
+                <td class="ellipsis third" style="width: {equalWidth}%;"><span>{values[1]}</span></td>
+                <td class="ellipsis fourth" style="width: {equalWidth}%;"><span>{values[2]}</span></td>
                 <td class="whitespace-nowrap">
                     {#each customActions.actions as action}
-                        <button
-                            class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
-                            on:click={(event) => handleCustomActionClick(event, action.clickEvent, row.id)}>
+                        <button class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}">
                             {#if action.faIcon === "faEye"}
                                 <Fa icon={faEye} size="1.1x" />
                             {:else if action.faIcon === "faTrash"}
@@ -368,6 +428,7 @@
 </div>
 
 {#if true}
+    <input type="checkbox" bind:checked={visible} />
     <div class="mb-2 mt-10 flex w-full lg:hidden">
         {#if enableFilters}
             <div class="my-auto">
@@ -426,22 +487,44 @@
                             }
                             await handleGeneralStates("globalSearch");
                         }}
-                        on:focus={(event) => event.target.select()}
-                        placeholder="Search..."
-                        class="input input-bordered input-sm w-full pr-16" />
-                    <button
-                        class:loading={requestPendingStates.globalSearch}
-                        class="btn btn-primary btn-sm absolute top-0 right-0 mr-0 rounded-l-none"
-                        on:click={async () => {
-                            if (isLoading) {
+                        on:focus={(event) => {
+                            event.target.select();
+                            visible = true;
+                        }}
+                        on:blur={(event) => {
+                            console.log(event.relatedTarget);
+                            if (event.relatedTarget === null) {
+                                console.log("type null");
+
+                                visible = false;
                                 return;
                             }
-                            await handleGeneralStates("globalSearch");
-                        }}>
-                        <span class:hidden={requestPendingStates.globalSearch}>
-                            <Fa icon={faMagnifyingGlass} size="1.1x" />
-                        </span>
-                    </button>
+
+                            if (event.relatedTarget.id !== "btnGlobalSearchId") {
+                                visibility = false;
+                            }
+                        }}
+                        placeholder="Search..."
+                        class="input input-bordered input-sm w-full pr-16" />
+                    {#if requestPendingStates.globalSearch || visible}
+                        <button
+                            id="btnGlobalSearchId"
+                            transition:fly={{ x: 10, duration: 250 }}
+                            class:loading={requestPendingStates.globalSearch}
+                            class="btn btn-primary btn-sm absolute top-0 right-0 mr-0 rounded-l-none"
+                            on:click={async () => {
+                                visible = true;
+                                if (isLoading) {
+                                    return;
+                                }
+                                await handleGeneralStates("globalSearch");
+                                visible = false;
+                            }}>
+                            <span class:hidden={requestPendingStates.globalSearch}>
+                                <Fa icon={faMagnifyingGlass} size="1.1x" />
+                            </span>
+                        </button>
+                    {/if}
                 </div>
             </div>
         {/if}
@@ -890,24 +973,35 @@
         border: 1px solid black;
     }
 
-    tr th:first-child {
-        width: 1%;
+    tr td:first-child {
+        width: 3%;
         white-space: nowrap;
     }
 
-    tr th:last-child {
-        width: 1%;
+    tr td:last-child {
+        width: 9%;
         white-space: nowrap;
     }
+
+    /* .test-table > tr > th {
+        min-width: 300px;
+    } */
 
     .first {
-        width: 50%;
+        min-width: 200px;
+        /* width: 20%; */
     }
     .second {
-        width: 20%;
+        min-width: 200px;
+        /* width: 30%; */
     }
     .third {
-        width: 10%;
+        min-width: 200px;
+        /* width: 30%; */
+    }
+    .fourth {
+        min-width: 200px;
+        /* width: 20%; */
     }
     .ellipsis {
         border: 1px solid black;
