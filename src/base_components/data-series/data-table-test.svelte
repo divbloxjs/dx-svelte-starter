@@ -114,7 +114,7 @@
         pageCount = Math.ceil(totalCount / postBody.limit);
 
         paginationOptions = buildPaginationOptions();
-        isLoading = false;
+        // isLoading = false;
     };
 
     export let showFilters = false;
@@ -324,591 +324,657 @@
 </script>
 
 {#if true}
-    <button on:click={updateValues} class="btn btn-primary">Update</button>
-    <div class="w-full overflow-x-auto">
-        <table class="table-zebra table">
-            <thead>
-                <tr class="child:bg-base-300">
-                    {#if enableMultiSelect === true}
-                        <th
-                            class="text-center align-middle"
-                            style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
-                            <label>
-                                <input
-                                    bind:checked={allSelected}
-                                    disabled={isLoading}
-                                    on:change={(event) => updateSelected(event.target.checked)}
-                                    type="checkbox"
-                                    class="checkbox checkbox-sm" />
-                            </label>
-                        </th>
-                    {/if}
+    <div class="px-2 sm:px-0">
+        <div class="mx-auto flex w-full">
+            <div class="btn-group">
+                <button
+                    class="btn btn-sm"
+                    on:click={async () => {
+                        if (postBody.pageNumber >= 1 && !isLoading) {
+                            await handlePaginate(postBody.pageNumber - 1);
+                        }
+                    }}>«</button>
+                <Dropdown
+                    dropDownText="Page {postBody.pageNumber + 1}"
+                    dropDownOptions={paginationOptions}
+                    btnClasses="rounded-none"
+                    on:optionSelected={async (params) =>
+                        await handlePaginate(parseInt(params.detail.params.pageNumber))} />
+                <button
+                    class="btn btn-sm"
+                    on:click={async () => {
+                        if (postBody.pageNumber < pageCount - 1 && !isLoading) {
+                            await handlePaginate(postBody.pageNumber + 1);
+                        }
+                    }}>»</button>
+            </div>
+        </div>
+        <div class="mb-2 flex w-full lg:hidden">
+            {#if enableFilters}
+                <div class="my-auto">
+                    <button on:click={() => (showFilters = !showFilters)} class="btn btn-link btn-xs my-auto mr-2 pl-0">
+                        <span class:hidden={showFilters}>Show Filters</span>
+                        <span class:hidden={!showFilters}>Hide Filters</span>
+                    </button>
+                </div>
+            {/if}
+            <div class="my-auto ml-auto flex flex-row">
+                <span class="badge my-auto border-base-300 bg-base-300 text-base-content"
+                    >{totalCount !== undefined ? totalCount : "... "} items</span>
 
-                    {#each Object.entries(columns) as [columnName, columnInfo]}
-                        <th class="align-top">
+                <div class="btn-group ml-2 hidden sm:flex">
+                    <button
+                        class="btn btn-sm"
+                        on:click={async () => {
+                            if (postBody.pageNumber >= 1 && !isLoading) {
+                                await handlePaginate(postBody.pageNumber - 1);
+                            }
+                        }}>«</button>
+                    <Dropdown
+                        dropDownText="Page {postBody.pageNumber + 1}"
+                        dropDownOptions={paginationOptions}
+                        btnClasses="rounded-none"
+                        on:optionSelected={async (params) =>
+                            await handlePaginate(parseInt(params.detail.params.pageNumber))} />
+                    <button
+                        class="btn btn-sm"
+                        on:click={async () => {
+                            if (postBody.pageNumber < pageCount - 1 && !isLoading) {
+                                await handlePaginate(postBody.pageNumber + 1);
+                            }
+                        }}>»</button>
+                </div>
+            </div>
+        </div>
+        <div class="mb-2 flex w-full">
+            {#if enableGlobalSearch === true}
+                <div class="form-control my-auto mr-2 w-80 lg:w-80">
+                    <div class="relative -mb-2">
+                        <input
+                            type="text"
+                            bind:value={postBody.globalSearchText}
+                            on:keypress={async (event) => {
+                                if (isLoading) {
+                                    return;
+                                }
+                                if (event.keyCode === 13) {
+                                    await handleGeneralStates("globalSearch");
+                                }
+                            }}
+                            on:change={async () => {
+                                if (isLoading) {
+                                    return;
+                                }
+                                await handleGeneralStates("globalSearch");
+                            }}
+                            on:focus={(event) => {
+                                event.target.select();
+                                requestPendingStates.globalSearch.visible = true;
+                            }}
+                            on:blur={(event) => {
+                                if (event.relatedTarget !== null && event.relatedTarget.id === "btnGlobalSearchId") {
+                                    return;
+                                }
+
+                                requestPendingStates.globalSearch.visible = false;
+                            }}
+                            placeholder="Search..."
+                            class="input input-bordered input-sm w-full pr-16" />
+                        {#if requestPendingStates.globalSearch.loading || requestPendingStates.globalSearch.visible}
                             <button
-                                on:click={async () => handleSortBy(columnName)}
-                                class="btn btn-link  btn-xs pl-0 text-base-content"
-                                class:py-0={!showFilters}
-                                class:text-success={sortBy === columnName}>
-                                <span class="inline-block align-middle" class:mr-2={sortBy === columnName}>
-                                    {columnName}
-                                </span>
-                                <span class="inline-block align-middle" class:hidden={sortBy !== columnName}>
-                                    <Fa
-                                        icon={faAngleDown}
-                                        size="1.4x"
-                                        rotate={rotateDegrees[postBody.columns[columnName].isSortAscending ? 1 : 0]} />
+                                id="btnGlobalSearchId"
+                                transition:fly={{ x: 10, duration: 250 }}
+                                class:loading={requestPendingStates.globalSearch.loading}
+                                class="btn btn-primary btn-sm absolute top-0 right-0 mr-0 rounded-l-none"
+                                on:click={async () => {
+                                    if (isLoading) {
+                                        return;
+                                    }
+                                    requestPendingStates.globalSearch.visible;
+                                    await handleGeneralStates("globalSearch");
+                                    requestPendingStates.globalSearch.visible;
+                                }}>
+                                <span class:hidden={requestPendingStates.globalSearch.loading}>
+                                    <Fa icon={faMagnifyingGlass} size="1.1x" />
                                 </span>
                             </button>
+                        {/if}
+                    </div>
+                </div>
+            {/if}
+            {#if enableRefresh === true}
+                <button
+                    class="btn btn-sm my-auto ml-auto mt-[1px] before:mr-0 lg:ml-0"
+                    class:loading={requestPendingStates.refresh.loading}
+                    on:click={async () => {
+                        if (isLoading) {
+                            return;
+                        }
+                        await resetPostBody();
+                        await handleGeneralStates("refresh");
+                    }}>
+                    <span class:hidden={requestPendingStates.refresh.loading}>
+                        <Fa icon={faTimes} size="1.1x" />
+                    </span>
+                </button>
+            {/if}
+            <div class="hidden lg:ml-auto lg:flex">
+                {#if Object.keys(multiSelectActions).length > 0 && Object.values(selectedRows).some((value) => value === true)}
+                    <span class="mr-2 ">
+                        <Dropdown
+                            dropDownText="Options"
+                            dropDownOptions={multiSelectActions}
+                            on:optionSelected={(params) => handleMultiSelect(params)} />
+                    </span>
+                {/if}
+                {#if enableFilters}
+                    <button on:click={() => (showFilters = !showFilters)} class="btn btn-link btn-xs my-auto mr-2">
+                        <span class:hidden={showFilters}>Show Filters</span>
+                        <span class:hidden={!showFilters}>Hide Filters</span>
+                    </button>
+                {/if}
+                <div class="my-auto ml-auto flex flex-row">
+                    <span class="badge my-auto mr-2 border-base-300 bg-base-300 text-base-content"
+                        >{totalCount !== undefined ? totalCount : "Loading"} items</span>
 
-                            {#if columnInfo.hasOwnProperty("filterBy")}
-                                {#each Object.entries(columnInfo.filterBy) as [filterName, filterInfo]}
-                                    <div class:hidden={!showFilters} class="mt-1 transition-all">
-                                        <div class="form-control my-auto mr-2">
-                                            <div class="relative flex">
-                                                {#if filterInfo.hasOwnProperty("label")}
-                                                    <span class="mt-1 w-9 capitalize">
-                                                        {filterInfo.label}
-                                                    </span>
-                                                {/if}
-                                                {#if filterName === "filterText"}
-                                                    <input
-                                                        type="text"
-                                                        bind:value={postBody.columns[columnName].filterBy[filterName]}
-                                                        on:keypress={async (event) => {
-                                                            if (event.keyCode === 13) {
-                                                                await handleFilterBy(columnName, filterName);
-                                                            }
-                                                        }}
-                                                        on:change={async () => {
-                                                            await handleFilterBy(columnName, filterName);
-                                                        }}
-                                                        on:focus={(event) => {
-                                                            event.target.select();
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = true;
-                                                        }}
-                                                        on:blur={(event) => {
-                                                            if (
-                                                                event.relatedTarget !== null &&
-                                                                event.relatedTarget.id ===
-                                                                    "btn" + columnName + filterName + "Id"
-                                                            ) {
-                                                                return;
-                                                            }
+                    <div class="btn-group">
+                        <button
+                            class="btn btn-sm"
+                            on:click={async () => {
+                                if (postBody.pageNumber >= 1 && !isLoading) {
+                                    await handlePaginate(postBody.pageNumber - 1);
+                                }
+                            }}>«</button>
+                        <Dropdown
+                            dropDownText="Page {postBody.pageNumber + 1}"
+                            dropDownOptions={paginationOptions}
+                            btnClasses="rounded-none"
+                            on:optionSelected={async (params) =>
+                                await handlePaginate(parseInt(params.detail.params.pageNumber))} />
+                        <button
+                            class="btn btn-sm"
+                            on:click={async () => {
+                                if (postBody.pageNumber < pageCount - 1 && !isLoading) {
+                                    await handlePaginate(postBody.pageNumber + 1);
+                                }
+                            }}>»</button>
+                    </div>
+                </div>
+            </div>
+            <div class="relative top-[-1px] lg:hidden">
+                {#if Object.keys(multiSelectActions).length > 0 && Object.values(selectedRows).some((value) => value === true)}
+                    <Dropdown
+                        dropDownIcon={faBars}
+                        dropDownText=""
+                        dropDownOptions={multiSelectActions}
+                        dropdownClasses={"ml-2"}
+                        on:optionSelected={(params) => handleMultiSelect(params)} />
+                {/if}
+            </div>
+        </div>
 
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = false;
-                                                        }}
-                                                        placeholder={filterInfo.placeholder}
-                                                        class="input input-bordered input-xs mb-0 grow " />
-                                                {:else if filterName === "filterNumber"}
-                                                    <input
-                                                        type="text"
-                                                        bind:value={postBody.columns[columnName].filterBy[filterName]}
-                                                        on:keypress={async (event) => {
-                                                            disableNonNumericInput(event);
-                                                            if (event.keyCode === 13) {
-                                                                await handleFilterBy(columnName, filterName);
-                                                            }
-                                                        }}
-                                                        on:change={async () => {
-                                                            await handleFilterBy(columnName, filterName);
-                                                        }}
-                                                        on:focus={(event) => {
-                                                            event.target.select();
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = true;
-                                                        }}
-                                                        on:blur={(event) => {
-                                                            if (
-                                                                event.relatedTarget !== null &&
-                                                                event.relatedTarget.id ===
-                                                                    "btn" + columnName + filterName + "Id"
-                                                            ) {
-                                                                return;
-                                                            }
+        <div class="w-full overflow-x-auto">
+            <table class="table-zebra table">
+                <thead>
+                    <tr class="child:bg-base-300">
+                        {#if enableMultiSelect === true}
+                            <th
+                                class="text-center align-middle"
+                                style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
+                                <label>
+                                    <input
+                                        bind:checked={allSelected}
+                                        disabled={isLoading}
+                                        on:change={(event) => updateSelected(event.target.checked)}
+                                        type="checkbox"
+                                        class="checkbox checkbox-sm" />
+                                </label>
+                            </th>
+                        {/if}
 
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = false;
-                                                        }}
-                                                        placeholder={filterInfo.placeholder}
-                                                        class="input input-bordered input-xs mb-0 grow" />
-                                                {:else if filterName === "filterDropdown"}
-                                                    <select
-                                                        bind:value={postBody.columns[columnName].filterBy[filterName]}
-                                                        on:change={async () => {
-                                                            await handleFilterBy(columnName, filterName);
-                                                        }}
-                                                        class="select select-bordered select-xs mb-0 grow pr-8">
-                                                        <option selected>{filterInfo.placeholder}</option>
-                                                        {#each filterInfo.defaultOptions as value}
-                                                            <option {value}>{value}</option>
-                                                        {/each}
-                                                    </select>
-                                                {:else if filterName === "fromDate" || filterName === "toDate"}
-                                                    <input
-                                                        type="date"
-                                                        bind:value={postBody.columns[columnName].filterBy[filterName]}
-                                                        on:change={async () => {
-                                                            await handleFilterBy(columnName, filterName);
-                                                        }}
-                                                        on:focus={(event) => {
-                                                            event.target.select();
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = true;
-                                                        }}
-                                                        on:blur={(event) => {
-                                                            if (
-                                                                event.relatedTarget !== null &&
-                                                                event.relatedTarget.id ===
-                                                                    "btn" + columnName + filterName + "Id"
-                                                            ) {
-                                                                return;
-                                                            }
+                        {#each Object.entries(columns) as [columnName, columnInfo]}
+                            <th class="align-top">
+                                <button
+                                    on:click={async () => handleSortBy(columnName)}
+                                    class="btn btn-link  btn-xs pl-0 text-base-content"
+                                    class:py-0={!showFilters}
+                                    class:text-success={sortBy === columnName}>
+                                    <span class="inline-block align-middle" class:mr-2={sortBy === columnName}>
+                                        {columnName}
+                                    </span>
+                                    <span class="inline-block align-middle" class:hidden={sortBy !== columnName}>
+                                        <Fa
+                                            icon={faAngleDown}
+                                            size="1.4x"
+                                            rotate={rotateDegrees[
+                                                postBody.columns[columnName].isSortAscending ? 1 : 0
+                                            ]} />
+                                    </span>
+                                </button>
 
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = false;
-                                                        }}
-                                                        class="input input-xs mb-0 grow {requestPendingStates.filters[
-                                                            columnName
-                                                        ][filterName].loading ||
-                                                        requestPendingStates.filters[columnName][filterName].visible
-                                                            ? 'pr-8'
-                                                            : ''}"
-                                                        placeholder={filterInfo.placeholder} />{/if}
-                                                {#if requestPendingStates.filters[columnName][filterName].loading || requestPendingStates.filters[columnName][filterName].visible}
-                                                    <button
-                                                        id="btn{columnName + filterName}Id"
-                                                        transition:fly={{ x: 8, duration: 250 }}
-                                                        class:loading={requestPendingStates.filters[columnName][
-                                                            filterName
-                                                        ].loading}
-                                                        class="btn btn-primary btn-xs absolute top-0 right-0 mr-0 rounded-l-none before:mr-0"
-                                                        on:click={async () => {
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = true;
-                                                            await handleFilterBy(columnName, filterName);
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = false;
-                                                        }}>
-                                                        <span
-                                                            class:hidden={requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].loading}>
-                                                            <Fa icon={faCheck} size="1.1x" />
+                                {#if columnInfo.hasOwnProperty("filterBy")}
+                                    {#each Object.entries(columnInfo.filterBy) as [filterName, filterInfo]}
+                                        <div class:hidden={!showFilters} class="mt-1 transition-all">
+                                            <div class="form-control my-auto mr-2">
+                                                <div class="relative flex">
+                                                    {#if filterInfo.hasOwnProperty("label")}
+                                                        <span class="mt-1 w-9 capitalize">
+                                                            {filterInfo.label}
                                                         </span>
-                                                    </button>
-                                                {/if}
+                                                    {/if}
+                                                    {#if filterName === "filterText"}
+                                                        <input
+                                                            type="text"
+                                                            bind:value={postBody.columns[columnName].filterBy[
+                                                                filterName
+                                                            ]}
+                                                            on:keypress={async (event) => {
+                                                                if (event.keyCode === 13) {
+                                                                    await handleFilterBy(columnName, filterName);
+                                                                }
+                                                            }}
+                                                            on:change={async () => {
+                                                                await handleFilterBy(columnName, filterName);
+                                                            }}
+                                                            on:focus={(event) => {
+                                                                event.target.select();
+                                                                requestPendingStates.filters[columnName][
+                                                                    filterName
+                                                                ].visible = true;
+                                                            }}
+                                                            on:blur={(event) => {
+                                                                if (
+                                                                    event.relatedTarget !== null &&
+                                                                    event.relatedTarget.id ===
+                                                                        "btn" + columnName + filterName + "Id"
+                                                                ) {
+                                                                    return;
+                                                                }
+
+                                                                requestPendingStates.filters[columnName][
+                                                                    filterName
+                                                                ].visible = false;
+                                                            }}
+                                                            placeholder={filterInfo.placeholder}
+                                                            class="input input-bordered input-xs mb-0 grow " />
+                                                    {:else if filterName === "filterNumber"}
+                                                        <input
+                                                            type="text"
+                                                            bind:value={postBody.columns[columnName].filterBy[
+                                                                filterName
+                                                            ]}
+                                                            on:keypress={async (event) => {
+                                                                disableNonNumericInput(event);
+                                                                if (event.keyCode === 13) {
+                                                                    await handleFilterBy(columnName, filterName);
+                                                                }
+                                                            }}
+                                                            on:change={async () => {
+                                                                await handleFilterBy(columnName, filterName);
+                                                            }}
+                                                            on:focus={(event) => {
+                                                                event.target.select();
+                                                                requestPendingStates.filters[columnName][
+                                                                    filterName
+                                                                ].visible = true;
+                                                            }}
+                                                            on:blur={(event) => {
+                                                                if (
+                                                                    event.relatedTarget !== null &&
+                                                                    event.relatedTarget.id ===
+                                                                        "btn" + columnName + filterName + "Id"
+                                                                ) {
+                                                                    return;
+                                                                }
+
+                                                                requestPendingStates.filters[columnName][
+                                                                    filterName
+                                                                ].visible = false;
+                                                            }}
+                                                            placeholder={filterInfo.placeholder}
+                                                            class="input input-bordered input-xs mb-0 grow" />
+                                                    {:else if filterName === "filterDropdown"}
+                                                        <select
+                                                            bind:value={postBody.columns[columnName].filterBy[
+                                                                filterName
+                                                            ]}
+                                                            on:change={async () => {
+                                                                await handleFilterBy(columnName, filterName);
+                                                            }}
+                                                            class="select select-bordered select-xs mb-0 grow pr-8">
+                                                            <option selected>{filterInfo.placeholder}</option>
+                                                            {#each filterInfo.defaultOptions as value}
+                                                                <option {value}>{value}</option>
+                                                            {/each}
+                                                        </select>
+                                                    {:else if filterName === "fromDate" || filterName === "toDate"}
+                                                        <input
+                                                            type="date"
+                                                            bind:value={postBody.columns[columnName].filterBy[
+                                                                filterName
+                                                            ]}
+                                                            on:change={async () => {
+                                                                await handleFilterBy(columnName, filterName);
+                                                            }}
+                                                            on:focus={(event) => {
+                                                                event.target.select();
+                                                                requestPendingStates.filters[columnName][
+                                                                    filterName
+                                                                ].visible = true;
+                                                            }}
+                                                            on:blur={(event) => {
+                                                                if (
+                                                                    event.relatedTarget !== null &&
+                                                                    event.relatedTarget.id ===
+                                                                        "btn" + columnName + filterName + "Id"
+                                                                ) {
+                                                                    return;
+                                                                }
+
+                                                                requestPendingStates.filters[columnName][
+                                                                    filterName
+                                                                ].visible = false;
+                                                            }}
+                                                            class="input input-xs mb-0 grow {requestPendingStates
+                                                                .filters[columnName][filterName].loading ||
+                                                            requestPendingStates.filters[columnName][filterName].visible
+                                                                ? 'pr-8'
+                                                                : ''}"
+                                                            placeholder={filterInfo.placeholder} />{/if}
+                                                    {#if requestPendingStates.filters[columnName][filterName].loading || requestPendingStates.filters[columnName][filterName].visible}
+                                                        <button
+                                                            id="btn{columnName + filterName}Id"
+                                                            transition:fly={{ x: 8, duration: 250 }}
+                                                            class:loading={requestPendingStates.filters[columnName][
+                                                                filterName
+                                                            ].loading}
+                                                            class="btn btn-primary btn-xs absolute top-0 right-0 mr-0 rounded-l-none before:mr-0"
+                                                            on:click={async () => {
+                                                                requestPendingStates.filters[columnName][
+                                                                    filterName
+                                                                ].visible = true;
+                                                                await handleFilterBy(columnName, filterName);
+                                                                requestPendingStates.filters[columnName][
+                                                                    filterName
+                                                                ].visible = false;
+                                                            }}>
+                                                            <span
+                                                                class:hidden={requestPendingStates.filters[columnName][
+                                                                    filterName
+                                                                ].loading}>
+                                                                <Fa icon={faCheck} size="1.1x" />
+                                                            </span>
+                                                        </button>
+                                                    {/if}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                {/each}
-                            {/if}
-                        </th>
-                    {/each}
-
-                    {#if Object.keys(customActions).length > 1}
-                        <th
-                            class="text-center align-top"
-                            style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
-                            <span class="inline-block">
-                                <span class="mr-2 inline-block align-middle">
-                                    {customActions.columnHeading}
-                                </span>
-                            </span>
-                        </th>
-                    {/if}
-                </tr>
-            </thead>
-            <tbody>
-                {#if !isLoading}
-                    {#each currentPage as row}
-                        <tr
-                            class="group"
-                            on:click={(event) => {
-                                if (clickableColumn === undefined) {
-                                    handleRowClick(event, row.id);
-                                }
-                            }}>
-                            {#if enableMultiSelect === true}
-                                <th
-                                    class="text-center align-middle group-hover:bg-base-300 {clickableColumn ===
-                                    undefined
-                                        ? 'group-hover:cursor-pointer'
-                                        : ''}"
-                                    style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
-                                    <label>
-                                        <input
-                                            on:click={(event) => {
-                                                event.stopPropagation();
-                                            }}
-                                            on:change={(event) => {
-                                                if (!event.target.checked) {
-                                                    allSelected = false;
-                                                }
-                                            }}
-                                            bind:checked={selectedRows[row.id]}
-                                            type="checkbox"
-                                            class="checkbox checkbox-sm align-middle" />
-                                    </label>
-                                </th>
-                            {/if}
-                            {#each Object.entries(row) as [columnName, columnValue]}
-                                {#if columnName !== "id"}
-                                    {#if columnName === clickableColumn}
-                                        <td
-                                            class="ellipsis group-hover:bg-base-300 {clickableColumn === undefined
-                                                ? 'group-hover:cursor-pointer'
-                                                : ''}"
-                                            style="width: {columns[columnName].width}%; min-width: {columns[columnName]
-                                                .minWidth}">
-                                            <span>
-                                                <button
-                                                    on:click={(event) => handleRowClick(event, row.id)}
-                                                    class="btn btn-link btn-xs text-base-content  underline">
-                                                    {columnValue}
-                                                </button>
-                                            </span>
-                                        </td>
-                                    {:else}
-                                        <td
-                                            class="ellipsis group-hover:bg-base-300 {clickableColumn === undefined
-                                                ? 'group-hover:cursor-pointer'
-                                                : ''}"
-                                            style="width: {columns[columnName].width}%; min-width: {columns[columnName]
-                                                .minWidth}">
-                                            <span>
-                                                {columnValue}
-                                            </span>
-                                        </td>
-                                    {/if}
-                                {/if}
-                            {/each}
-
-                            {#if Object.keys(customActions).length > 1}
-                                <td
-                                    class="group-hover:bg-base-300  {clickableColumn === undefined
-                                        ? 'group-hover:cursor-pointer'
-                                        : ''}"
-                                    style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
-                                    {#each customActions.actions as action}
-                                        <button
-                                            class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
-                                            on:click={(event) =>
-                                                handleCustomActionClick(event, action.clickEvent, row.id)}>
-                                            {#if action.faIcon === "faEye"}
-                                                <Fa icon={faEye} size="1.1x" />
-                                            {:else if action.faIcon === "faTrash"}
-                                                <Fa icon={faTrash} size="1.1x" />
-                                            {:else if action.faIcon === "faEdit"}
-                                                <Fa icon={faEdit} size="1.1x" />
-                                            {/if}
-
-                                            {#if action.hasOwnProperty("displayLabel")}
-                                                <span class="ml-1">{action.displayLabel}</span>
-                                            {/if}
-                                        </button>
                                     {/each}
-                                </td>
-                            {/if}
-                        </tr>
-                    {/each}
-                {:else}
-                    {#each Array(postBody.limit) as _, index}
-                        <tr class="group">
-                            {#if enableMultiSelect === true}
-                                <th
-                                    class="animate-pulse text-center align-middle"
-                                    style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
-                                    <label>
-                                        <input type="checkbox" class="checkbox checkbox-sm align-middle" disabled />
-                                    </label>
-                                </th>
+                                {/if}
+                            </th>
+                        {/each}
+
+                        {#if Object.keys(customActions).length > 1}
+                            <th
+                                class="text-center align-top"
+                                style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
+                                <span class="inline-block">
+                                    <span class="mr-2 inline-block align-middle">
+                                        {customActions.columnHeading}
+                                    </span>
+                                </span>
+                            </th>
+                        {/if}
+                    </tr>
+                </thead>
+                <tbody>
+                    {#if !isLoading}
+                        {#each currentPage as row}
+                            <tr
+                                class="group"
+                                on:click={(event) => {
+                                    if (clickableColumn === undefined) {
+                                        handleRowClick(event, row.id);
+                                    }
+                                }}>
+                                {#if enableMultiSelect === true}
+                                    <th
+                                        class="text-center align-middle group-hover:bg-base-300 {clickableColumn ===
+                                        undefined
+                                            ? 'group-hover:cursor-pointer'
+                                            : ''}"
+                                        style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
+                                        <label>
+                                            <input
+                                                on:click={(event) => {
+                                                    event.stopPropagation();
+                                                }}
+                                                on:change={(event) => {
+                                                    if (!event.target.checked) {
+                                                        allSelected = false;
+                                                    }
+                                                }}
+                                                bind:checked={selectedRows[row.id]}
+                                                type="checkbox"
+                                                class="checkbox checkbox-sm align-middle" />
+                                        </label>
+                                    </th>
+                                {/if}
+                                {#each Object.entries(row) as [columnName, columnValue]}
+                                    {#if columnName !== "id"}
+                                        {#if columnName === clickableColumn}
+                                            <td
+                                                class="ellipsis group-hover:bg-base-300 {clickableColumn === undefined
+                                                    ? 'group-hover:cursor-pointer'
+                                                    : ''}"
+                                                style="width: {columns[columnName].width}%; min-width: {columns[
+                                                    columnName
+                                                ].minWidth}">
+                                                <span>
+                                                    <button
+                                                        on:click={(event) => handleRowClick(event, row.id)}
+                                                        class="btn btn-link btn-xs text-base-content  underline">
+                                                        {columnValue}
+                                                    </button>
+                                                </span>
+                                            </td>
+                                        {:else}
+                                            <td
+                                                class="ellipsis group-hover:bg-base-300 {clickableColumn === undefined
+                                                    ? 'group-hover:cursor-pointer'
+                                                    : ''}"
+                                                style="width: {columns[columnName].width}%; min-width: {columns[
+                                                    columnName
+                                                ].minWidth}">
+                                                <span>
+                                                    {columnValue}
+                                                </span>
+                                            </td>
+                                        {/if}
+                                    {/if}
+                                {/each}
+
+                                {#if Object.keys(customActions).length > 1}
+                                    <td
+                                        class="group-hover:bg-base-300  {clickableColumn === undefined
+                                            ? 'group-hover:cursor-pointer'
+                                            : ''}"
+                                        style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
+                                        {#each customActions.actions as action}
+                                            <button
+                                                class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
+                                                on:click={(event) =>
+                                                    handleCustomActionClick(event, action.clickEvent, row.id)}>
+                                                {#if action.faIcon === "faEye"}
+                                                    <Fa icon={faEye} size="1.1x" />
+                                                {:else if action.faIcon === "faTrash"}
+                                                    <Fa icon={faTrash} size="1.1x" />
+                                                {:else if action.faIcon === "faEdit"}
+                                                    <Fa icon={faEdit} size="1.1x" />
+                                                {/if}
+
+                                                {#if action.hasOwnProperty("displayLabel")}
+                                                    <span class="ml-1">{action.displayLabel}</span>
+                                                {/if}
+                                            </button>
+                                        {/each}
+                                    </td>
+                                {/if}
+                            </tr>
+                        {/each}
+                    {:else}
+                        {#each Array(postBody.limit) as _, index}
+                            <tr class="group">
+                                {#if enableMultiSelect === true}
+                                    <th
+                                        class="animate-pulse text-center align-middle"
+                                        style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
+                                        <label>
+                                            <input type="checkbox" class="checkbox checkbox-sm align-middle" disabled />
+                                        </label>
+                                    </th>
+                                {/if}
+                                {#each Object.entries(columns) as [columnName, columnValue]}
+                                    {#if columnName !== "id"}
+                                        {#if clickableColumn !== undefined && columnName === clickableColumn}
+                                            <td
+                                                class="ellipsis animate-pulse"
+                                                style="width: {columns[columnName].width}%; min-width: {columns[
+                                                    columnName
+                                                ].minWidth}">
+                                                <button
+                                                    class="btn btn-link btn-xs animate-pulse bg-opacity-50 text-base-content text-opacity-50 underline hover:cursor-default" />
+                                            </td>
+                                        {:else}
+                                            <td
+                                                class="ellipsis animate-pulse text-base-content text-opacity-50"
+                                                style="width: {columns[columnName].width}%; min-width: {columns[
+                                                    columnName
+                                                ].minWidth}">
+                                                <span
+                                                    class="mr-1 rounded-lg border-opacity-50  bg-base-300 bg-opacity-50 text-transparent"
+                                                    >Loading.............................................</span>
+                                            </td>
+                                        {/if}
+                                    {/if}
+                                {/each}
+
+                                {#if Object.keys(customActions).length > 1}
+                                    <td
+                                        class="animate-pulse align-middle"
+                                        style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
+                                        {#each customActions.actions as action}
+                                            <!-- <span
+                                                class="mr-1 h-[24px] rounded-lg border-opacity-50 bg-base-300 bg-opacity-50 text-transparent">
+                                                aaa
+                                            </span> -->
+                                            <button
+                                                class="btn btn-ghost btn-xs mr-1 flex-nowrap bg-base-300 bg-opacity-50 text-transparent">
+                                                <Fa icon={faEye} size="1.2x" />
+                                                {#if action.hasOwnProperty("displayLabel")}
+                                                    <span class="ml-1">{action.displayLabel}</span>
+                                                {/if}
+                                            </button>
+                                        {/each}
+                                    </td>
+                                {/if}
+                            </tr>
+                        {/each}
+                    {/if}
+                </tbody>
+
+                {#if Object.keys(columns).length !== 0}
+                    <tfoot>
+                        <tr class="child:bg-base-300">
+                            {#if enableMultiSelect}
+                                <th />
                             {/if}
                             {#each Object.entries(columns) as [columnName, columnValue]}
-                                {#if columnName !== "id"}
-                                    {#if clickableColumn !== undefined && columnName === clickableColumn}
-                                        <td
-                                            class="ellipsis animate-pulse"
-                                            style="width: {columns[columnName].width}%; min-width: {columns[columnName]
-                                                .minWidth}">
-                                            <button
-                                                class="btn btn-link btn-xs animate-pulse bg-opacity-50 text-base-content text-opacity-50 underline hover:cursor-default" />
-                                        </td>
-                                    {:else}
-                                        <td
-                                            class="ellipsis animate-pulse text-base-content text-opacity-50"
-                                            style="width: {columns[columnName].width}%; min-width: {columns[columnName]
-                                                .minWidth}">
-                                            <span
-                                                class="mr-1 rounded-lg border-opacity-50  bg-base-300 bg-opacity-50 text-transparent"
-                                                >Loading.............................................</span>
-                                        </td>
-                                    {/if}
-                                {/if}
+                                <th>{columnName}</th>
                             {/each}
-
                             {#if Object.keys(customActions).length > 1}
-                                <td
-                                    class="animate-pulse"
-                                    style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
-                                    {#each customActions.actions as action}
-                                        <span
-                                            class="mr-1 rounded-lg border-opacity-50 bg-base-300 bg-opacity-50 text-transparent">
-                                            aaa
-                                        </span>
-                                    {/each}
-                                </td>
+                                <th class="text-center"> {customActions.columnHeading} </th>
                             {/if}
                         </tr>
-                    {/each}
+                    </tfoot>
                 {/if}
-            </tbody>
-        </table>
-    </div>
-    <div class="hidden w-full">
-        <table class="table-zebra table">
-            <thead>
-                <tr class="child:bg-base-300">
-                    {#if enableMultiSelect === true}
-                        <th class="align-middle">
-                            <label class="text-center">
-                                <input
-                                    bind:checked={allSelected}
-                                    disabled={isLoading}
-                                    on:change={(event) => updateSelected(event.target.checked)}
-                                    type="checkbox"
-                                    class="checkbox checkbox-sm" />
-                            </label>
-                        </th>
-                    {/if}
+            </table>
+        </div>
 
-                    {#each Object.entries(columns) as [columnName, columnInfo]}
-                        <th class="min-w-[150px] align-top">
+        <div class="mt-3 flex w-full">
+            <div class="mr-auto -mt-[2px]">
+                <div class="btn btn-sm" class:hidden={editingLimit} on:click={() => (editingLimit = true)}>
+                    Items per Page: {postBody.limit}
+                </div>
+                <div class="form-control w-36" class:hidden={!editingLimit}>
+                    <div class="relative">
+                        <input
+                            bind:value={postBody.limit}
+                            on:keypress={async (event) => {
+                                disableNonNumericInput(event);
+                                if (event.keyCode === 13) {
+                                    await handleGeneralStates("editLimit");
+                                }
+                            }}
+                            on:blur={(event) => {
+                                if (event.relatedTarget !== null && event.relatedTarget.id === "btnEditLimitId") {
+                                    return;
+                                }
+
+                                requestPendingStates.editLimit.visible = false;
+                            }}
+                            type="text"
+                            on:focus={(event) => {
+                                event.target.select();
+                                requestPendingStates.editLimit.visible = true;
+                            }}
+                            placeholder="25"
+                            class="input input-bordered input-sm w-full pr-16" />
+                        {#if requestPendingStates.editLimit.loading || requestPendingStates.editLimit.visible}
                             <button
-                                on:click={async () => handleSortBy(columnName)}
-                                class="btn btn-link  btn-xs pl-0 text-base-content"
-                                class:py-0={!showFilters}
-                                class:text-success={sortBy === columnName}>
-                                <span class="inline-block align-middle" class:mr-2={sortBy === columnName}>
-                                    {columnName}
-                                </span>
-                                <span class="inline-block align-middle" class:hidden={sortBy !== columnName}>
-                                    <Fa
-                                        icon={faAngleDown}
-                                        size="1.4x"
-                                        rotate={rotateDegrees[postBody.columns[columnName].isSortAscending ? 1 : 0]} />
+                                id="btnEditLimitId"
+                                class="btn btn-primary btn-sm absolute top-0 right-0 rounded-l-none before:mr-0"
+                                class:loading={requestPendingStates.editLimit.loading}
+                                transition:fly={{ x: 10, duration: 250 }}
+                                on:click={async () => {
+                                    await handleGeneralStates("editLimit");
+                                    editingLimit = false;
+                                }}>
+                                <span class:hidden={requestPendingStates.editLimit.loading}>
+                                    <Fa icon={faCheck} size="1.1x" />
                                 </span>
                             </button>
+                        {/if}
+                    </div>
+                </div>
+            </div>
 
-                            {#if columnInfo.hasOwnProperty("filterBy")}
-                                {#each Object.entries(columnInfo.filterBy) as [filterName, filterInfo]}
-                                    <div class:hidden={!showFilters} class="mt-1 transition-all">
-                                        <div class="form-control my-auto mr-2">
-                                            <div class="relative flex">
-                                                {#if filterInfo.hasOwnProperty("label")}
-                                                    <span class="mt-1 w-9 capitalize">
-                                                        {filterInfo.label}
-                                                    </span>
-                                                {/if}
-                                                {#if filterName === "filterText"}
-                                                    <input
-                                                        type="text"
-                                                        bind:value={postBody.columns[columnName].filterBy[filterName]}
-                                                        on:keypress={async (event) => {
-                                                            if (event.keyCode === 13) {
-                                                                await handleFilterBy(columnName, filterName);
-                                                            }
-                                                        }}
-                                                        on:change={async () => {
-                                                            await handleFilterBy(columnName, filterName);
-                                                        }}
-                                                        on:focus={(event) => {
-                                                            event.target.select();
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = true;
-                                                        }}
-                                                        on:blur={(event) => {
-                                                            if (
-                                                                event.relatedTarget !== null &&
-                                                                event.relatedTarget.id ===
-                                                                    "btn" + columnName + filterName + "Id"
-                                                            ) {
-                                                                return;
-                                                            }
-
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = false;
-                                                        }}
-                                                        placeholder={filterInfo.placeholder}
-                                                        class="input input-bordered input-xs mb-0 grow " />
-                                                {:else if filterName === "filterNumber"}
-                                                    <input
-                                                        type="text"
-                                                        bind:value={postBody.columns[columnName].filterBy[filterName]}
-                                                        on:keypress={async (event) => {
-                                                            disableNonNumericInput(event);
-                                                            if (event.keyCode === 13) {
-                                                                await handleFilterBy(columnName, filterName);
-                                                            }
-                                                        }}
-                                                        on:change={async () => {
-                                                            await handleFilterBy(columnName, filterName);
-                                                        }}
-                                                        on:focus={(event) => {
-                                                            event.target.select();
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = true;
-                                                        }}
-                                                        on:blur={(event) => {
-                                                            if (
-                                                                event.relatedTarget !== null &&
-                                                                event.relatedTarget.id ===
-                                                                    "btn" + columnName + filterName + "Id"
-                                                            ) {
-                                                                return;
-                                                            }
-
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = false;
-                                                        }}
-                                                        placeholder={filterInfo.placeholder}
-                                                        class="input input-bordered input-xs mb-0 grow" />
-                                                {:else if filterName === "filterDropdown"}
-                                                    <select
-                                                        bind:value={postBody.columns[columnName].filterBy[filterName]}
-                                                        on:change={async () => {
-                                                            await handleFilterBy(columnName, filterName);
-                                                        }}
-                                                        class="select select-bordered select-xs mb-0 grow pr-8">
-                                                        <option selected>{filterInfo.placeholder}</option>
-                                                        {#each filterInfo.defaultOptions as value}
-                                                            <option {value}>{value}</option>
-                                                        {/each}
-                                                    </select>
-                                                {:else if filterName === "fromDate" || filterName === "toDate"}
-                                                    <input
-                                                        type="date"
-                                                        bind:value={postBody.columns[columnName].filterBy[filterName]}
-                                                        on:change={async () => {
-                                                            await handleFilterBy(columnName, filterName);
-                                                        }}
-                                                        on:focus={(event) => {
-                                                            event.target.select();
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = true;
-                                                        }}
-                                                        on:blur={(event) => {
-                                                            if (
-                                                                event.relatedTarget !== null &&
-                                                                event.relatedTarget.id ===
-                                                                    "btn" + columnName + filterName + "Id"
-                                                            ) {
-                                                                return;
-                                                            }
-
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = false;
-                                                        }}
-                                                        class="input input-xs mb-0 grow {requestPendingStates.filters[
-                                                            columnName
-                                                        ][filterName].loading ||
-                                                        requestPendingStates.filters[columnName][filterName].visible
-                                                            ? 'pr-8'
-                                                            : ''}"
-                                                        placeholder={filterInfo.placeholder} />{/if}
-                                                {#if requestPendingStates.filters[columnName][filterName].loading || requestPendingStates.filters[columnName][filterName].visible}
-                                                    <button
-                                                        id="btn{columnName + filterName}Id"
-                                                        transition:fly={{ x: 8, duration: 250 }}
-                                                        class:loading={requestPendingStates.filters[columnName][
-                                                            filterName
-                                                        ].loading}
-                                                        class="btn btn-primary btn-xs absolute top-0 right-0 mr-0 rounded-l-none before:mr-0"
-                                                        on:click={async () => {
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = true;
-                                                            await handleFilterBy(columnName, filterName);
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = false;
-                                                        }}>
-                                                        <span
-                                                            class:hidden={requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].loading}>
-                                                            <Fa icon={faCheck} size="1.1x" />
-                                                        </span>
-                                                    </button>
-                                                {/if}
-                                            </div>
-                                        </div>
-                                    </div>
-                                {/each}
-                            {/if}
-                        </th>
-                    {/each}
-
-                    {#if Object.keys(customActions).length > 1}
-                        <th class="text-center align-top">
-                            <span class="inline-block">
-                                <span class="mr-2 inline-block align-middle">
-                                    {customActions.columnHeading}
-                                </span>
-                            </span>
-                        </th>
-                    {/if}
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr>
-                    <th>
-                        <label class="relative top-1 text-center">
-                            <input
-                                bind:checked={allSelected}
-                                disabled={isLoading}
-                                on:change={(event) => updateSelected(event.target.checked)}
-                                type="checkbox"
-                                class="checkbox checkbox-sm" />
-                        </label>
-                    </th>
-                    <th class="min-w-[200px] max-w-[400px] flex-nowrap overflow-hidden overflow-ellipsis">
-                        <span>{values[3]}</span>
-                    </th>
-                    <th class="min-w-[200px] max-w-[400px] flex-nowrap overflow-hidden overflow-ellipsis">
-                        <span>{values[1]}</span>
-                    </th>
-                    <th class="min-w-[200px] max-w-[400px] flex-nowrap overflow-hidden overflow-ellipsis">
-                        <span>{values[2]}</span>
-                    </th>
-                    <th class="text-center align-middle">
-                        <span class="inline-block">
-                            <span class="mr-2 inline-block align-middle">
-                                {customActions.columnHeading}
-                            </span>
-                        </span>
-                    </th>
-                </tr>
-            </tbody>
-        </table>
+            <div class="ml-auto">
+                <div class="btn-group">
+                    <button
+                        class="btn btn-sm"
+                        on:click={async () => {
+                            if (postBody.pageNumber >= 1) {
+                                await handlePaginate(postBody.pageNumber - 1);
+                            }
+                        }}>«</button>
+                    <Dropdown
+                        dropDownText="Page {postBody.pageNumber + 1}"
+                        dropDownOptions={paginationOptions}
+                        dropdownClasses="dropdown-top"
+                        btnClasses="rounded-none"
+                        on:optionSelected={async (params) =>
+                            await handlePaginate(parseInt(params.detail.params.pageNumber))} />
+                    <button
+                        class="btn btn-sm"
+                        on:click={async () => {
+                            if (postBody.pageNumber < pageCount - 1) {
+                                await handlePaginate(postBody.pageNumber + 1);
+                            }
+                        }}>»</button>
+                </div>
+            </div>
+        </div>
     </div>
 {/if}
 
