@@ -1,6 +1,6 @@
 //////////////////////////////////////////
 // DIVBLOX GENERATED CODE - DO NOT MODIFY!
-const dxBuildTimeStamp = "14jul2022aaaaaaaaaaa";
+const dxBuildTimeStamp = "14jul2022aaaaaaaaaaaa";
 //////////////////////////////////////////
 
 const PRECACHE = "precache-" + dxBuildTimeStamp;
