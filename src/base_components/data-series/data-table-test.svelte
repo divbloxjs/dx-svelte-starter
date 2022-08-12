@@ -442,8 +442,8 @@
 
 {#if true}
     <div class="px-2 sm:px-0">
-        <div class="flex w-full">
-            <div class="btn-group mx-auto flex w-full">
+        <div class="mx-auto flex w-full">
+            <div class="btn-group">
                 <button
                     class="btn btn-sm"
                     on:click={async () => {
@@ -561,7 +561,7 @@
             {/if}
             {#if enableRefresh === true}
                 <button
-                    class="btn btn-sm my-auto ml-auto before:mr-0 lg:ml-0 lg:mr-auto"
+                    class="btn btn-sm my-auto ml-auto mt-[1px] before:mr-0 lg:ml-0"
                     class:loading={requestPendingStates.refresh.loading}
                     on:click={async () => {
                         if (isLoading) {
@@ -575,21 +575,20 @@
                     </span>
                 </button>
             {/if}
-            <div class="hidden lg:flex">
-                {#if enableFilters}
-                    <button on:click={() => (showFilters = !showFilters)} class="btn btn-link btn-xs my-auto mr-2">
-                        <span class:hidden={showFilters}>Show Filters</span>
-                        <span class:hidden={!showFilters}>Hide Filters</span>
-                    </button>
-                {/if}
-
+            <div class="hidden lg:ml-auto lg:flex">
                 {#if Object.keys(multiSelectActions).length > 0 && Object.values(selectedRows).some((value) => value === true)}
-                    <span>
+                    <span class="mr-2 ">
                         <Dropdown
                             dropDownText="Options"
                             dropDownOptions={multiSelectActions}
                             on:optionSelected={(params) => handleMultiSelect(params)} />
                     </span>
+                {/if}
+                {#if enableFilters}
+                    <button on:click={() => (showFilters = !showFilters)} class="btn btn-link btn-xs my-auto mr-2">
+                        <span class:hidden={showFilters}>Show Filters</span>
+                        <span class:hidden={!showFilters}>Hide Filters</span>
+                    </button>
                 {/if}
                 <div class="my-auto ml-auto flex flex-row">
                     <span class="badge my-auto mr-2 border-base-300 bg-base-300 text-base-content"
@@ -619,7 +618,7 @@
                     </div>
                 </div>
             </div>
-            <div class="lg:hidden">
+            <div class="relative top-[-1px] lg:hidden">
                 {#if Object.keys(multiSelectActions).length > 0 && Object.values(selectedRows).some((value) => value === true)}
                     <Dropdown
                         dropDownIcon={faBars}
@@ -831,7 +830,7 @@
                         {/each}
 
                         {#if Object.keys(customActions).length > 1}
-                            <th class="text-center align-middle">
+                            <th class="text-center align-top">
                                 <span class="inline-block">
                                     <span class="mr-2 inline-block align-middle">
                                         {customActions.columnHeading}
@@ -987,12 +986,12 @@
         </div>
 
         <div class="mt-3 flex w-full">
-            <div class="mr-auto">
+            <div class="mr-auto -mt-[2px]">
                 <div class="btn btn-sm" class:hidden={editingLimit} on:click={() => (editingLimit = true)}>
                     Items per Page: {postBody.limit}
                 </div>
                 <div class="form-control w-36" class:hidden={!editingLimit}>
-                    <div class="relative mt-[1px]">
+                    <div class="relative">
                         <input
                             bind:value={postBody.limit}
                             on:keypress={async (event) => {
