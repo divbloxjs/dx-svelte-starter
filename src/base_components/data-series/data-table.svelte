@@ -248,6 +248,7 @@
     };
     //endregion
 
+    //#region Column Widths
     export const multiActionsColumnWidth = 3;
     const multiActionsColumnMinWidth = multiActionsColumnWidth;
     export const customActionsColumnWidth = 9;
@@ -296,6 +297,7 @@
             }
         }
     };
+    //#endregion
 </script>
 
 <div class="px-2 sm:px-0">
