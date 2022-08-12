@@ -82,9 +82,11 @@
         if (isLoading) {
             return;
         }
+        console.log(1);
         requestPendingStates.filters[columnName][filterName].loading = true;
         await refreshDataTable();
         requestPendingStates.filters[columnName][filterName].loading = false;
+        console.log(2);
     };
 
     let isLoading = false;
@@ -92,7 +94,7 @@
         isLoading = true;
         await sleep(() => {}, 1000);
         postBody.limit = itemsPerPage;
-        postBody.offset = (pageCount - 1) * itemsPerPage;
+        postBody.offset = (totalPagesCount - 1) * itemsPerPage;
         const response = await fetch(dataSource, {
             method: "POST",
             headers: {
@@ -107,13 +109,13 @@
         currentPage = data.data;
 
         //TODO: remove - Simulating server-side pagination
-        currentPage = currentPage.splice(postBody.pageNumber * postBody.limit, postBody.limit);
+        currentPage = currentPage.splice(postBody.pageNumber * postBody.itemsPerPage, postBody.itemsPerPage);
         currentPage.forEach((row) => {
             selectedRows[row.id] = false;
         });
 
         totalCount = data.count;
-        pageCount = Math.ceil(totalCount / postBody.limit);
+        totalPagesCount = Math.ceil(totalCount / postBody.itemsPerPage);
 
         paginationOptions = buildPaginationOptions();
         isLoading = false;
@@ -147,8 +149,8 @@
     beforeUpdate(async () => {
         if (!initComplete) {
             initComplete = true;
-            handleColWidths();
             await initPostBody();
+            await handleColWidths();
         }
     });
 
@@ -173,7 +175,7 @@
         if (columns === undefined) {
             throw Error("dataSource has not been provided");
         }
-        postBody.limit = itemsPerPage;
+        postBody.itemsPerPage = itemsPerPage;
         postBody.pageNumber = pageNumber;
         postBody.columns = {};
 
@@ -202,9 +204,9 @@
     };
 
     //#region Pagination
-    let pageCount;
+    let totalPagesCount;
     const buildPaginationOptions = () => {
-        const options = Array.from(Array(pageCount).keys()).map((_, index) => {
+        const options = Array.from(Array(totalPagesCount).keys()).map((_, index) => {
             const optionInfo = {
                 params: { pageNumber: index },
                 displayLabel: "Page " + (index + 1).toString(),
@@ -254,15 +256,17 @@
     export const customActionsColumnWidth = 9;
     const customActionsColumnMinWidth = customActionsColumnWidth;
 
-    export const handleColWidths = () => {
+    export const handleColWidths = async () => {
+        console.log(columns);
         let takenUpWidth = 0;
 
         if (enableMultiSelect) {
-            takenUpWidth += 3;
+            takenUpWidth += multiActionsColumnWidth;
         }
 
-        if (customActions) {
-            takenUpWidth += 9;
+        console.log(Object.keys(customActions).length);
+        if (Object.keys(customActions).length > 0) {
+            takenUpWidth += customActionsColumnWidth;
         }
 
         let colsWithDefinedWidthCount = 0;
@@ -273,6 +277,7 @@
             }
         }
 
+        console.log(takenUpWidth);
         if (takenUpWidth > 100) {
             throw Error(
                 "Width of columns exceeds 100. Note that 12% may be reserved for multiActions and custom actions column"
@@ -283,10 +288,12 @@
         let colsWithoutDefinedWidth = Object.entries(columns).length - colsWithDefinedWidthCount;
         if (colsWithoutDefinedWidth === 0 && remainingWidth !== 0) {
             columns[Object.keys(columns)[Object.keys(columns).length - 1]].width += remainingWidth;
+            console.log(columns);
             return;
         }
 
         let equalRemainder = (100 - takenUpWidth) / colsWithoutDefinedWidth;
+        console.log("equalRemainder: ", equalRemainder);
         for (const [columnName, columnInfo] of Object.entries(columns)) {
             if (!columnInfo.hasOwnProperty("width")) {
                 columns[columnName].width = equalRemainder;
@@ -297,37 +304,11 @@
             }
         }
     };
+    console.log(columns);
     //#endregion
 </script>
 
 <div class="px-2 sm:px-0">
-    <div class="w-full text-center sm:hidden">
-        <div class="btn-group justify-center">
-            <button
-                class="btn btn-sm"
-                on:click={async () => {
-                    if (postBody.pageNumber >= 1 && !isLoading) {
-                        await handlePaginate(postBody.pageNumber - 1);
-                    }
-                }}
-                >«
-            </button>
-            <Dropdown
-                dropDownText="Page {postBody.pageNumber + 1}"
-                dropDownOptions={paginationOptions}
-                btnClasses="rounded-none"
-                on:optionSelected={async (params) => await handlePaginate(parseInt(params.detail.params.pageNumber))} />
-            <button
-                class="btn btn-sm"
-                on:click={async () => {
-                    if (postBody.pageNumber < pageCount - 1 && !isLoading) {
-                        await handlePaginate(postBody.pageNumber + 1);
-                    }
-                }}
-                >»
-            </button>
-        </div>
-    </div>
     <div class="mb-2 flex w-full lg:hidden">
         {#if enableFilters}
             <div class="my-auto">
@@ -360,7 +341,7 @@
                 <button
                     class="btn btn-sm"
                     on:click={async () => {
-                        if (postBody.pageNumber < pageCount - 1 && !isLoading) {
+                        if (postBody.pageNumber < totalPagesCount - 1 && !isLoading) {
                             await handlePaginate(postBody.pageNumber + 1);
                         }
                     }}
@@ -413,9 +394,9 @@
                                 if (isLoading) {
                                     return;
                                 }
-                                requestPendingStates.globalSearch.visible;
+                                requestPendingStates.globalSearch.visible = true;
                                 await handleGeneralStates("globalSearch");
-                                requestPendingStates.globalSearch.visible;
+                                requestPendingStates.globalSearch.visible = false;
                             }}>
                             <span class:hidden={requestPendingStates.globalSearch.loading}>
                                 <Fa icon={faMagnifyingGlass} size="1.1x" />
@@ -479,7 +460,7 @@
                     <button
                         class="btn btn-sm"
                         on:click={async () => {
-                            if (postBody.pageNumber < pageCount - 1 && !isLoading) {
+                            if (postBody.pageNumber < totalPagesCount - 1 && !isLoading) {
                                 await handlePaginate(postBody.pageNumber + 1);
                             }
                         }}
@@ -494,7 +475,7 @@
                     dropDownIcon={faBars}
                     dropDownText=""
                     dropDownOptions={multiSelectActions}
-                    dropdownClasses={"ml-2"}
+                    dropdownClasses={"ml-2 max-w-[300px] overflow-y-auto"}
                     on:optionSelected={(params) => handleMultiSelect(params)} />
             {/if}
         </div>
@@ -618,6 +599,8 @@
                                                     <select
                                                         bind:value={postBody.columns[columnName].filterBy[filterName]}
                                                         on:change={async () => {
+                                                            console.log("changed");
+
                                                             await handleFilterBy(columnName, filterName);
                                                         }}
                                                         class="select select-bordered select-xs mb-0 grow pr-8">
@@ -652,14 +635,35 @@
                                                                 filterName
                                                             ].visible = false;
                                                         }}
-                                                        class="input input-xs mb-0 grow {requestPendingStates.filters[
-                                                            columnName
-                                                        ][filterName].loading ||
-                                                        requestPendingStates.filters[columnName][filterName].visible
-                                                            ? 'pr-8'
-                                                            : ''}"
+                                                        class="input input-xs mb-0 grow"
                                                         placeholder={filterInfo.placeholder} />{/if}
-                                                {#if requestPendingStates.filters[columnName][filterName].loading || requestPendingStates.filters[columnName][filterName].visible}
+                                                {#if ["fromDate", "toDate", "filterDropdown"].includes(filterName)}
+                                                    {#if requestPendingStates.filters[columnName][filterName].loading}
+                                                        <button
+                                                            id="btn{columnName + filterName}Id"
+                                                            transition:fly={{ x: 8, duration: 250 }}
+                                                            class:loading={requestPendingStates.filters[columnName][
+                                                                filterName
+                                                            ].loading}
+                                                            class="btn btn-primary btn-xs absolute top-0 right-0 mr-0 rounded-l-none before:mr-0"
+                                                            on:click={async () => {
+                                                                requestPendingStates.filters[columnName][
+                                                                    filterName
+                                                                ].visible = true;
+                                                                await handleFilterBy(columnName, filterName);
+                                                                requestPendingStates.filters[columnName][
+                                                                    filterName
+                                                                ].visible = false;
+                                                            }}>
+                                                            <span
+                                                                class:hidden={requestPendingStates.filters[columnName][
+                                                                    filterName
+                                                                ].loading}>
+                                                                <Fa icon={faCheck} size="1.1x" />
+                                                            </span>
+                                                        </button>
+                                                    {/if}
+                                                {:else if requestPendingStates.filters[columnName][filterName].visible}
                                                     <button
                                                         id="btn{columnName + filterName}Id"
                                                         transition:fly={{ x: 8, duration: 250 }}
@@ -799,7 +803,7 @@
                         </tr>
                     {/each}
                 {:else}
-                    {#each Array(postBody.limit) as _, index}
+                    {#each Array(parseInt(postBody.itemsPerPage)) as _, index}
                         <tr class="group">
                             {#if enableMultiSelect === true}
                                 <th
@@ -810,6 +814,7 @@
                                     </label>
                                 </th>
                             {/if}
+
                             {#each Object.entries(columns) as [columnName, columnValue]}
                                 {#if columnName !== "id"}
                                     {#if clickableColumn !== undefined && columnName === clickableColumn}
@@ -878,15 +883,15 @@
         </table>
     </div>
 
-    <div class="mt-3 flex w-full">
-        <div class="mr-auto -mt-[2px]">
+    <div class="mt-3 flex flex-wrap">
+        <div class="w-full sm:w-1/2">
             <div class="btn btn-sm" class:hidden={editingLimit} on:click={() => (editingLimit = true)}>
-                Items per Page: {postBody.limit}
+                Items per Page: {postBody.itemsPerPage}
             </div>
             <div class="form-control w-36" class:hidden={!editingLimit}>
                 <div class="relative">
                     <input
-                        bind:value={postBody.limit}
+                        bind:value={postBody.itemsPerPage}
                         on:keypress={async (event) => {
                             disableNonNumericInput(event);
                             if (event.keyCode === 13) {
@@ -925,9 +930,8 @@
                 </div>
             </div>
         </div>
-
-        <div class="ml-auto">
-            <div class="btn-group">
+        <div class="mt-2 w-full sm:mt-0 sm:w-1/2">
+            <div class="btn-group sm:justify-end">
                 <button
                     class="btn btn-sm"
                     on:click={async () => {
@@ -947,7 +951,7 @@
                 <button
                     class="btn btn-sm"
                     on:click={async () => {
-                        if (postBody.pageNumber < pageCount - 1) {
+                        if (postBody.pageNumber < totalPagesCount - 1) {
                             await handlePaginate(postBody.pageNumber + 1);
                         }
                     }}
@@ -972,7 +976,7 @@
         position: absolute;
         left: 1rem;
         right: 1rem;
-        top: 1.25rem;
+        top: 1rem;
         bottom: 1rem;
         white-space: nowrap;
         overflow: hidden;
