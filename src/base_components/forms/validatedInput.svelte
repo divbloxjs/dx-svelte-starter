@@ -15,7 +15,7 @@
         //Minimum 8 characters, at least 1 lowercase letter, 1 uppercase letter and 1 number
         default: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
         //Minimum 8 characters, at least 1 lowercase letter, 1 uppercase letter, 1 special character and 1 number
-        strong: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*[@$!%*#?&]).{8,}$/,
+        strong: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*[@$!%*#?&_-]).{8,}$/,
         //Minimum 6 characters, at least 1 letter and 1 number
         relaxed: /^(?=.*\d)(?=.*[a-zA-Z]).{6,}$/,
     };
