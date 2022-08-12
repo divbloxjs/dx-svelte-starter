@@ -9,6 +9,7 @@
     import ForgotPassword from "./routes/forgotPassword.svelte";
     import ResetPassword from "./routes/resetPassword.svelte";
     import Profile from "./routes/profile.svelte";
+    import DataTable from "./routes/dataTableDemo.svelte";
     import ServiceWorkerUpdate from "./lib/service_worker/ServiceWorkerUpdate.svelte";
     import { onMount } from "svelte";
     import { updateProfilePicturePath } from "./lib/js/stores/userData";
@@ -28,6 +29,7 @@
         "/routing-example/:id": RoutingExample,
         "/component-library": ComponentLibrary,
         "/profile": Profile,
+        "/dataTable": DataTable,
 
         "*": NotFound,
     };

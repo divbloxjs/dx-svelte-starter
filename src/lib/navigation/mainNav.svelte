@@ -19,7 +19,7 @@
     </div>
 
     <div class="flex-none lg:hidden">
-        <div class="dropdown-end dropdown">
+        <div class="dropdown dropdown-end">
             <!-- svelte-ignore a11y-label-has-associated-control -->
             <label tabindex="0" class="btn btn-ghost">
                 <svg
@@ -66,6 +66,9 @@
             </li>
             <li>
                 <a href="#/">Page 2</a>
+            </li>
+            <li>
+                <a href="#/dataTable">Data Table</a>
             </li>
         </ul>
 

@@ -34,10 +34,11 @@
     export let enableRefresh = true;
     export let enableFilters = false;
 
+    export let multiActionsColumnWidth = 3;
+    export let customActionsColumnWidth = 9;
+
     export let columns = undefined;
-
     export let customActions = {};
-
     export let multiSelectActions = [];
 
     let postBody = {};
@@ -82,11 +83,9 @@
         if (isLoading) {
             return;
         }
-        console.log(1);
         requestPendingStates.filters[columnName][filterName].loading = true;
         await refreshDataTable();
         requestPendingStates.filters[columnName][filterName].loading = false;
-        console.log(2);
     };
 
     let isLoading = false;
@@ -173,8 +172,9 @@
             throw Error("dataSource has not been provided");
         }
         if (columns === undefined) {
-            throw Error("dataSource has not been provided");
+            throw Error("columns have not been provided");
         }
+
         postBody.itemsPerPage = itemsPerPage;
         postBody.pageNumber = pageNumber;
         postBody.columns = {};
@@ -251,13 +251,10 @@
     //endregion
 
     //#region Column Widths
-    export const multiActionsColumnWidth = 3;
     const multiActionsColumnMinWidth = multiActionsColumnWidth;
-    export const customActionsColumnWidth = 9;
     const customActionsColumnMinWidth = customActionsColumnWidth;
 
     export const handleColWidths = async () => {
-        console.log(columns);
         let takenUpWidth = 0;
 
         if (enableMultiSelect) {
@@ -276,21 +273,13 @@
                 takenUpWidth += columnInfo.width;
             }
 
-            // if (!columnInfo.hasOwnProperty("minWidth")) {
             columns[columnName].minWidth = "1px";
-            // }
-
-            // if (!columnInfo.hasOwnProperty("maxWidth")) {
-            // columns[columnName].maxWidth = "calc( " + columns[columnName].width + "%)";
             columns[columnName].maxWidth = "1px";
-            console.log(columns[columnName].maxWidth);
-            // }
         }
 
-        console.log(takenUpWidth);
         if (takenUpWidth > 100) {
             throw Error(
-                "Width of columns exceeds 100. Note that 12% may be reserved for multiActions and custom actions column"
+                `Width of columns exceeds 100. Note that ${multiActionsColumnWidth} may be reserved for multiActions column and ${customActionsColumnWidth} for custom actions column`
             );
         }
 
@@ -298,23 +287,21 @@
         let colsWithoutDefinedWidth = Object.entries(columns).length - colsWithDefinedWidthCount;
         if (colsWithoutDefinedWidth === 0 && remainingWidth !== 0) {
             columns[Object.keys(columns)[Object.keys(columns).length - 1]].width += remainingWidth;
-            console.log(columns);
             return;
         }
 
         let equalRemainder = (100 - takenUpWidth) / colsWithoutDefinedWidth;
-        console.log("equalRemainder: ", equalRemainder);
         for (const [columnName, columnInfo] of Object.entries(columns)) {
             if (!columnInfo.hasOwnProperty("width")) {
                 columns[columnName].width = equalRemainder;
             }
         }
     };
-    console.log(columns);
     //#endregion
 </script>
 
 <div class="px-2">
+    <!-- #region Top Buttons -->
     <div class="mb-2 flex w-full lg:hidden">
         {#if enableFilters}
             <div class="my-auto">
@@ -481,14 +468,16 @@
                     dropDownIcon={faBars}
                     dropDownText=""
                     dropDownOptions={multiSelectActions}
-                    dropdownClasses={"ml-2 max-w-[300px] overflow-y-auto"}
+                    dropdownClasses={"ml-2"}
                     on:optionSelected={(params) => handleMultiSelect(params)} />
             {/if}
         </div>
     </div>
+    <!-- #endregion -->
 
-    <div class="w-full overflow-x-auto">
-        <table class="table-zebra table">
+    <!-- #region Table -->
+    <div class="w-full overflow-x-auto ">
+        <table class="table-zebra table min-w-[1000px] border-base-300">
             <thead>
                 <tr class="child:bg-base-300">
                     {#if enableMultiSelect === true}
@@ -719,6 +708,7 @@
                     {/if}
                 </tr>
             </thead>
+
             <tbody>
                 {#if !isLoading}
                     {#each currentPage as row}
@@ -911,7 +901,9 @@
             {/if}
         </table>
     </div>
+    <!-- #endregion -->
 
+    <!-- #region Bottom Buttons -->
     <div class="xs:hidden">
         <div class="mx-auto mt-2">
             <div class="btn-group justify-center">
@@ -1065,24 +1057,5 @@
             </button>
         </div>
     </div>
+    <!-- #endregion  -->
 </div>
-
-<style>
-    /* .ellipsis {
-        position: relative;
-    } */
-
-    /* .ellipsis:before {
-        content: "&nbsp;";
-        visibility: hidden;
-    } */
-
-    .ellipsis span {
-        /* max-width: 100px; */
-        /* display: inline-block; */
-        /* width: 100px; */
-        /* white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis; */
-    }
-</style>

@@ -8,8 +8,8 @@
     let isClicked = false;
 </script>
 
-<div class="fixed bottom-6 right-0 md:hidden">
-    <div class="dropdown-end dropdown-top dropdown">
+<div class="fixed bottom-[30vh] right-0 md:hidden">
+    <div class="dropdown-end dropdown dropdown-top">
         <div
             bind:this={dropDownEl}
             on:click={() => {
