@@ -114,7 +114,7 @@
         pageCount = Math.ceil(totalCount / postBody.limit);
 
         paginationOptions = buildPaginationOptions();
-        // isLoading = false;
+        isLoading = false;
     };
 
     export let showFilters = false;
@@ -325,8 +325,8 @@
 
 {#if true}
     <div class="px-2 sm:px-0">
-        <div class="mx-auto flex w-full">
-            <div class="btn-group">
+        <div class="w-full text-center sm:hidden">
+            <div class="btn-group justify-center">
                 <button
                     class="btn btn-sm"
                     on:click={async () => {
@@ -843,7 +843,7 @@
                                                     columnName
                                                 ].minWidth}">
                                                 <button
-                                                    class="btn btn-link btn-xs animate-pulse bg-opacity-50 text-base-content text-opacity-50 underline hover:cursor-default" />
+                                                    class="btn btn-link btn-xs animate-pulse bg-opacity-30 text-base-content text-opacity-50 underline hover:cursor-default" />
                                             </td>
                                         {:else}
                                             <td
@@ -852,7 +852,7 @@
                                                     columnName
                                                 ].minWidth}">
                                                 <span
-                                                    class="mr-1 rounded-lg border-opacity-50  bg-base-300 bg-opacity-50 text-transparent"
+                                                    class="mr-1 rounded-lg border-opacity-50  bg-base-300 bg-opacity-30 text-transparent"
                                                     >Loading.............................................</span>
                                             </td>
                                         {/if}
@@ -861,16 +861,19 @@
 
                                 {#if Object.keys(customActions).length > 1}
                                     <td
-                                        class="animate-pulse align-middle"
+                                        class="animate-pulse"
                                         style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
                                         {#each customActions.actions as action}
-                                            <!-- <span
-                                                class="mr-1 h-[24px] rounded-lg border-opacity-50 bg-base-300 bg-opacity-50 text-transparent">
-                                                aaa
-                                            </span> -->
                                             <button
-                                                class="btn btn-ghost btn-xs mr-1 flex-nowrap bg-base-300 bg-opacity-50 text-transparent">
-                                                <Fa icon={faEye} size="1.2x" />
+                                                class="btn btn-ghost btn-xs relative top-[-1px] mr-1 flex-nowrap bg-base-300 bg-opacity-30 text-transparent">
+                                                {#if action.faIcon === "faEye"}
+                                                    <Fa icon={faEye} size="1.1x" />
+                                                {:else if action.faIcon === "faTrash"}
+                                                    <Fa icon={faTrash} size="1.1x" />
+                                                {:else if action.faIcon === "faEdit"}
+                                                    <Fa icon={faEdit} size="1.1x" />
+                                                {/if}
+
                                                 {#if action.hasOwnProperty("displayLabel")}
                                                     <span class="ml-1">{action.displayLabel}</span>
                                                 {/if}
@@ -1478,12 +1481,12 @@
                                         {#if clickableColumn !== undefined && columnName === clickableColumn}
                                             <td class="min-w-[150px] animate-pulse">
                                                 <button
-                                                    class="btn btn-link btn-xs animate-pulse bg-opacity-50 text-base-content text-opacity-50 underline hover:cursor-default" />
+                                                    class="btn btn-link btn-xs animate-pulse bg-opacity-30 text-base-content text-opacity-50 underline hover:cursor-default" />
                                             </td>
                                         {:else}
                                             <td class="min-w-[150px] animate-pulse text-base-content text-opacity-50">
                                                 <span
-                                                    class="mr-1 w-[150px] rounded-lg border-opacity-50  bg-base-300 bg-opacity-50 text-transparent"
+                                                    class="mr-1 w-[150px] rounded-lg border-opacity-50  bg-base-300 bg-opacity-30 text-transparent"
                                                     >Loading...</span>
                                             </td>
                                         {/if}
@@ -1494,7 +1497,7 @@
                                     <td class="animate-pulse">
                                         {#each customActions.actions as action}
                                             <span
-                                                class="mr-1 rounded-lg border-opacity-50 bg-base-300 bg-opacity-50 text-transparent">
+                                                class="mr-1 rounded-lg border-opacity-50 bg-base-300 bg-opacity-30 text-transparent">
                                                 aaa
                                             </span>
                                         {/each}
