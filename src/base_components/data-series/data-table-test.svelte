@@ -44,16 +44,25 @@
 
     // TODO figure out how to add filterStates here dynamically
     const requestPendingStates = {
-        globalSearch: false,
-        editLimit: false,
-        refresh: false,
+        globalSearch: {
+            loading: false,
+            visible: false,
+        },
+        editLimit: {
+            loading: false,
+            visible: false,
+        },
+        refresh: {
+            loading: false,
+            visible: false,
+        },
         filters: {}, // Populated dynamically based on incoming data
     };
 
     const handleGeneralStates = async (type) => {
-        requestPendingStates[type] = true;
+        requestPendingStates[type].loading = true;
         await refreshDataTable();
-        requestPendingStates[type] = false;
+        requestPendingStates[type].loading = false;
     };
 
     const handleSortBy = async (columnName) => {
@@ -73,9 +82,9 @@
         if (isLoading) {
             return;
         }
-        requestPendingStates.filters[columnName][filterName] = true;
+        requestPendingStates.filters[columnName][filterName].loading = true;
         await refreshDataTable();
-        requestPendingStates.filters[columnName][filterName] = false;
+        requestPendingStates.filters[columnName][filterName].loading = false;
     };
 
     let isLoading = false;
@@ -186,7 +195,9 @@
                 for (const [filterName, filterByInfo] of Object.entries(columnInfo.filterBy)) {
                     postBody.columns[columnName].filterBy[filterName] = filterByInfo.userInput;
 
-                    requestPendingStates.filters[columnName][filterName] = false;
+                    requestPendingStates.filters[columnName][filterName] = {};
+                    requestPendingStates.filters[columnName][filterName].loading = false;
+                    requestPendingStates.filters[columnName][filterName].visible = false;
                 }
             }
         }
@@ -489,38 +500,32 @@
                         }}
                         on:focus={(event) => {
                             event.target.select();
-                            visible = true;
+                            requestPendingStates.globalSearch.visible = true;
                         }}
                         on:blur={(event) => {
-                            console.log(event.relatedTarget);
-                            if (event.relatedTarget === null) {
-                                console.log("type null");
-
-                                visible = false;
+                            if (event.relatedTarget !== null && event.relatedTarget.id === "btnGlobalSearchId") {
                                 return;
                             }
 
-                            if (event.relatedTarget.id !== "btnGlobalSearchId") {
-                                visibility = false;
-                            }
+                            requestPendingStates.globalSearch.visible = false;
                         }}
                         placeholder="Search..."
                         class="input input-bordered input-sm w-full pr-16" />
-                    {#if requestPendingStates.globalSearch || visible}
+                    {#if requestPendingStates.globalSearch.loading || requestPendingStates.globalSearch.visible}
                         <button
                             id="btnGlobalSearchId"
                             transition:fly={{ x: 10, duration: 250 }}
-                            class:loading={requestPendingStates.globalSearch}
+                            class:loading={requestPendingStates.globalSearch.loading}
                             class="btn btn-primary btn-sm absolute top-0 right-0 mr-0 rounded-l-none"
                             on:click={async () => {
-                                visible = true;
                                 if (isLoading) {
                                     return;
                                 }
+                                requestPendingStates.globalSearch.visible;
                                 await handleGeneralStates("globalSearch");
-                                visible = false;
+                                requestPendingStates.globalSearch.visible;
                             }}>
-                            <span class:hidden={requestPendingStates.globalSearch}>
+                            <span class:hidden={requestPendingStates.globalSearch.loading}>
                                 <Fa icon={faMagnifyingGlass} size="1.1x" />
                             </span>
                         </button>
@@ -531,7 +536,7 @@
         {#if enableRefresh === true}
             <button
                 class="btn btn-sm my-auto ml-auto mr-2 before:mr-0 lg:ml-0 lg:mr-auto"
-                class:loading={requestPendingStates.refresh}
+                class:loading={requestPendingStates.refresh.loading}
                 on:click={async () => {
                     if (isLoading) {
                         return;
@@ -539,7 +544,7 @@
                     await resetPostBody();
                     await handleGeneralStates("refresh");
                 }}>
-                <span class:hidden={requestPendingStates.refresh}>
+                <span class:hidden={requestPendingStates.refresh.loading}>
                     <Fa icon={faTimes} size="1.1x" />
                 </span>
             </button>
@@ -656,9 +661,27 @@
                                                         on:change={async () => {
                                                             await handleFilterBy(columnName, filterName);
                                                         }}
-                                                        on:focus={(event) => event.target.select()}
+                                                        on:focus={(event) => {
+                                                            event.target.select();
+                                                            requestPendingStates.filters[columnName][
+                                                                filterName
+                                                            ].visible = true;
+                                                        }}
+                                                        on:blur={(event) => {
+                                                            if (
+                                                                event.relatedTarget !== null &&
+                                                                event.relatedTarget.id ===
+                                                                    "btn" + columnName + filterName + "Id"
+                                                            ) {
+                                                                return;
+                                                            }
+
+                                                            requestPendingStates.filters[columnName][
+                                                                filterName
+                                                            ].visible = false;
+                                                        }}
                                                         placeholder={filterInfo.placeholder}
-                                                        class="input input-bordered input-xs mb-0 grow pr-8" />
+                                                        class="input input-bordered input-xs mb-0 grow " />
                                                 {:else if filterName === "filterNumber"}
                                                     <input
                                                         type="text"
@@ -672,9 +695,27 @@
                                                         on:change={async () => {
                                                             await handleFilterBy(columnName, filterName);
                                                         }}
-                                                        on:focus={(event) => event.target.select()}
+                                                        on:focus={(event) => {
+                                                            event.target.select();
+                                                            requestPendingStates.filters[columnName][
+                                                                filterName
+                                                            ].visible = true;
+                                                        }}
+                                                        on:blur={(event) => {
+                                                            if (
+                                                                event.relatedTarget !== null &&
+                                                                event.relatedTarget.id ===
+                                                                    "btn" + columnName + filterName + "Id"
+                                                            ) {
+                                                                return;
+                                                            }
+
+                                                            requestPendingStates.filters[columnName][
+                                                                filterName
+                                                            ].visible = false;
+                                                        }}
                                                         placeholder={filterInfo.placeholder}
-                                                        class="input input-bordered input-xs mb-0 grow pr-8" />
+                                                        class="input input-bordered input-xs mb-0 grow" />
                                                 {:else if filterName === "filterDropdown"}
                                                     <select
                                                         bind:value={postBody.columns[columnName].filterBy[filterName]}
@@ -694,21 +735,57 @@
                                                         on:change={async () => {
                                                             await handleFilterBy(columnName, filterName);
                                                         }}
-                                                        class="input input-xs mb-0 grow pr-8 transition-all"
+                                                        on:focus={(event) => {
+                                                            event.target.select();
+                                                            requestPendingStates.filters[columnName][
+                                                                filterName
+                                                            ].visible = true;
+                                                        }}
+                                                        on:blur={(event) => {
+                                                            if (
+                                                                event.relatedTarget !== null &&
+                                                                event.relatedTarget.id ===
+                                                                    "btn" + columnName + filterName + "Id"
+                                                            ) {
+                                                                return;
+                                                            }
+
+                                                            requestPendingStates.filters[columnName][
+                                                                filterName
+                                                            ].visible = false;
+                                                        }}
+                                                        class="input input-xs mb-0 grow {requestPendingStates.filters[
+                                                            columnName
+                                                        ][filterName].loading ||
+                                                        requestPendingStates.filters[columnName][filterName].visible
+                                                            ? 'pr-8'
+                                                            : ''}"
                                                         placeholder={filterInfo.placeholder} />{/if}
-                                                <button
-                                                    class:loading={requestPendingStates.filters[columnName][filterName]}
-                                                    class="btn btn-primary btn-xs absolute top-0 right-0 mr-0 rounded-l-none before:mr-0"
-                                                    on:click={async () => {
-                                                        await handleFilterBy(columnName, filterName, false);
-                                                    }}>
-                                                    <span
-                                                        class:hidden={requestPendingStates.filters[columnName][
+                                                {#if requestPendingStates.filters[columnName][filterName].loading || requestPendingStates.filters[columnName][filterName].visible}
+                                                    <button
+                                                        id="btn{columnName + filterName}Id"
+                                                        transition:fly={{ x: 8, duration: 250 }}
+                                                        class:loading={requestPendingStates.filters[columnName][
                                                             filterName
-                                                        ]}>
-                                                        <Fa icon={faCheck} size="1.1x" />
-                                                    </span>
-                                                </button>
+                                                        ].loading}
+                                                        class="btn btn-primary btn-xs absolute top-0 right-0 mr-0 rounded-l-none before:mr-0"
+                                                        on:click={async () => {
+                                                            requestPendingStates.filters[columnName][
+                                                                filterName
+                                                            ].visible = true;
+                                                            await handleFilterBy(columnName, filterName);
+                                                            requestPendingStates.filters[columnName][
+                                                                filterName
+                                                            ].visible = false;
+                                                        }}>
+                                                        <span
+                                                            class:hidden={requestPendingStates.filters[columnName][
+                                                                filterName
+                                                            ].loading}>
+                                                            <Fa icon={faCheck} size="1.1x" />
+                                                        </span>
+                                                    </button>
+                                                {/if}
                                             </div>
                                         </div>
                                     </div>
@@ -879,28 +956,42 @@
             <div class="form-control w-36" class:hidden={!editingLimit}>
                 <div class="relative mt-[1px]">
                     <input
+                        bind:value={postBody.limit}
                         on:keypress={async (event) => {
                             disableNonNumericInput(event);
                             if (event.keyCode === 13) {
                                 await handleGeneralStates("editLimit");
                             }
                         }}
-                        bind:value={postBody.limit}
+                        on:blur={(event) => {
+                            if (event.relatedTarget !== null && event.relatedTarget.id === "btnEditLimitId") {
+                                return;
+                            }
+
+                            requestPendingStates.editLimit.visible = false;
+                        }}
                         type="text"
-                        on:focus={(event) => event.target.select()}
+                        on:focus={(event) => {
+                            event.target.select();
+                            requestPendingStates.editLimit.visible = true;
+                        }}
                         placeholder="25"
                         class="input input-bordered input-sm w-full pr-16" />
-                    <button
-                        class="btn btn-primary btn-sm absolute top-0 right-0 rounded-l-none before:mr-0"
-                        class:loading={requestPendingStates.editLimit}
-                        on:click={async () => {
-                            await handleGeneralStates("editLimit");
-                            editingLimit = false;
-                        }}>
-                        <span class:hidden={requestPendingStates.editLimit}>
-                            <Fa icon={faCheck} size="1.1x" />
-                        </span>
-                    </button>
+                    {#if requestPendingStates.editLimit.loading || requestPendingStates.editLimit.visible}
+                        <button
+                            id="btnEditLimitId"
+                            class="btn btn-primary btn-sm absolute top-0 right-0 rounded-l-none before:mr-0"
+                            class:loading={requestPendingStates.editLimit.loading}
+                            transition:fly={{ x: 10, duration: 250 }}
+                            on:click={async () => {
+                                await handleGeneralStates("editLimit");
+                                editingLimit = false;
+                            }}>
+                            <span class:hidden={requestPendingStates.editLimit.loading}>
+                                <Fa icon={faCheck} size="1.1x" />
+                            </span>
+                        </button>
+                    {/if}
                 </div>
             </div>
         </div>
