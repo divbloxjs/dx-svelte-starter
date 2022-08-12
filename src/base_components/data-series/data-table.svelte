@@ -570,7 +570,7 @@
                                                             ].visible = false;
                                                         }}
                                                         placeholder={filterInfo.placeholder}
-                                                        class="input input-bordered input-xs mb-0 grow " />
+                                                        class="input input-bordered input-xs mb-0 w-full grow " />
                                                 {:else if filterName === "filterNumber"}
                                                     <input
                                                         type="text"
@@ -604,7 +604,7 @@
                                                             ].visible = false;
                                                         }}
                                                         placeholder={filterInfo.placeholder}
-                                                        class="input input-bordered input-xs mb-0 grow" />
+                                                        class="input input-bordered input-xs mb-0 w-full grow" />
                                                 {:else if filterName === "filterDropdown"}
                                                     <select
                                                         bind:value={postBody.columns[columnName].filterBy[filterName]}

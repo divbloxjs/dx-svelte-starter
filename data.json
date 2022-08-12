@@ -2,136 +2,31 @@
     "data": [
         {
             "id": 1,
-            "name": "Tommy is a little lamb and doesnt even know he is on ehahaha",
+            "name": "Tommy is a little",
+            "age": "lamb and doesnt even know he is on ehahaha",
             "date": "2018-06-07T00:00",
-            "category": "aasdasdasd asdasd sd asda asd asd a sd asd as dasd",
-            "age": 25
+            "category": "aasdasdasd asdasd sd asda asd asd a sd asd as dasd"
         },
         {
             "id": 2,
             "name": "Diggy",
+            "age": 2,
             "date": "2011-06-07T00:00",
-            "category": "this is a logn oiec eof thext and it will want to flow yayayayaya hahaha ",
-            "age": 2
+            "category": "this is a logn oiec eof thext and it will want to flow yayayayaya hahaha "
         },
         {
             "id": 3,
             "name": "smity",
+            "age": 12,
             "date": "2011-09-07T00:00",
-            "category": "cat",
-            "age": 12
+            "category": "cat"
         },
         {
             "id": 4,
             "name": "Tommy",
+            "age": 25,
             "date": "2018-06-07T00:00",
-            "category": "person",
-            "age": 25
-        },
-        {
-            "id": 5,
-            "name": "Diggy",
-            "date": "2011-06-07T00:00",
-            "category": "dog",
-            "age": 2
-        },
-        {
-            "id": 6,
-            "name": "smity",
-            "date": "2011-09-07T00:00",
-            "category": "cat",
-            "age": 12
-        },
-        {
-            "id": 3,
-            "name": "smity",
-            "date": "2011-09-07T00:00",
-            "category": "cat",
-            "age": 12
-        },
-        {
-            "id": 4,
-            "name": "Tommy",
-            "date": "2018-06-07T00:00",
-            "category": "person",
-            "age": 25
-        },
-        {
-            "id": 5,
-            "name": "Diggy",
-            "date": "2011-06-07T00:00",
-            "category": "dog",
-            "age": 2
-        },
-        {
-            "id": 6,
-            "name": "smity",
-            "date": "2011-09-07T00:00",
-            "category": "cat",
-            "age": 12
-        },
-        {
-            "id": 3,
-            "name": "smity",
-            "date": "2011-09-07T00:00",
-            "category": "cat",
-            "age": 12
-        },
-        {
-            "id": 4,
-            "name": "Tommy",
-            "date": "2018-06-07T00:00",
-            "category": "person",
-            "age": 25
-        },
-        {
-            "id": 5,
-            "name": "Diggy",
-            "date": "2011-06-07T00:00",
-            "category": "dog",
-            "age": 2
-        },
-        {
-            "id": 6,
-            "name": "smity",
-            "date": "2011-09-07T00:00",
-            "category": "cat",
-            "age": 12
-        },
-        {
-            "id": 3,
-            "name": "smity",
-            "date": "2011-09-07T00:00",
-            "category": "cat",
-            "age": 12
-        },
-        {
-            "id": 4,
-            "name": "Tommy",
-            "date": "2018-06-07T00:00",
-            "category": "person",
-            "age": 25
-        },
-        {
-            "id": 5,
-            "name": "Diggy",
-            "date": "2011-06-07T00:00",
-            "category": "dog",
-            "age": 2
-        },
-        {
-            "id": 6,
-            "name": "smity",
-            "date": "2011-09-07T00:00",
-            "category": "cat",
-            "age": 12
-        },
-        {
-            "id": 7,
-            "name": "smity",
-            "date": "2011-09-07T00:00",
-            "category": "cat",
-            "age": 12
+            "category": "person"
         }
     ],
     "footer": {

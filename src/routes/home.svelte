@@ -16,8 +16,8 @@
         await checkAuthentication();
     });
     let columns = {
-        namaaaaaaae: {
-            width: 10,
+        name: {
+            width: 20,
             sortBy: true,
             isSortAscending: true,
             filterBy: {
@@ -28,8 +28,16 @@
                 },
             },
         },
+        age: {
+            width: 10,
+            sortBy: false,
+            isSortAscending: true,
+            filterBy: {
+                filterNumber: { userInput: "", placeholder: "Age is just a number", defaultValue: "" },
+            },
+        },
         date: {
-            width: 3,
+            width: 20,
             sortBy: false,
             isSortAscending: true,
             filterBy: {
@@ -52,14 +60,6 @@
                     placeholder: "-All-",
                     defaultOptions: ["Miller", "Tinkerer", "Hotdog", "Oven"],
                 },
-            },
-        },
-        age: {
-            width: 10,
-            sortBy: false,
-            isSortAscending: true,
-            filterBy: {
-                filterNumber: { userInput: "", placeholder: "Age", defaultValue: "" },
             },
         },
     };
