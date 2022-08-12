@@ -20,14 +20,10 @@
         dispatch("optionSelected", params);
     };
 
-    afterUpdate(() => {
-        console.log(dropDownOptions);
-    });
-
     let dropDownOpen = false;
 </script>
 
-<div class="dropdown-end dropdown {dropdownClasses}">
+<div class="dropdown dropdown-end {dropdownClasses}">
     <button
         on:mouseup={() => {
             if (dropDownOpen === true) {
