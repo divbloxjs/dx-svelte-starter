@@ -6,7 +6,6 @@
     import { onMount } from "svelte";
     import PageTransitionFade from "$base_components/page_transitions/pageTransitionFade.svelte";
     import DataTable from "$base_components/data-series/data-table.svelte";
-    import DataTableTest from "$base_components/data-series/data-table-test.svelte";
 
     import { faFileExcel, faFileCsv, faFileText, faTrash } from "@fortawesome/free-solid-svg-icons/index.es";
     const openComponentLibrary = () => {
@@ -133,16 +132,13 @@
     const handleActionTriggered = async (params) => {
         console.log(params.detail);
     };
-
-    let cols = 4;
 </script>
 
 <PageTransitionFade>
     <MainNav />
 
     <div class="container mx-auto mt-10">
-        <!-- <DataTable -->
-        <DataTableTest
+        <DataTable
             dataSource="data.json"
             {columns}
             enableGlobalSearch={true}
