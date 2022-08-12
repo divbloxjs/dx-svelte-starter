@@ -326,13 +326,13 @@
 {#if true}
     <button on:click={updateValues} class="btn btn-primary">Update</button>
     <div class="w-full overflow-x-auto">
-        <table class="test-table">
+        <table class="table-zebra table">
             <thead>
                 <tr class="child:bg-base-300">
                     {#if enableMultiSelect === true}
                         <th
                             class="text-center align-middle"
-                            style="width:{multiActionsColumnWidth} %; min-width:{multiActionsColumnMinWidth};">
+                            style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
                             <label>
                                 <input
                                     bind:checked={allSelected}
@@ -520,7 +520,7 @@
                     {#if Object.keys(customActions).length > 1}
                         <th
                             class="text-center align-top"
-                            style="width:{customActionsColumnWidth} %; min-width:{customActionsColumnMinWidth};">
+                            style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
                             <span class="inline-block">
                                 <span class="mr-2 inline-block align-middle">
                                     {customActions.columnHeading}
@@ -546,7 +546,7 @@
                                     undefined
                                         ? 'group-hover:cursor-pointer'
                                         : ''}"
-                                    style="width:{multiActionsColumnWidth} %; min-width:{multiActionsColumnMinWidth};">
+                                    style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
                                     <label>
                                         <input
                                             on:click={(event) => {
@@ -567,7 +567,7 @@
                                 {#if columnName !== "id"}
                                     {#if columnName === clickableColumn}
                                         <td
-                                            class="ellipsis p-3 group-hover:bg-base-300 {clickableColumn === undefined
+                                            class="ellipsis group-hover:bg-base-300 {clickableColumn === undefined
                                                 ? 'group-hover:cursor-pointer'
                                                 : ''}"
                                             style="width: {columns[columnName].width}%; min-width: {columns[columnName]
@@ -582,7 +582,7 @@
                                         </td>
                                     {:else}
                                         <td
-                                            class="ellipsis p-3 group-hover:bg-base-300 {clickableColumn === undefined
+                                            class="ellipsis group-hover:bg-base-300 {clickableColumn === undefined
                                                 ? 'group-hover:cursor-pointer'
                                                 : ''}"
                                             style="width: {columns[columnName].width}%; min-width: {columns[columnName]
@@ -600,7 +600,7 @@
                                     class="group-hover:bg-base-300  {clickableColumn === undefined
                                         ? 'group-hover:cursor-pointer'
                                         : ''}"
-                                    style="width:{customActionsColumnWidth} %; min-width:{customActionsColumnMinWidth};">
+                                    style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
                                     {#each customActions.actions as action}
                                         <button
                                             class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
@@ -629,7 +629,7 @@
                             {#if enableMultiSelect === true}
                                 <th
                                     class="animate-pulse text-center align-middle"
-                                    style="width:{multiActionsColumnWidth} %; min-width:{multiActionsColumnMinWidth};">
+                                    style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
                                     <label>
                                         <input type="checkbox" class="checkbox checkbox-sm align-middle" disabled />
                                     </label>
@@ -639,7 +639,7 @@
                                 {#if columnName !== "id"}
                                     {#if clickableColumn !== undefined && columnName === clickableColumn}
                                         <td
-                                            class="ellipsis animate-pulse p-3"
+                                            class="ellipsis animate-pulse"
                                             style="width: {columns[columnName].width}%; min-width: {columns[columnName]
                                                 .minWidth}">
                                             <button
@@ -647,7 +647,7 @@
                                         </td>
                                     {:else}
                                         <td
-                                            class="ellipsis animate-pulse p-3 text-base-content text-opacity-50"
+                                            class="ellipsis animate-pulse text-base-content text-opacity-50"
                                             style="width: {columns[columnName].width}%; min-width: {columns[columnName]
                                                 .minWidth}">
                                             <span
@@ -661,7 +661,7 @@
                             {#if Object.keys(customActions).length > 1}
                                 <td
                                     class="animate-pulse"
-                                    style="width:{customActionsColumnWidth} %; min-width:{customActionsColumnMinWidth};">
+                                    style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
                                     {#each customActions.actions as action}
                                         <span
                                             class="mr-1 rounded-lg border-opacity-50 bg-base-300 bg-opacity-50 text-transparent">
@@ -1535,79 +1535,7 @@
 {/if}
 
 <style>
-    /* thead > tr > th:not(:first-child) {
-        vertical-align: top;
-    }
-
-    tr td:last-child {
-        width: 1%;
-        white-space: nowrap;
-    }
-    tr th:first-child {
-        width: 1%;
-        white-space: nowrap;
-    } */
-
-    /* tr th:last-child {
-        width: 1%;
-        white-space: nowrap;
-    }
-    tr th:first-child {
-        width: 1%;
-        white-space: nowrap;
-    }
-
-    th {
-        border: 1px solid black;
-        width: 20%;
-    }
-    th:nth-child(2) {
-        width: 60%;
-    }
-
-    th {
-        border: 1px solid black;
-        width: 20%;
-    } */
-
-    table {
-        border: 1px solid black;
-    }
-
-    tr td:first-child {
-        width: 3%;
-        min-width: 3%;
-        white-space: nowrap;
-    }
-
-    tr td:last-child {
-        width: 9%;
-        min-width: 9%;
-        white-space: nowrap;
-    }
-
-    /* .test-table > tr > th {
-        min-width: 300px;
-    } */
-
-    .first {
-        min-width: 200px;
-        /* width: 20%; */
-    }
-    .second {
-        min-width: 200px;
-        /* width: 30%; */
-    }
-    .third {
-        min-width: 200px;
-        /* width: 30%; */
-    }
-    .fourth {
-        min-width: 200px;
-        /* width: 20%; */
-    }
     .ellipsis {
-        border: 1px solid black;
         position: relative;
     }
     .ellipsis:before {
@@ -1616,10 +1544,10 @@
     }
     .ellipsis span {
         position: absolute;
-        left: 0.75rem;
-        right: 0.75rem;
-        top: 0.75rem;
-        bottom: 0.75rem;
+        left: 1rem;
+        right: 1rem;
+        top: 1.25rem;
+        bottom: 1rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
