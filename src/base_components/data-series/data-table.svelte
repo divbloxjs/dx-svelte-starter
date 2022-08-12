@@ -275,6 +275,16 @@
                 colsWithDefinedWidthCount++;
                 takenUpWidth += columnInfo.width;
             }
+
+            // if (!columnInfo.hasOwnProperty("minWidth")) {
+            columns[columnName].minWidth = "1px";
+            // }
+
+            // if (!columnInfo.hasOwnProperty("maxWidth")) {
+            // columns[columnName].maxWidth = "calc( " + columns[columnName].width + "%)";
+            columns[columnName].maxWidth = "1px";
+            console.log(columns[columnName].maxWidth);
+            // }
         }
 
         console.log(takenUpWidth);
@@ -298,17 +308,13 @@
             if (!columnInfo.hasOwnProperty("width")) {
                 columns[columnName].width = equalRemainder;
             }
-
-            if (!columnInfo.hasOwnProperty("minWidth")) {
-                columns[columnName].minWidth = "100px";
-            }
         }
     };
     console.log(columns);
     //#endregion
 </script>
 
-<div class="px-2 sm:px-0">
+<div class="px-2">
     <div class="mb-2 flex w-full lg:hidden">
         {#if enableFilters}
             <div class="my-auto">
@@ -495,13 +501,17 @@
                                     disabled={isLoading}
                                     on:change={(event) => updateSelected(event.target.checked)}
                                     type="checkbox"
-                                    class="checkbox checkbox-sm" />
+                                    class="checkbox checkbox-sm relative top-[-1px]" />
                             </label>
                         </th>
                     {/if}
 
                     {#each Object.entries(columns) as [columnName, columnInfo]}
-                        <th class="align-top">
+                        <th
+                            class="align-top"
+                            style="width: {columns[columnName].width}%; 
+                                min-width: {columns[columnName].minWidth}; 
+                                max-width:calc({columns[columnName].maxWidth} - 2rem);">
                             <button
                                 on:click={async () => handleSortBy(columnName)}
                                 class="btn btn-link  btn-xs pl-0 text-base-content"
@@ -521,7 +531,7 @@
                             {#if columnInfo.hasOwnProperty("filterBy")}
                                 {#each Object.entries(columnInfo.filterBy) as [filterName, filterInfo]}
                                     <div class:hidden={!showFilters} class="mt-1 transition-all">
-                                        <div class="form-control my-auto mr-2">
+                                        <div class="form-control my-auto">
                                             <div class="relative flex">
                                                 {#if filterInfo.hasOwnProperty("label")}
                                                     <span class="mt-1 w-9 capitalize">
@@ -738,7 +748,7 @@
                                             }}
                                             bind:checked={selectedRows[row.id]}
                                             type="checkbox"
-                                            class="checkbox checkbox-sm align-middle" />
+                                            class="checkbox checkbox-sm relative top-[-1px] align-middle" />
                                     </label>
                                 </th>
                             {/if}
@@ -746,12 +756,16 @@
                                 {#if columnName !== "id"}
                                     {#if columnName === clickableColumn}
                                         <td
-                                            class="ellipsis group-hover:bg-base-300 {clickableColumn === undefined
+                                            class="overflow-hidden group-hover:bg-base-300 {clickableColumn ===
+                                            undefined
                                                 ? 'group-hover:cursor-pointer'
                                                 : ''}"
-                                            style="width: {columns[columnName].width}%; min-width: {columns[columnName]
-                                                .minWidth}">
-                                            <span>
+                                            style="width: {columns[columnName].width}%; 
+                                                min-width: {columns[columnName].minWidth}; 
+                                                max-width: calc({columns[columnName].maxWidth});">
+                                            <span
+                                                class="text-nowrap inline-block overflow-hidden overflow-ellipsis"
+                                                style="max-width:calc(100% - 2rem);">
                                                 <button
                                                     on:click={(event) => handleRowClick(event, row.id)}
                                                     class="btn btn-link btn-xs text-base-content  underline">
@@ -761,14 +775,18 @@
                                         </td>
                                     {:else}
                                         <td
-                                            class="ellipsis group-hover:bg-base-300 {clickableColumn === undefined
+                                            class="overflow-hidden group-hover:bg-base-300 {clickableColumn ===
+                                            undefined
                                                 ? 'group-hover:cursor-pointer'
                                                 : ''}"
-                                            style="width: {columns[columnName].width}%; min-width: {columns[columnName]
-                                                .minWidth}">
-                                            <span>
-                                                {columnValue}
-                                            </span>
+                                            style="width: {columns[columnName].width}%; 
+                                            min-width: {columns[columnName].minWidth}; 
+                                            max-width: calc({columns[columnName].maxWidth});">
+                                            <div
+                                                class="text-nowrap inline-block  overflow-hidden overflow-ellipsis align-middle"
+                                                style="max-width:calc(100% - 2rem);">
+                                                {@html columnValue}
+                                            </div>
                                         </td>
                                     {/if}
                                 {/if}
@@ -776,28 +794,30 @@
 
                             {#if Object.keys(customActions).length > 1}
                                 <td
-                                    class="group-hover:bg-base-300  {clickableColumn === undefined
+                                    class="text-center group-hover:bg-base-300 {clickableColumn === undefined
                                         ? 'group-hover:cursor-pointer'
                                         : ''}"
                                     style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
-                                    {#each customActions.actions as action}
-                                        <button
-                                            class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
-                                            on:click={(event) =>
-                                                handleCustomActionClick(event, action.clickEvent, row.id)}>
-                                            {#if action.faIcon === "faEye"}
-                                                <Fa icon={faEye} size="1.1x" />
-                                            {:else if action.faIcon === "faTrash"}
-                                                <Fa icon={faTrash} size="1.1x" />
-                                            {:else if action.faIcon === "faEdit"}
-                                                <Fa icon={faEdit} size="1.1x" />
-                                            {/if}
+                                    <div class="flex justify-center align-middle">
+                                        {#each customActions.actions as action}
+                                            <button
+                                                class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
+                                                on:click={(event) =>
+                                                    handleCustomActionClick(event, action.clickEvent, row.id)}>
+                                                {#if action.faIcon === "faEye"}
+                                                    <Fa icon={faEye} size="1.1x" />
+                                                {:else if action.faIcon === "faTrash"}
+                                                    <Fa icon={faTrash} size="1.1x" />
+                                                {:else if action.faIcon === "faEdit"}
+                                                    <Fa icon={faEdit} size="1.1x" />
+                                                {/if}
 
-                                            {#if action.hasOwnProperty("displayLabel")}
-                                                <span class="ml-1">{action.displayLabel}</span>
-                                            {/if}
-                                        </button>
-                                    {/each}
+                                                {#if action.hasOwnProperty("displayLabel")}
+                                                    <span class="ml-1">{action.displayLabel}</span>
+                                                {/if}
+                                            </button>
+                                        {/each}
+                                    </div>
                                 </td>
                             {/if}
                         </tr>
@@ -810,7 +830,10 @@
                                     class="animate-pulse text-center align-middle"
                                     style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
                                     <label>
-                                        <input type="checkbox" class="checkbox checkbox-sm align-middle" disabled />
+                                        <input
+                                            type="checkbox"
+                                            class="checkbox checkbox-sm relative top-[-1px] align-middle"
+                                            disabled />
                                     </label>
                                 </th>
                             {/if}
@@ -819,20 +842,24 @@
                                 {#if columnName !== "id"}
                                     {#if clickableColumn !== undefined && columnName === clickableColumn}
                                         <td
-                                            class="ellipsis animate-pulse"
-                                            style="width: {columns[columnName].width}%; min-width: {columns[columnName]
-                                                .minWidth}">
+                                            class="animate-pulse"
+                                            style="width: {columns[columnName].width}%; 
+                                                min-width: {columns[columnName].minWidth}; 
+                                                max-width: calc({columns[columnName].maxWidth} - 2rem);">
                                             <button
-                                                class="btn btn-link btn-xs animate-pulse bg-opacity-30 text-base-content text-opacity-50 underline hover:cursor-default" />
+                                                class="btn btn-link btn-xs bg-opacity-100 text-base-content text-opacity-50 underline hover:cursor-default" />
                                         </td>
                                     {:else}
                                         <td
-                                            class="ellipsis animate-pulse text-base-content text-opacity-50"
-                                            style="width: {columns[columnName].width}%; min-width: {columns[columnName]
-                                                .minWidth}">
-                                            <span
-                                                class="mr-1 rounded-lg border-opacity-50  bg-base-300 bg-opacity-30 text-transparent"
-                                                >Loading.............................................</span>
+                                            class="animate-pulse text-center text-base-content text-opacity-50"
+                                            style="width: {columns[columnName].width}%; 
+                                                min-width: {columns[columnName].minWidth}; 
+                                                max-width: calc({columns[columnName].maxWidth} - 2rem);">
+                                            <div
+                                                class="text-nowrap inline-block overflow-hidden rounded-lg border-opacity-50 bg-base-300 bg-opacity-100 align-middle text-transparent"
+                                                style="max-width: calc(100% - 2rem);">
+                                                Loading.....................................................
+                                            </div>
                                         </td>
                                     {/if}
                                 {/if}
@@ -840,24 +867,26 @@
 
                             {#if Object.keys(customActions).length > 1}
                                 <td
-                                    class="animate-pulse"
+                                    class="animate-pulse text-center"
                                     style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
-                                    {#each customActions.actions as action}
-                                        <button
-                                            class="btn btn-ghost btn-xs relative top-[-1px] mr-1 flex-nowrap bg-base-300 bg-opacity-30 text-transparent">
-                                            {#if action.faIcon === "faEye"}
-                                                <Fa icon={faEye} size="1.1x" />
-                                            {:else if action.faIcon === "faTrash"}
-                                                <Fa icon={faTrash} size="1.1x" />
-                                            {:else if action.faIcon === "faEdit"}
-                                                <Fa icon={faEdit} size="1.1x" />
-                                            {/if}
+                                    <div class="flex justify-center align-middle">
+                                        {#each customActions.actions as action}
+                                            <button
+                                                class="btn btn-ghost btn-xs relative mr-1 flex-nowrap justify-center bg-base-300 bg-opacity-100 text-transparent">
+                                                {#if action.faIcon === "faEye"}
+                                                    <Fa icon={faEye} size="1.1x" />
+                                                {:else if action.faIcon === "faTrash"}
+                                                    <Fa icon={faTrash} size="1.1x" />
+                                                {:else if action.faIcon === "faEdit"}
+                                                    <Fa icon={faEdit} size="1.1x" />
+                                                {/if}
 
-                                            {#if action.hasOwnProperty("displayLabel")}
-                                                <span class="ml-1">{action.displayLabel}</span>
-                                            {/if}
-                                        </button>
-                                    {/each}
+                                                {#if action.hasOwnProperty("displayLabel")}
+                                                    <span class="ml-1">{action.displayLabel}</span>
+                                                {/if}
+                                            </button>
+                                        {/each}
+                                    </div>
                                 </td>
                             {/if}
                         </tr>
@@ -883,8 +912,87 @@
         </table>
     </div>
 
-    <div class="mt-3 flex flex-wrap">
-        <div class="w-full sm:w-1/2">
+    <div class="xs:hidden">
+        <div class="mx-auto mt-2">
+            <div class="btn-group justify-center">
+                <button
+                    class="btn btn-sm"
+                    on:click={async () => {
+                        if (postBody.pageNumber >= 1) {
+                            await handlePaginate(postBody.pageNumber - 1);
+                        }
+                    }}
+                    >«
+                </button>
+                <Dropdown
+                    dropDownText="Page {postBody.pageNumber + 1}"
+                    dropDownOptions={paginationOptions}
+                    dropdownClasses="dropdown-top"
+                    btnClasses="rounded-none"
+                    on:optionSelected={async (params) =>
+                        await handlePaginate(parseInt(params.detail.params.pageNumber))} />
+                <button
+                    class="btn btn-sm"
+                    on:click={async () => {
+                        if (postBody.pageNumber < totalPagesCount - 1) {
+                            await handlePaginate(postBody.pageNumber + 1);
+                        }
+                    }}
+                    >»
+                </button>
+            </div>
+        </div>
+        <div class="mx-auto mt-2">
+            <div class="flex justify-center">
+                <div class="btn btn-sm" class:hidden={editingLimit} on:click={() => (editingLimit = true)}>
+                    Items per Page: {postBody.itemsPerPage}
+                </div>
+                <div class="form-control w-36" class:hidden={!editingLimit}>
+                    <div class="relative">
+                        <input
+                            bind:value={postBody.itemsPerPage}
+                            on:keypress={async (event) => {
+                                disableNonNumericInput(event);
+                                if (event.keyCode === 13) {
+                                    await handleGeneralStates("editLimit");
+                                }
+                            }}
+                            on:blur={(event) => {
+                                if (event.relatedTarget !== null && event.relatedTarget.id === "btnEditLimitId") {
+                                    return;
+                                }
+
+                                requestPendingStates.editLimit.visible = false;
+                            }}
+                            type="text"
+                            on:focus={(event) => {
+                                event.target.select();
+                                requestPendingStates.editLimit.visible = true;
+                            }}
+                            placeholder="25"
+                            class="input input-bordered input-sm w-full pr-16" />
+                        {#if requestPendingStates.editLimit.loading || requestPendingStates.editLimit.visible}
+                            <button
+                                id="btnEditLimitId"
+                                class="btn btn-primary btn-sm absolute top-0 right-0 rounded-l-none before:mr-0"
+                                class:loading={requestPendingStates.editLimit.loading}
+                                transition:fly={{ x: 10, duration: 250 }}
+                                on:click={async () => {
+                                    await handleGeneralStates("editLimit");
+                                    editingLimit = false;
+                                }}>
+                                <span class:hidden={requestPendingStates.editLimit.loading}>
+                                    <Fa icon={faCheck} size="1.1x" />
+                                </span>
+                            </button>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-2 hidden w-full xs:flex xs:justify-between">
+        <div class="mr-auto">
             <div class="btn btn-sm" class:hidden={editingLimit} on:click={() => (editingLimit = true)}>
                 Items per Page: {postBody.itemsPerPage}
             </div>
@@ -930,56 +1038,51 @@
                 </div>
             </div>
         </div>
-        <div class="mt-2 w-full sm:mt-0 sm:w-1/2">
-            <div class="btn-group sm:justify-end">
-                <button
-                    class="btn btn-sm"
-                    on:click={async () => {
-                        if (postBody.pageNumber >= 1) {
-                            await handlePaginate(postBody.pageNumber - 1);
-                        }
-                    }}
-                    >«
-                </button>
-                <Dropdown
-                    dropDownText="Page {postBody.pageNumber + 1}"
-                    dropDownOptions={paginationOptions}
-                    dropdownClasses="dropdown-top"
-                    btnClasses="rounded-none"
-                    on:optionSelected={async (params) =>
-                        await handlePaginate(parseInt(params.detail.params.pageNumber))} />
-                <button
-                    class="btn btn-sm"
-                    on:click={async () => {
-                        if (postBody.pageNumber < totalPagesCount - 1) {
-                            await handlePaginate(postBody.pageNumber + 1);
-                        }
-                    }}
-                    >»
-                </button>
-            </div>
+        <div class="btn-group ml-auto">
+            <button
+                class="btn btn-sm"
+                on:click={async () => {
+                    if (postBody.pageNumber >= 1) {
+                        await handlePaginate(postBody.pageNumber - 1);
+                    }
+                }}
+                >«
+            </button>
+            <Dropdown
+                dropDownText="Page {postBody.pageNumber + 1}"
+                dropDownOptions={paginationOptions}
+                dropdownClasses="dropdown-top"
+                btnClasses="rounded-none"
+                on:optionSelected={async (params) => await handlePaginate(parseInt(params.detail.params.pageNumber))} />
+            <button
+                class="btn btn-sm"
+                on:click={async () => {
+                    if (postBody.pageNumber < totalPagesCount - 1) {
+                        await handlePaginate(postBody.pageNumber + 1);
+                    }
+                }}
+                >»
+            </button>
         </div>
     </div>
 </div>
 
 <style>
-    .ellipsis {
+    /* .ellipsis {
         position: relative;
-    }
+    } */
 
-    .ellipsis:before {
+    /* .ellipsis:before {
         content: "&nbsp;";
         visibility: hidden;
-    }
+    } */
 
     .ellipsis span {
-        position: absolute;
-        left: 1rem;
-        right: 1rem;
-        top: 1rem;
-        bottom: 1rem;
-        white-space: nowrap;
+        /* max-width: 100px; */
+        /* display: inline-block; */
+        /* width: 100px; */
+        /* white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;
+        text-overflow: ellipsis; */
     }
 </style>

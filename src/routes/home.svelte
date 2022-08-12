@@ -16,9 +16,8 @@
         await checkAuthentication();
     });
     let columns = {
-        name: {
-            width: 25,
-            minWidth: "200px",
+        namaaaaaaae: {
+            width: 10,
             sortBy: true,
             isSortAscending: true,
             filterBy: {
@@ -30,8 +29,7 @@
             },
         },
         date: {
-            width: 25,
-            minWidth: "200px",
+            width: 3,
             sortBy: false,
             isSortAscending: true,
             filterBy: {
@@ -45,8 +43,7 @@
             },
         },
         category: {
-            width: 18,
-            minWidth: "200px",
+            width: 3,
             sortBy: false,
             isSortAscending: true,
             filterBy: {
@@ -59,7 +56,6 @@
         },
         age: {
             width: 10,
-            minWidth: "200px",
             sortBy: false,
             isSortAscending: true,
             filterBy: {
