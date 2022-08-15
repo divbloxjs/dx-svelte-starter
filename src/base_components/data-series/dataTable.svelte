@@ -296,7 +296,6 @@
             columns[columnName].width =
                 (allocatedDataColumnWidth * columns[columnName].width) / sumOfColumnDataColumnWidths;
             takenUpWidth += columns[columnName].width;
-            console.log(columnName + ": " + columns[columnName].width);
         }
     };
     //#endregion
