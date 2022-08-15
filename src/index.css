@@ -37,9 +37,8 @@
         .btn-outline:focus-visible {
             outline: 2px solid white;
         }
-
-        .btn.loading.mr-0:before {
-            margin-right: 0;
+        .btn.loading.custom-btn-loading:before {
+            margin: 0;
         }
     }
 }

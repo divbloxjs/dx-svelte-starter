@@ -4,6 +4,115 @@
     import PageTransitionFade from "../page_transitions/pageTransitionFade.svelte";
     import ValidatedInput from "../forms/validatedInput.svelte";
     import ValidatedSelectInput from "../forms/validatedSelectInput.svelte";
+    import DataTable from "$src/base_components/data-series/dataTable.svelte";
+    import { faFileExcel, faFileCsv, faFileText, faTrash } from "@fortawesome/free-solid-svg-icons/index.es";
+
+    let columns = {
+        name: {
+            width: 20,
+            sortBy: true,
+            isSortAscending: true,
+            filterBy: {
+                filterText: {
+                    userInput: "Joeys",
+                    placeholder: "First Name",
+                    defaultValue: "Joeys",
+                },
+            },
+        },
+        age: {
+            width: 15,
+            sortBy: false,
+            isSortAscending: true,
+            filterBy: {
+                filterNumber: { userInput: "", placeholder: "Age is just a number", defaultValue: "" },
+            },
+        },
+        date: {
+            width: 25,
+            sortBy: false,
+            isSortAscending: true,
+            filterBy: {
+                fromDate: {
+                    userInput: "",
+                    label: "From",
+                    placeholder: "From",
+                    defaultValue: "",
+                },
+                toDate: { userInput: "", label: "To", placeholder: "To", defaultValue: "" },
+            },
+        },
+        category: {
+            width: 30,
+            sortBy: false,
+            isSortAscending: true,
+            filterBy: {
+                filterDropdown: {
+                    userInput: "Miller",
+                    placeholder: "-All-",
+                    defaultOptions: ["Miller", "Tinkerer", "Hotdog", "Oven"],
+                },
+            },
+        },
+    };
+
+    let multiSelectActions = [
+        {
+            faIcon: faTrash,
+            displayLabel: "Delete",
+            optionClasses: "",
+            faClasses: "text-error",
+            clickEvent: "delete_clicked",
+        },
+        {
+            faIcon: faFileText,
+            displayLabel: "Export (Text)",
+            optionClasses: "",
+            faClasses: "text-success",
+            clickEvent: "export_txt_clicked",
+        },
+        {
+            faIcon: faFileExcel,
+            displayLabel: "Export (Excel)",
+            optionClasses: "",
+            faClasses: "text-success",
+            clickEvent: "export_excel_clicked",
+        },
+        {
+            faIcon: faFileCsv,
+            displayLabel: "Export (CSV)",
+            params: {},
+            optionClasses: "",
+            faClasses: "text-success",
+            clickEvent: "export_csv_clicked",
+        },
+    ];
+
+    let customActions = {
+        columnHeading: "Actions",
+        actions: [
+            {
+                faIcon: "faEye",
+                btnClasses: "btn-info",
+                clickEvent: "open_clicked",
+            },
+            {
+                faIcon: "faEdit",
+                btnClasses: "btn-success",
+                displayLabel: "Edit",
+                clickEvent: "edit_clicked",
+            },
+            {
+                faIcon: "faTrash",
+                btnClasses: "btn-error",
+                clickEvent: "delete_clicked",
+            },
+        ],
+    };
+
+    const handleActionTriggered = async (params) => {
+        console.log(params.detail);
+    };
 
     let validatedInputArray = [];
 
@@ -11,7 +120,7 @@
     let isValid = [];
     let validatedInput = [];
 
-    $: activeComponentTab = "daisyUiComponents";
+    $: activeComponentTab = "dataTableExample";
 
     const tabToggle = (event, tabToggleId) => {
         event.target.classList.add("tab-active");
@@ -71,99 +180,37 @@
             <div class="tabs tabs-boxed pl-5 pr-5">
                 <span
                     class="tab tab-bordered mr-2"
-                    class:tab-active={activeComponentTab === "daisyUiComponents"}
-                    on:click={(event) => tabToggle(event, "daisyUiComponents")}>
-                    DaisyUI Preview
+                    class:tab-active={activeComponentTab === "dataTableExample"}
+                    on:click={(event) => tabToggle(event, "dataTableExample")}>
+                    Data Table
                 </span>
                 <span
                     class="tab tab-bordered"
-                    class:tab-active={activeComponentTab === "customComponents"}
-                    on:click={(event) => tabToggle(event, "customComponents")}>
-                    Custom Built
+                    class:tab-active={activeComponentTab === "validatedInputs"}
+                    on:click={(event) => tabToggle(event, "validatedInputs")}>
+                    Validated Inputs
                 </span>
             </div>
 
-            {#if activeComponentTab == "daisyUiComponents"}
-                <div in:fade={{ duration: 500 }}>
-                    <!-- buttons -->
-                    <div class="m-4">
-                        <button class="btn btn-primary">primary</button>
-                        <button class="btn btn-secondary">secondary</button>
-                        <button class="btn btn-accent">accent</button>
-                    </div>
-
-                    <!-- toggle -->
-                    <div class="m-4">
-                        <input type="checkbox" class="toggle toggle-primary" />
-                        <input type="checkbox" class="toggle toggle-secondary" />
-                        <input type="checkbox" class="toggle toggle-accent" />
-                    </div>
-
-                    <!-- card -->
-                    <div class="card m-4 w-80 shadow-2xl">
-                        <figure>
-                            <!-- svelte-ignore a11y-missing-attribute -->
-                            <img src="https://picsum.photos/id/1005/500/250" />
-                        </figure>
-                        <div class="card-body">
-                            <h2 class="card-title">DaisyUI Card</h2>
-                            <p>
-                                Rerum reiciendis beatae tenetur excepturi aut pariatur est eos. Sit sit necessitatibus.
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- dropdown -->
-                    <div class="dropdown m-4">
-                        <div tabindex="0" class="btn m-1">Dropdown</div>
-                        <ul
-                            tabindex="0"
-                            class="dropdown-content menu rounded-box w-52 bg-neutral p-2 text-neutral-content">
-                            <li><span>Item 1</span></li>
-                            <li><span>Item 2</span></li>
-                        </ul>
-                    </div>
-
-                    <!-- modal button -->
-                    <label for="my-modal" class="modal-button btn">Modal</label>
-                    <!-- modal content -->
-                    <input type="checkbox" id="my-modal" class="modal-toggle" />
-                    <div class="modal">
-                        <div class="modal-box">
-                            <p>
-                                Enim dolorem dolorum omnis atque necessitatibus. Consequatur aut adipisci qui iusto illo
-                                eaque. Consequatur repudiandae et. Nulla ea quasi eligendi. Saepe velit autem minima.
-                            </p>
-                            <div class="modal-action">
-                                <label for="my-modal" class="btn">Close</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- steps -->
-                    <ul class="steps my-4 w-full">
-                        <li class="step step-primary">Register</li>
-                        <li class="step step-primary">Choose plan</li>
-                        <li class="step">Purchase</li>
-                        <li class="step">Receive Product</li>
-                    </ul>
-
-                    <!-- avatar -->
-                    <div class="avatar online m-10">
-                        <div class="h-24 w-24 rounded-full">
-                            <!-- svelte-ignore a11y-missing-attribute -->
-                            <img src="http://daisyui.com/tailwind-css-component-profile-1@94w.png" />
-                        </div>
-                    </div>
-                    <div class="avatar offline m-10">
-                        <div class="h-24 w-24 rounded-full">
-                            <!-- svelte-ignore a11y-missing-attribute -->
-                            <img src="http://daisyui.com/tailwind-css-component-profile-2@94w.png" />
-                        </div>
-                    </div>
+            {#if activeComponentTab == "dataTableExample"}
+                <div in:fade={{ duration: 500 }} class="pt-4">
+                    <DataTable
+                        dataSource="src/base_components/data-series/tests/data.json"
+                        {columns}
+                        enableGlobalSearch={true}
+                        enableFilters={true}
+                        enableRefresh={true}
+                        showFilters={true}
+                        itemsPerPage={3}
+                        enableMultiSelect={true}
+                        pageNumber={0}
+                        {customActions}
+                        {multiSelectActions}
+                        dataSourceDelaySimulation={1000}
+                        on:actionTriggered={async (params) => handleActionTriggered(params)} />
                 </div>
-            {:else if activeComponentTab == "customComponents"}
-                <div in:fade={{ duration: 500 }} class="flex flex-row gap-5">
+            {:else if activeComponentTab == "validatedInputs"}
+                <div in:fade={{ duration: 500 }} class="flex flex-row gap-5 pt-4">
                     <div class="basis-4/12">
                         <h4 class="text-xl font-bold">Validated inputs</h4>
                         <ValidatedSelectInput

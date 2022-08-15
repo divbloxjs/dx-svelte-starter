@@ -67,12 +67,9 @@
             <li>
                 <a href="#/">Page 2</a>
             </li>
-            <li>
-                <a href="#/dataTable">Data Table</a>
-            </li>
         </ul>
 
-        <div class="dropdown-end dropdown">
+        <div class="dropdown dropdown-end">
             <!-- svelte-ignore a11y-label-has-associated-control -->
             <label tabindex="0" class="avatar btn btn-ghost btn-circle">
                 <div class="w-10 rounded-full">

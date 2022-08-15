@@ -20,12 +20,11 @@
     import Dropdown from "$src/base_components/data-series/ui-elements/dropdown.svelte";
     import { createEventDispatcher } from "svelte";
 
-    const dispatch = createEventDispatcher();
-    const actionTriggered = (params) => {
-        dispatch("actionTriggered", params);
-    };
-
     export let dataSource;
+    export let dataSourceDelaySimulation = 0; //ms
+    export let dataSourceReturnProp = "data";
+    export let dataSourceFooterReturnProp = "footer";
+    export let dataSourceCountReturnProp = "count";
     export let itemsPerPage = 10;
     export let pageNumber = 0;
     export let enableMultiSelect = true;
@@ -37,14 +36,42 @@
 
     export let multiActionsColumnWidth = 3;
     export let customActionsColumnWidth = 9;
+    const multiActionsColumnMinWidth = multiActionsColumnWidth;
+    const customActionsColumnMinWidth = customActionsColumnWidth;
 
     export let columns = undefined;
     export let customActions = {};
     export let multiSelectActions = [];
+    export let footerColumns = {};
+
+    export let showFilters = false;
 
     let postBody = {};
 
-    // TODO figure out how to add filterStates here dynamically
+    let editingLimit = false;
+
+    let sortBy;
+    let isSortAscending = true;
+    let rotateDegrees = [0, 180];
+
+    let currentPage = [];
+    let totalItemCount;
+    let totalPagesCount;
+
+    let paginationOptions = [];
+
+    let selectedRows = {};
+    let allSelected = false;
+
+    let isLoading = false;
+
+    let initComplete = false;
+
+    const dispatch = createEventDispatcher();
+    const actionTriggered = (params) => {
+        dispatch("actionTriggered", params);
+    };
+
     const requestPendingStates = {
         globalSearch: {
             loading: false,
@@ -64,7 +91,9 @@
     const handleGeneralStates = async (type) => {
         requestPendingStates[type].visible = true;
         requestPendingStates[type].loading = true;
+
         await refreshDataTable();
+
         requestPendingStates[type].visible = false;
         requestPendingStates[type].loading = false;
     };
@@ -73,6 +102,7 @@
         if (isLoading) {
             return;
         }
+
         sortBy = columnName;
         isSortAscending = !isSortAscending;
 
@@ -86,17 +116,24 @@
         if (isLoading) {
             return;
         }
+
         requestPendingStates.filters[columnName][filterName].loading = true;
+
         await refreshDataTable();
+
         requestPendingStates.filters[columnName][filterName].loading = false;
     };
 
-    let isLoading = false;
     const refreshDataTable = async () => {
         isLoading = true;
-        await sleep(() => {}, 1000);
+
+        if (dataSourceDelaySimulation > 0) {
+            await sleep(() => {}, dataSourceDelaySimulation);
+        }
+
         postBody.limit = itemsPerPage;
-        postBody.offset = (totalPagesCount - 1) * itemsPerPage;
+        postBody.offset = (pageNumber - 1) * itemsPerPage;
+
         const response = await fetch(dataSource, {
             method: "POST",
             headers: {
@@ -108,35 +145,32 @@
 
         let data = await response.json();
 
-        currentPage = data.data;
+        if (typeof data[dataSourceReturnProp] === "undefined") {
+            throw new Error("dataSourceReturnProp '" + dataSourceReturnProp + "' is not defined on the fetch result");
+        }
+        currentPage = data[dataSourceReturnProp];
 
-        //TODO: remove - Simulating server-side pagination
-        currentPage = currentPage.splice(postBody.pageNumber * postBody.itemsPerPage, postBody.itemsPerPage);
         currentPage.forEach((row) => {
             selectedRows[row.id] = false;
         });
 
-        totalCount = data.count;
-        totalPagesCount = Math.ceil(totalCount / postBody.itemsPerPage);
+        if (typeof data[dataSourceCountReturnProp] === "undefined") {
+            throw new Error(
+                "dataSourceCountReturnProp '" + dataSourceCountReturnProp + "' is not defined on the fetch result"
+            );
+        }
+
+        totalItemCount = data[dataSourceCountReturnProp];
+        totalPagesCount = Math.ceil(totalItemCount / postBody.itemsPerPage);
+
+        if (typeof data[dataSourceFooterReturnProp] !== "undefined") {
+            footerColumns = data[dataSourceFooterReturnProp];
+        }
 
         paginationOptions = buildPaginationOptions();
         isLoading = false;
     };
 
-    export let showFilters = false;
-    let editingLimit = false;
-
-    let sortBy;
-    let isSortAscending = true;
-    let rotateDegrees = [0, 180];
-
-    let currentPage = [];
-    let totalCount;
-
-    let paginationOptions = [];
-
-    let selectedRows = {};
-    let allSelected = false;
     const updateSelected = (allSelected) => {
         Object.keys(selectedRows).forEach((key) => {
             selectedRows[key] = allSelected;
@@ -147,7 +181,6 @@
         await refreshDataTable();
     });
 
-    let initComplete = false;
     beforeUpdate(async () => {
         if (!initComplete) {
             initComplete = true;
@@ -174,6 +207,7 @@
         if (dataSource === undefined) {
             throw Error("dataSource has not been provided");
         }
+
         if (columns === undefined) {
             throw Error("columns have not been provided");
         }
@@ -207,7 +241,7 @@
     };
 
     //#region Pagination
-    let totalPagesCount;
+
     const buildPaginationOptions = () => {
         const options = Array.from(Array(totalPagesCount).keys()).map((_, index) => {
             const optionInfo = {
@@ -225,6 +259,7 @@
         if (isLoading) {
             return;
         }
+
         paginationOptions = [];
         postBody.pageNumber = pageNumber;
         await refreshDataTable();
@@ -254,9 +289,6 @@
     //endregion
 
     //#region Column Widths
-    const multiActionsColumnMinWidth = multiActionsColumnWidth;
-    const customActionsColumnMinWidth = customActionsColumnWidth;
-
     // Handles dynamic scaling of data columns bases on provided widths, or defaults to generic auto HTML table scaling
     const handleColWidths = async () => {
         let takenUpWidth = 0;
@@ -314,7 +346,7 @@
         {/if}
         <div class="my-auto ml-auto flex flex-row">
             <span class="badge my-auto border-base-300 bg-base-300 text-base-content"
-                >{totalCount !== undefined ? totalCount : "... "} items</span>
+                >{totalItemCount !== undefined ? totalItemCount : "... "} items</span>
 
             <div class="btn-group ml-2 hidden sm:flex">
                 <button
@@ -383,7 +415,7 @@
                         <button
                             transition:fly={{ x: 10, duration: 250 }}
                             class:loading={requestPendingStates.globalSearch.loading}
-                            class="btn btn-primary btn-sm absolute top-0 right-0 mr-0 rounded-l-none"
+                            class="custom-btn-loading btn btn-primary btn-sm absolute top-0 right-0 mr-0 rounded-l-none"
                             on:click={async () => {
                                 if (isLoading) {
                                     return;
@@ -402,7 +434,7 @@
         {/if}
         {#if enableRefresh === true}
             <button
-                class="btn btn-sm my-auto ml-auto mt-[1px] before:mr-0 lg:ml-0"
+                class="custom-btn-loading btn btn-sm my-auto ml-auto mt-[1px] lg:ml-0"
                 class:loading={requestPendingStates.refresh.loading}
                 on:click={async () => {
                     if (isLoading) {
@@ -433,7 +465,7 @@
             {/if}
             <div class="my-auto ml-auto flex flex-row">
                 <span class="badge my-auto mr-2 border-base-300 bg-base-300 text-base-content"
-                    >{totalCount !== undefined ? totalCount : "Loading"} items</span>
+                    >{totalItemCount !== undefined ? totalItemCount : "Loading"} items</span>
 
                 <div class="btn-group">
                     <button
@@ -627,7 +659,7 @@
                                                             class:loading={requestPendingStates.filters[columnName][
                                                                 filterName
                                                             ].loading}
-                                                            class="btn btn-primary btn-xs absolute top-0 right-0 mr-0 rounded-l-none before:mr-0"
+                                                            class="custom-btn-loading btn btn-primary btn-xs absolute top-0 right-0 mr-0 rounded-l-none"
                                                             on:click={async () => {
                                                                 requestPendingStates.filters[columnName][
                                                                     filterName
@@ -651,7 +683,7 @@
                                                         class:loading={requestPendingStates.filters[columnName][
                                                             filterName
                                                         ].loading}
-                                                        class="btn btn-primary btn-xs absolute top-0 right-0 mr-0 rounded-l-none before:mr-0"
+                                                        class="custom-btn-loading btn btn-primary btn-xs absolute top-0 right-0 mr-0 rounded-l-none"
                                                         on:click={async () => {
                                                             requestPendingStates.filters[columnName][
                                                                 filterName
@@ -679,7 +711,7 @@
 
                     {#if Object.keys(customActions).length > 1}
                         <th
-                            class="text-center align-top"
+                            class="align-top"
                             style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
                             <span class="inline-block">
                                 <span class="mr-2 inline-block align-middle">
@@ -766,11 +798,11 @@
 
                             {#if Object.keys(customActions).length > 1}
                                 <td
-                                    class="text-center group-hover:bg-base-300 {clickableColumn === undefined
+                                    class="group-hover:bg-base-300 {clickableColumn === undefined
                                         ? 'group-hover:cursor-pointer'
                                         : ''}"
                                     style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
-                                    <div class="flex justify-center align-middle">
+                                    <div class="flex align-middle">
                                         {#each customActions.actions as action}
                                             <button
                                                 class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
@@ -839,9 +871,9 @@
 
                             {#if Object.keys(customActions).length > 1}
                                 <td
-                                    class="animate-pulse text-center"
+                                    class="animate-pulse"
                                     style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
-                                    <div class="flex justify-center align-middle">
+                                    <div class="flex align-middle">
                                         {#each customActions.actions as action}
                                             <button
                                                 class="btn btn-ghost btn-xs relative mr-1 flex-nowrap justify-center bg-base-300 bg-opacity-100 text-transparent">
@@ -866,17 +898,21 @@
                 {/if}
             </tbody>
 
-            {#if Object.keys(columns).length !== 0}
+            {#if Object.keys(footerColumns).length !== 0}
                 <tfoot>
                     <tr class="child:bg-base-300">
                         {#if enableMultiSelect}
                             <th />
                         {/if}
-                        {#each Object.entries(columns) as [columnName, columnValue]}
-                            <th>{columnName}</th>
+                        {#each Object.entries(columns) as [columnName, footerColumnName]}
+                            <th>
+                                {#if typeof footerColumns[columnName] !== "undefined"}
+                                    {footerColumns[columnName]}
+                                {/if}
+                            </th>
                         {/each}
                         {#if Object.keys(customActions).length > 1}
-                            <th class="text-center"> {customActions.columnHeading} </th>
+                            <th />
                         {/if}
                     </tr>
                 </tfoot>
@@ -952,7 +988,7 @@
                             class="input input-bordered input-sm w-full pr-16" />
                         {#if requestPendingStates.editLimit.loading || requestPendingStates.editLimit.visible}
                             <button
-                                class="btn btn-primary btn-sm absolute top-0 right-0 rounded-l-none before:mr-0"
+                                class="custom-btn-loading btn btn-primary btn-sm absolute top-0 right-0 rounded-l-none"
                                 class:loading={requestPendingStates.editLimit.loading}
                                 transition:fly={{ x: 10, duration: 250 }}
                                 on:click={async () => {
@@ -1005,7 +1041,7 @@
                         class="input input-bordered input-sm w-full pr-16" />
                     {#if requestPendingStates.editLimit.loading || requestPendingStates.editLimit.visible}
                         <button
-                            class="btn btn-primary btn-sm absolute top-0 right-0 rounded-l-none before:mr-0"
+                            class="custom-btn-loading btn btn-primary btn-sm absolute top-0 right-0 rounded-l-none"
                             class:loading={requestPendingStates.editLimit.loading}
                             transition:fly={{ x: 10, duration: 250 }}
                             on:click={async () => {
