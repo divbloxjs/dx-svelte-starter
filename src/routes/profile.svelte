@@ -1,15 +1,15 @@
 <script>
-    import { profilePicturePath, updateProfilePicturePath } from "../lib/js/stores/userData";
-    import profilePictureDefault from "../assets/images/dx_profile_placeholder.svg";
+    import { profilePicturePath, updateProfilePicturePath } from "$src/lib/js/stores/userData";
+    import profilePictureDefault from "$src/assets/images/dx_profile_placeholder.svg";
 
-    import MainNav from "../lib/navigation/mainNav.svelte";
-    import PageTransitionFade from "../base_components/page_transitions/pageTransitionFade.svelte";
-    import QuickActionsMenu from "../lib/navigation/quickActionsMenu.svelte";
-    import { routeUtilities } from "../lib/js/utilities/routeUtilities";
-    import ValidatedInput from "../base_components/forms/validatedInput.svelte";
+    import MainNav from "$src/lib/navigation/mainNav.svelte";
+    import PageTransitionFade from "$src/base_components/page_transitions/pageTransitionFade.svelte";
+    import QuickActionsMenu from "$src/lib/navigation/quickActionsMenu.svelte";
+    import { routeUtilities } from "$src/lib/js/utilities/routeUtilities";
+    import ValidatedInput from "$src/base_components/forms/validatedInput.svelte";
     import { fade } from "svelte/transition";
-    import { checkAuthentication, logout } from "../lib/js/stores/authentication";
-    import SingleImageUploader from "../base_components/uploaders/singleImageUploader.svelte";
+    import { checkAuthentication, logout } from "$src/lib/js/stores/authentication";
+    import SingleImageUploader from "$src/base_components/uploaders/singleImageUploader.svelte";
     import { onMount } from "svelte";
 
     let profilePictureUploadResponse = {};

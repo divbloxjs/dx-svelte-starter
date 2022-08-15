@@ -1,0 +1,39 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "name": "Tommy is a little",
+            "age": "lamb and doesnt even know he is on ehahaha",
+            "date": "2018-06-07T00:00",
+            "category": "aasdasdasd asdasd sd asda asd asd a sd asd as dasd"
+        },
+        {
+            "id": 2,
+            "name": "Diggy",
+            "age": 2,
+            "date": "2011-06-07T00:00",
+            "category": "this is a logn oiec eof thext and it will want to flow yayayayaya hahaha "
+        },
+        {
+            "id": 3,
+            "name": "smity",
+            "age": 12,
+            "date": "2011-09-07T00:00",
+            "category": "cat"
+        },
+        {
+            "id": 4,
+            "name": "Tommy",
+            "age": 25,
+            "date": "2018-06-07T00:00",
+            "category": "person"
+        }
+    ],
+    "footer": {
+        "name": "All are named",
+        "category": "mammals",
+        "age": "quite old",
+        "date": "One was not issued"
+    },
+    "count": 40
+}

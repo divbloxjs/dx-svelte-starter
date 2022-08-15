@@ -1,27 +1,15 @@
 <script>
     import Fa from "svelte-fa";
-    import FaLayers from "svelte-fa";
-    import {
-        faChartLine,
-        faCogs,
-        faDashboard,
-        faEllipsisV,
-        faGrip,
-        faListCheck,
-        faPeopleArrows,
-        faPeopleGroup,
-        faPowerOff,
-        faProjectDiagram,
-    } from "@fortawesome/free-solid-svg-icons/index.es";
-    import { profilePicturePath } from "../../lib/js/stores/userData";
-    import { logout } from "../js/stores/authentication";
+    import { faEllipsisV, faGrip, faPowerOff } from "@fortawesome/free-solid-svg-icons/index.es";
+    import { profilePicturePath } from "$src/lib/js/stores/userData";
+    import { logout } from "$src/lib/js/stores/authentication";
     let dropDownEl;
     let isExpanded = false;
     let isClicked = false;
 </script>
 
-<div class="fixed bottom-6 right-0 md:hidden">
-    <div class="dropdown-end dropdown-top dropdown">
+<div class="fixed bottom-[30vh] right-0 md:hidden">
+    <div class="dropdown-end dropdown dropdown-top">
         <div
             bind:this={dropDownEl}
             on:click={() => {

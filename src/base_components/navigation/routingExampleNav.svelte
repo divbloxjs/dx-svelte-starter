@@ -1,5 +1,5 @@
 <script>
-    import { appLogo, appName } from "../../lib/js/stores/configurations";
+    import { appLogo, appName } from "$src/lib/js/stores/configurations";
     import { push, pop, replace } from "svelte-spa-router";
 
     const doNavigate = (event, page) => {
@@ -7,7 +7,7 @@
     };
 </script>
 
-<div class="sticky top-0 z-50 navbar bg-base-100 shadow-xl">
+<div class="navbar sticky top-0 z-50 bg-base-100 shadow-xl">
     <div class="flex-1">
         <img
             on:click={(event) => doNavigate(event, "home")}
@@ -17,7 +17,7 @@
     </div>
 
     <div class="flex-none lg:hidden">
-        <div class="dropdown dropdown-end">
+        <div class="dropdown-end dropdown">
             <!-- svelte-ignore a11y-label-has-associated-control -->
             <label tabindex="0" class="btn btn-ghost">
                 <svg
@@ -26,30 +26,22 @@
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor">
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M4 6h16M4 12h8m-8 6h16" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
                 </svg>
             </label>
 
-            <ul
-                tabindex="0"
-                class="mt-3 p-1 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-80">
+            <ul tabindex="0" class="dropdown-content menu rounded-box menu-compact mt-3 w-80 bg-base-100 p-1 shadow">
                 <li>
                     <a href="#/routing-example">Routing Example</a>
                 </li>
                 <li>
-                    <a href="#/routing-example/123"
-                        >Routing Example with input
-                    </a>
+                    <a href="#/routing-example/123">Routing Example with input </a>
                 </li>
             </ul>
         </div>
     </div>
 
-    <div class="flex-none hidden lg:flex">
+    <div class="hidden flex-none lg:flex">
         <ul class="menu menu-horizontal p-0">
             <li>
                 <a href="#/routing-example">Routing Example</a>
@@ -59,17 +51,15 @@
             </li>
         </ul>
 
-        <div class="dropdown dropdown-end">
+        <div class="dropdown-end dropdown">
             <!-- svelte-ignore a11y-label-has-associated-control -->
-            <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+            <label tabindex="0" class="avatar btn btn-ghost btn-circle">
                 <div class="w-10 rounded-full">
                     <!-- svelte-ignore a11y-missing-attribute -->
                     <img src="https://api.lorem.space/image/face?hash=33791" />
                 </div>
             </label>
-            <ul
-                tabindex="0"
-                class="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52">
+            <ul tabindex="0" class="dropdown-content menu rounded-box menu-compact mt-3 w-52 bg-base-100 p-2 shadow">
                 <li>
                     <span class="justify-between">
                         <a href="#/profile">Profile</a>

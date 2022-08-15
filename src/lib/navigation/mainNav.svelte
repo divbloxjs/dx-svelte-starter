@@ -1,7 +1,7 @@
 <script>
-    import { logout } from "../js/stores/authentication";
-    import { profilePicturePath } from "../../lib/js/stores/userData";
-    import { domainRoot, appLogo, appName } from "../../lib/js/stores/configurations";
+    import { logout } from "$src/lib/js/stores/authentication";
+    import { profilePicturePath } from "$src/lib/js/stores/userData";
+    import { domainRoot, appLogo, appName } from "$src/lib/js/stores/configurations";
     import { push, pop, replace } from "svelte-spa-router";
 
     const doNavigate = (event, page) => {
@@ -19,7 +19,7 @@
     </div>
 
     <div class="flex-none lg:hidden">
-        <div class="dropdown-end dropdown">
+        <div class="dropdown dropdown-end">
             <!-- svelte-ignore a11y-label-has-associated-control -->
             <label tabindex="0" class="btn btn-ghost">
                 <svg
@@ -66,6 +66,9 @@
             </li>
             <li>
                 <a href="#/">Page 2</a>
+            </li>
+            <li>
+                <a href="#/dataTable">Data Table</a>
             </li>
         </ul>
 

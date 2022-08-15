@@ -15,3 +15,18 @@ export const handleFetchResponse = (responseCode) => {
             break;
     }
 };
+
+export const disableNonNumericInput = (event) => {
+    if (event.which < 48 || event.which > 57) {
+        event.preventDefault();
+    }
+};
+
+export const asyncTimeout = (ms) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+export const sleep = async (fn, ...args) => {
+    await asyncTimeout(3000);
+    return fn(...args);
+};

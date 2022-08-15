@@ -4,9 +4,20 @@
 module.exports = {
     content: ["./index.html", "./src/**/*.{svelte,js,ts,jsx,tsx}"],
     theme: {
-        extend: {},
+        extend: {
+            screens: {
+                xs: "380px",
+            },
+        },
     },
-    plugins: [require("@tailwindcss/typography"), require("daisyui")],
+    plugins: [
+        require("@tailwindcss/typography"),
+        require("daisyui"),
+        function ({ addVariant }) {
+            addVariant("child", "& > *");
+            addVariant("child-hover", "& > *:hover");
+        },
+    ],
     daisyui: {
         styled: true,
         themes: [
