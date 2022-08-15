@@ -20,6 +20,7 @@
     import Dropdown from "$src/base_components/data-series/ui-elements/dropdown.svelte";
     import { createEventDispatcher } from "svelte";
 
+    export let httpRequestType = "POST";
     export let dataSource;
     export let dataSourceDelaySimulation = 0; //ms
     export let dataSourceReturnProp = "data";
@@ -122,6 +123,7 @@
         await refreshDataTable();
 
         requestPendingStates.filters[columnName][filterName].loading = false;
+        requestPendingStates.filters[columnName][filterName].visible = false;
     };
 
     const refreshDataTable = async () => {
@@ -133,15 +135,30 @@
 
         postBody.limit = itemsPerPage;
         postBody.offset = (pageNumber - 1) * itemsPerPage;
+        postBody.columns.name.filterBy.filterText = "@AS?#$|'ASD\\asdn{}asd{]][[]!))_--+==";
 
-        const response = await fetch(dataSource, {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(postBody),
-        });
+        if (httpRequestType === "GET") {
+            let encodedPostBody = encodeURIComponent(JSON.stringify(postBody));
+
+            var response = await fetch(dataSource + "?encodedPostBody=" + encodedPostBody, {
+                method: httpRequestType,
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+            });
+        } else if (httpRequestType === "POST") {
+            var response = await fetch(dataSource, {
+                method: httpRequestType,
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(postBody),
+            });
+        } else {
+            throw Error("Allowed HTTP request types are only 'POST' and 'GET'. Provided: " + httpRequestType);
+        }
 
         let data = await response.json();
 
