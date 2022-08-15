@@ -33,6 +33,7 @@
     export let clickableColumn = undefined;
     export let enableRefresh = true;
     export let enableFilters = false;
+    export let tableMinWidth = "1400px";
 
     export let multiActionsColumnWidth = 3;
     export let customActionsColumnWidth = 9;
@@ -254,47 +255,46 @@
     const multiActionsColumnMinWidth = multiActionsColumnWidth;
     const customActionsColumnMinWidth = customActionsColumnWidth;
 
-    export const handleColWidths = async () => {
+    // Handles dynamic scaling of data columns bases on provided widths, or defaults to generic auto HTML table scaling
+    const handleColWidths = async () => {
         let takenUpWidth = 0;
 
         if (enableMultiSelect) {
             takenUpWidth += multiActionsColumnWidth;
         }
 
-        console.log(Object.keys(customActions).length);
         if (Object.keys(customActions).length > 0) {
             takenUpWidth += customActionsColumnWidth;
         }
 
-        let colsWithDefinedWidthCount = 0;
+        let definedColWidths = {};
         for (const [columnName, columnInfo] of Object.entries(columns)) {
             if (columnInfo.hasOwnProperty("width")) {
-                colsWithDefinedWidthCount++;
-                takenUpWidth += columnInfo.width;
+                definedColWidths[columnName] = columnInfo.width;
             }
 
             columns[columnName].minWidth = "1px";
             columns[columnName].maxWidth = "1px";
         }
 
-        if (takenUpWidth > 100) {
-            throw Error(
-                `Width of columns exceeds 100. Note that ${multiActionsColumnWidth} may be reserved for multiActions column and ${customActionsColumnWidth} for custom actions column`
-            );
-        }
-
-        let remainingWidth = 100 - takenUpWidth;
-        let colsWithoutDefinedWidth = Object.entries(columns).length - colsWithDefinedWidthCount;
-        if (colsWithoutDefinedWidth === 0 && remainingWidth !== 0) {
-            columns[Object.keys(columns)[Object.keys(columns).length - 1]].width += remainingWidth;
-            return;
-        }
-
-        let equalRemainder = (100 - takenUpWidth) / colsWithoutDefinedWidth;
+        // Set all undefined column widths to the minimum defined width
         for (const [columnName, columnInfo] of Object.entries(columns)) {
             if (!columnInfo.hasOwnProperty("width")) {
-                columns[columnName].width = equalRemainder;
+                columns[columnName].width = Math.min(...Object.values(definedColWidths));
             }
+        }
+
+        let sumOfColumnDataColumnWidths = Object.values(columns).reduce(function (acc, column) {
+            return acc + column.width;
+        }, 0);
+
+        let allocatedDataColumnWidth = 100 - takenUpWidth;
+        // Create widths according to ratio of defined width entries, constrained into defined data column width allocation
+        for (const [columnName, columnInfo] of Object.entries(columns)) {
+            columns[columnName].width =
+                (allocatedDataColumnWidth * columns[columnName].width) / sumOfColumnDataColumnWidths;
+            takenUpWidth += columns[columnName].width;
+            console.log(columnName + ": " + columns[columnName].width);
         }
     };
     //#endregion
@@ -476,8 +476,8 @@
     <!-- #endregion -->
 
     <!-- #region Table -->
-    <div class="w-full overflow-x-auto ">
-        <table class="table-zebra table min-w-[1000px] border-base-300">
+    <div class="w-full overflow-x-auto">
+        <table class="table-zebra table w-full border-base-300" style="min-width: {tableMinWidth};">
             <thead>
                 <tr class="child:bg-base-300">
                     {#if enableMultiSelect === true}
@@ -598,8 +598,6 @@
                                                     <select
                                                         bind:value={postBody.columns[columnName].filterBy[filterName]}
                                                         on:change={async () => {
-                                                            console.log("changed");
-
                                                             await handleFilterBy(columnName, filterName);
                                                         }}
                                                         class="select select-bordered select-xs mb-0 grow pr-8">
@@ -620,19 +618,6 @@
                                                             requestPendingStates.filters[columnName][
                                                                 filterName
                                                             ].visible = true;
-                                                        }}
-                                                        on:blur={(event) => {
-                                                            if (
-                                                                event.relatedTarget !== null &&
-                                                                event.relatedTarget.id ===
-                                                                    "btn" + columnName + filterName + "Id"
-                                                            ) {
-                                                                return;
-                                                            }
-
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = false;
                                                         }}
                                                         class="input input-xs mb-0 grow"
                                                         placeholder={filterInfo.placeholder} />{/if}
@@ -847,8 +832,8 @@
                                                 max-width: calc({columns[columnName].maxWidth} - 2rem);">
                                             <div
                                                 class="text-nowrap inline-block overflow-hidden rounded-lg border-opacity-50 bg-base-300 bg-opacity-100 align-middle text-transparent"
-                                                style="max-width: calc(100% - 2rem);">
-                                                Loading.....................................................
+                                                style="width: calc(100%);">
+                                                Loading...
                                             </div>
                                         </td>
                                     {/if}
