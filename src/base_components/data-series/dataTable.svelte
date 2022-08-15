@@ -62,8 +62,10 @@
     };
 
     const handleGeneralStates = async (type) => {
+        requestPendingStates[type].visible = true;
         requestPendingStates[type].loading = true;
         await refreshDataTable();
+        requestPendingStates[type].visible = false;
         requestPendingStates[type].loading = false;
     };
 
@@ -369,17 +371,17 @@
                             requestPendingStates.globalSearch.visible = true;
                         }}
                         on:blur={(event) => {
-                            if (event.relatedTarget !== null && event.relatedTarget.id === "btnGlobalSearchId") {
-                                return;
+                            if (
+                                !requestPendingStates.globalSearch.loading &&
+                                event.relatedTarget !== event.currentTarget.parentNode.lastChild
+                            ) {
+                                requestPendingStates.globalSearch.visible = false;
                             }
-
-                            requestPendingStates.globalSearch.visible = false;
                         }}
                         placeholder="Search..."
                         class="input input-bordered input-sm w-full pr-16" />
                     {#if requestPendingStates.globalSearch.loading || requestPendingStates.globalSearch.visible}
                         <button
-                            id="btnGlobalSearchId"
                             transition:fly={{ x: 10, duration: 250 }}
                             class:loading={requestPendingStates.globalSearch.loading}
                             class="btn btn-primary btn-sm absolute top-0 right-0 mr-0 rounded-l-none"
@@ -547,16 +549,15 @@
                                                         }}
                                                         on:blur={(event) => {
                                                             if (
-                                                                event.relatedTarget !== null &&
-                                                                event.relatedTarget.id ===
-                                                                    "btn" + columnName + filterName + "Id"
+                                                                !requestPendingStates.filters[columnName][filterName]
+                                                                    .loading &&
+                                                                event.relatedTarget !==
+                                                                    event.currentTarget.parentNode.lastChild
                                                             ) {
-                                                                return;
+                                                                requestPendingStates.filters[columnName][
+                                                                    filterName
+                                                                ].visible = false;
                                                             }
-
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = false;
                                                         }}
                                                         placeholder={filterInfo.placeholder}
                                                         class="input input-bordered input-xs mb-0 w-full grow " />
@@ -581,16 +582,15 @@
                                                         }}
                                                         on:blur={(event) => {
                                                             if (
-                                                                event.relatedTarget !== null &&
-                                                                event.relatedTarget.id ===
-                                                                    "btn" + columnName + filterName + "Id"
+                                                                !requestPendingStates.filters[columnName][filterName]
+                                                                    .loading &&
+                                                                event.relatedTarget !==
+                                                                    event.currentTarget.parentNode.lastChild
                                                             ) {
-                                                                return;
+                                                                requestPendingStates.filters[columnName][
+                                                                    filterName
+                                                                ].visible = false;
                                                             }
-
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = false;
                                                         }}
                                                         placeholder={filterInfo.placeholder}
                                                         class="input input-bordered input-xs mb-0 w-full grow" />
@@ -624,7 +624,6 @@
                                                 {#if ["fromDate", "toDate", "filterDropdown"].includes(filterName)}
                                                     {#if requestPendingStates.filters[columnName][filterName].loading}
                                                         <button
-                                                            id="btn{columnName + filterName}Id"
                                                             transition:fly={{ x: 8, duration: 250 }}
                                                             class:loading={requestPendingStates.filters[columnName][
                                                                 filterName
@@ -649,7 +648,6 @@
                                                     {/if}
                                                 {:else if requestPendingStates.filters[columnName][filterName].visible}
                                                     <button
-                                                        id="btn{columnName + filterName}Id"
                                                         transition:fly={{ x: 8, duration: 250 }}
                                                         class:loading={requestPendingStates.filters[columnName][
                                                             filterName
@@ -934,12 +932,17 @@
                                     await handleGeneralStates("editLimit");
                                 }
                             }}
+                            on:change={async () => {
+                                await handleGeneralStates("editLimit");
+                                editingLimit = false;
+                            }}
                             on:blur={(event) => {
-                                if (event.relatedTarget !== null && event.relatedTarget.id === "btnEditLimitId") {
-                                    return;
+                                if (
+                                    !requestPendingStates.editLimit.loading &&
+                                    event.relatedTarget !== event.currentTarget.parentNode.lastChild
+                                ) {
+                                    requestPendingStates.editLimit.visible = false;
                                 }
-
-                                requestPendingStates.editLimit.visible = false;
                             }}
                             type="text"
                             on:focus={(event) => {
@@ -950,7 +953,6 @@
                             class="input input-bordered input-sm w-full pr-16" />
                         {#if requestPendingStates.editLimit.loading || requestPendingStates.editLimit.visible}
                             <button
-                                id="btnEditLimitId"
                                 class="btn btn-primary btn-sm absolute top-0 right-0 rounded-l-none before:mr-0"
                                 class:loading={requestPendingStates.editLimit.loading}
                                 transition:fly={{ x: 10, duration: 250 }}
@@ -983,12 +985,17 @@
                                 await handleGeneralStates("editLimit");
                             }
                         }}
+                        on:change={async () => {
+                            await handleGeneralStates("editLimit");
+                            editingLimit = false;
+                        }}
                         on:blur={(event) => {
-                            if (event.relatedTarget !== null && event.relatedTarget.id === "btnEditLimitId") {
-                                return;
+                            if (
+                                !requestPendingStates.editLimit.loading &&
+                                event.relatedTarget !== event.currentTarget.parentNode.lastChild
+                            ) {
+                                requestPendingStates.editLimit.visible = false;
                             }
-
-                            requestPendingStates.editLimit.visible = false;
                         }}
                         type="text"
                         on:focus={(event) => {
@@ -999,7 +1006,6 @@
                         class="input input-bordered input-sm w-full pr-16" />
                     {#if requestPendingStates.editLimit.loading || requestPendingStates.editLimit.visible}
                         <button
-                            id="btnEditLimitId"
                             class="btn btn-primary btn-sm absolute top-0 right-0 rounded-l-none before:mr-0"
                             class:loading={requestPendingStates.editLimit.loading}
                             transition:fly={{ x: 10, duration: 250 }}
