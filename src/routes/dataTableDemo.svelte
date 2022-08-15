@@ -1,5 +1,5 @@
 <script>
-    import PageTransitionFade from "$base_components/page_transitions/pageTransitionFade.svelte";
+    import PageTransitionFade from "$src/base_components/page_transitions/pageTransitionFade.svelte";
     import DataTable from "$src/base_components/data-series/dataTable.svelte";
     import MainNav from "$src/lib/navigation/mainNav.svelte";
     import QuickActionsMenu from "$src/lib/navigation/quickActionsMenu.svelte";

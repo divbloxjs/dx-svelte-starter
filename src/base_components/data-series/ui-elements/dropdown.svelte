@@ -1,7 +1,6 @@
 <script>
     import Fa from "svelte-fa";
     import { createEventDispatcher } from "svelte";
-    import { afterUpdate } from "svelte";
 
     const dispatch = createEventDispatcher();
 

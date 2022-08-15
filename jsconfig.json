@@ -26,13 +26,7 @@
          */
         "checkJs": true,
         "paths": {
-            "$src/*": ["src/*"],
-            "$base_components/*": ["src/base_components/*"],
-            "$assets/*": ["src/assets/*"],
-            "$lib/*": ["src/lib/*"],
-            "$navigation/*": ["src/lib/navigation/*"],
-            "$utilities/*": ["src/lib/js/utilities/*"],
-            "$stores/*": ["src/lib/js/stores/*"]
+            "$src/*": ["src/*"]
         }
     },
     /**

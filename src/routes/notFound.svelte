@@ -1,7 +1,7 @@
 <script>
-    import MainFooter from "$navigation/mainFooter.svelte";
+    import MainFooter from "$src/lib/navigation/mainFooter.svelte";
     import { push, pop, replace } from "svelte-spa-router";
-    import PageTransitionFade from "$base_components/page_transitions/pageTransitionFade.svelte";
+    import PageTransitionFade from "$src/base_components/page_transitions/pageTransitionFade.svelte";
 
     const returnToPreviousPage = () => {
         pop();

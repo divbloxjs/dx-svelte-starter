@@ -1,10 +1,10 @@
 <script>
-    import MainNav from "../lib/navigation/mainNav.svelte";
+    import MainNav from "$src/lib/navigation/mainNav.svelte";
     import { push, pop, replace } from "svelte-spa-router";
-    import QuickActionsMenu from "$navigation/quickActionsMenu.svelte";
-    import { checkAuthentication } from "$stores/authentication";
+    import QuickActionsMenu from "$src/lib/navigation/quickActionsMenu.svelte";
+    import { checkAuthentication } from "$src/lib/js/stores/authentication";
     import { onMount } from "svelte";
-    import PageTransitionFade from "$base_components/page_transitions/pageTransitionFade.svelte";
+    import PageTransitionFade from "$src/base_components/page_transitions/pageTransitionFade.svelte";
 
     const openComponentLibrary = () => {
         push("/component-library");

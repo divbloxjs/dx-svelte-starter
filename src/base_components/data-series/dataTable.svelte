@@ -17,7 +17,7 @@
     } from "@fortawesome/free-solid-svg-icons/index.es";
     import { onMount, beforeUpdate } from "svelte";
     import { disableNonNumericInput, sleep } from "$src/lib/js/utilities/helpers";
-    import Dropdown from "$base_components/data-series/ui-elements/dropdown.svelte";
+    import Dropdown from "$src/base_components/data-series/ui-elements/dropdown.svelte";
     import { createEventDispatcher } from "svelte";
 
     const dispatch = createEventDispatcher();

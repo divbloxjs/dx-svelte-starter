@@ -1,8 +1,8 @@
 <script>
     import Fa from "svelte-fa";
     import { faEllipsisV, faGrip, faPowerOff } from "@fortawesome/free-solid-svg-icons/index.es";
-    import { profilePicturePath } from "../../lib/js/stores/userData";
-    import { logout } from "../js/stores/authentication";
+    import { profilePicturePath } from "$src/lib/js/stores/userData";
+    import { logout } from "$src/lib/js/stores/authentication";
     let dropDownEl;
     let isExpanded = false;
     let isClicked = false;

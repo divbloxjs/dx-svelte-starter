@@ -1,7 +1,7 @@
 <script>
-    import { logout } from "../js/stores/authentication";
-    import { profilePicturePath } from "../../lib/js/stores/userData";
-    import { domainRoot, appLogo, appName } from "../../lib/js/stores/configurations";
+    import { logout } from "$src/lib/js/stores/authentication";
+    import { profilePicturePath } from "$src/lib/js/stores/userData";
+    import { domainRoot, appLogo, appName } from "$src/lib/js/stores/configurations";
     import { push, pop, replace } from "svelte-spa-router";
 
     const doNavigate = (event, page) => {
