@@ -50,10 +50,10 @@ upstream        DISABLE (push)
 
 ```
 git fetch upstream
-git rebase upstream/main
+git merge upstream/main
 ```
 
-You should now be able to pull any future changes from this template using the above commands to fetch and rebase.
+You should now be able to pull any future changes from this template using the above commands to fetch and merge.
 
 ## Once you have the template fetched on your local machine
 
