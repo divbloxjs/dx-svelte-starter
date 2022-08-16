@@ -14,6 +14,7 @@
         faFileExcel,
         faFileText,
         faBars,
+        faPlus,
     } from "@fortawesome/free-solid-svg-icons/index.es";
     import { onMount, beforeUpdate } from "svelte";
     import { disableNonNumericInput, sleep } from "$src/lib/js/utilities/helpers";
@@ -39,6 +40,15 @@
     export let customActionsColumnWidth = 9;
     const multiActionsColumnMinWidth = multiActionsColumnWidth;
     const customActionsColumnMinWidth = customActionsColumnWidth;
+
+    export let enableNewButton = true;
+    export let newButtonOptions = {
+        btnClasses: "",
+        faIcon: faPlus,
+        displayLabel: "New",
+        faClasses: "sm:mr-2",
+        clickEvent: "add_new_clicked",
+    };
 
     export let columns = undefined;
     export let customActions = {};
@@ -135,7 +145,6 @@
 
         postBody.limit = itemsPerPage;
         postBody.offset = (pageNumber - 1) * itemsPerPage;
-        postBody.columns.name.filterBy.filterText = "@AS?#$|'ASD\\asdn{}asd{]][[]!))_--+==";
 
         if (httpRequestType === "GET") {
             let encodedPostBody = encodeURIComponent(JSON.stringify(postBody));
@@ -364,32 +373,56 @@
         <div class="my-auto ml-auto flex flex-row">
             <span class="badge my-auto border-base-300 bg-base-300 text-base-content"
                 >{totalItemCount !== undefined ? totalItemCount : "... "} items</span>
-
-            <div class="btn-group ml-2 hidden sm:flex">
-                <button
-                    class="btn btn-sm"
-                    on:click={async () => {
-                        if (postBody.pageNumber >= 1 && !isLoading) {
-                            await handlePaginate(postBody.pageNumber - 1);
-                        }
-                    }}
-                    >«
-                </button>
-                <Dropdown
-                    dropDownText="Page {postBody.pageNumber + 1}"
-                    dropDownOptions={paginationOptions}
-                    btnClasses="rounded-none"
-                    on:optionSelected={async (params) =>
-                        await handlePaginate(parseInt(params.detail.params.pageNumber))} />
-                <button
-                    class="btn btn-sm"
-                    on:click={async () => {
-                        if (postBody.pageNumber < totalPagesCount - 1 && !isLoading) {
-                            await handlePaginate(postBody.pageNumber + 1);
-                        }
-                    }}
-                    >»
-                </button>
+            <div class="btn-group ml-2 {!enableNewButton ? 'hidden' : ''} sm:flex">
+                {#if enableNewButton}
+                    <button
+                        class="btn btn-primary btn-sm {newButtonOptions.hasOwnProperty('btnClasses')
+                            ? newButtonOptions.btnClasses
+                            : ''}"
+                        on:click={() => {
+                            let clickEvent = newButtonOptions.hasOwnProperty("clickEvent")
+                                ? newButtonOptions.clickEvent
+                                : "add_new_clicked";
+                            actionTriggered({ clickEvent: clickEvent });
+                        }}>
+                        {#if newButtonOptions.hasOwnProperty("faIcon")}
+                            <Fa
+                                icon={newButtonOptions.faIcon}
+                                size="1x"
+                                class={newButtonOptions.hasOwnProperty("faClasses")
+                                    ? newButtonOptions.faClasses
+                                    : ""} />
+                        {/if}
+                        {#if newButtonOptions.hasOwnProperty("displayLabel")}
+                            <span class="hidden sm:flex">{newButtonOptions.displayLabel}</span>
+                        {/if}
+                    </button>
+                {:else}
+                    <button
+                        class="btn btn-sm"
+                        on:click={async () => {
+                            if (postBody.pageNumber >= 1 && !isLoading) {
+                                await handlePaginate(postBody.pageNumber - 1);
+                            }
+                        }}
+                        >«
+                    </button>
+                    <Dropdown
+                        dropDownText="Page {postBody.pageNumber + 1}"
+                        dropDownOptions={paginationOptions}
+                        btnClasses="rounded-none"
+                        on:optionSelected={async (params) =>
+                            await handlePaginate(parseInt(params.detail.params.pageNumber))} />
+                    <button
+                        class="btn btn-sm"
+                        on:click={async () => {
+                            if (postBody.pageNumber < totalPagesCount - 1 && !isLoading) {
+                                await handlePaginate(postBody.pageNumber + 1);
+                            }
+                        }}
+                        >»
+                    </button>
+                {/if}
             </div>
         </div>
     </div>
@@ -451,7 +484,7 @@
         {/if}
         {#if enableRefresh === true}
             <button
-                class="custom-btn-loading btn btn-sm my-auto ml-auto mt-[1px] lg:ml-0"
+                class="custom-btn-loading btn btn-sm my-auto ml-auto lg:ml-0"
                 class:loading={requestPendingStates.refresh.loading}
                 on:click={async () => {
                     if (isLoading) {
@@ -467,7 +500,7 @@
         {/if}
         <div class="hidden lg:ml-auto lg:flex">
             {#if Object.keys(multiSelectActions).length > 0 && Object.values(selectedRows).some((value) => value === true)}
-                <span class="mr-2 ">
+                <span class="mr-2">
                     <Dropdown
                         dropDownText="Options"
                         dropDownOptions={multiSelectActions}
@@ -485,34 +518,59 @@
                     >{totalItemCount !== undefined ? totalItemCount : "Loading"} items</span>
 
                 <div class="btn-group">
-                    <button
-                        class="btn btn-sm"
-                        on:click={async () => {
-                            if (postBody.pageNumber >= 1 && !isLoading) {
-                                await handlePaginate(postBody.pageNumber - 1);
-                            }
-                        }}
-                        >«
-                    </button>
-                    <Dropdown
-                        dropDownText="Page {postBody.pageNumber + 1}"
-                        dropDownOptions={paginationOptions}
-                        btnClasses="rounded-none"
-                        on:optionSelected={async (params) =>
-                            await handlePaginate(parseInt(params.detail.params.pageNumber))} />
-                    <button
-                        class="btn btn-sm"
-                        on:click={async () => {
-                            if (postBody.pageNumber < totalPagesCount - 1 && !isLoading) {
-                                await handlePaginate(postBody.pageNumber + 1);
-                            }
-                        }}
-                        >»
-                    </button>
+                    {#if enableNewButton}
+                        <button
+                            class="btn btn-primary btn-sm {newButtonOptions.hasOwnProperty('btnClasses')
+                                ? newButtonOptions.btnClasses
+                                : ''}"
+                            on:click={() => {
+                                let clickEvent = newButtonOptions.hasOwnProperty("clickEvent")
+                                    ? newButtonOptions.clickEvent
+                                    : "add_new_clicked";
+                                actionTriggered({ clickEvent: clickEvent });
+                            }}>
+                            {#if newButtonOptions.hasOwnProperty("faIcon")}
+                                <Fa
+                                    icon={newButtonOptions.faIcon}
+                                    size="1.1x"
+                                    class={newButtonOptions.hasOwnProperty("faClasses")
+                                        ? newButtonOptions.faClasses
+                                        : ""} />
+                            {/if}
+                            {#if newButtonOptions.hasOwnProperty("displayLabel")}
+                                <span class="hidden xs:flex">{newButtonOptions.displayLabel}</span>
+                            {/if}
+                        </button>
+                    {:else}
+                        <button
+                            class="btn btn-sm"
+                            on:click={async () => {
+                                if (postBody.pageNumber >= 1 && !isLoading) {
+                                    await handlePaginate(postBody.pageNumber - 1);
+                                }
+                            }}
+                            >«
+                        </button>
+                        <Dropdown
+                            dropDownText="Page {postBody.pageNumber + 1}"
+                            dropDownOptions={paginationOptions}
+                            btnClasses="rounded-none"
+                            on:optionSelected={async (params) =>
+                                await handlePaginate(parseInt(params.detail.params.pageNumber))} />
+                        <button
+                            class="btn btn-sm"
+                            on:click={async () => {
+                                if (postBody.pageNumber < totalPagesCount - 1 && !isLoading) {
+                                    await handlePaginate(postBody.pageNumber + 1);
+                                }
+                            }}
+                            >»
+                        </button>
+                    {/if}
                 </div>
             </div>
         </div>
-        <div class="relative top-[-1px] lg:hidden">
+        <div class="lg:hidden">
             {#if Object.keys(multiSelectActions).length > 0 && Object.values(selectedRows).some((value) => value === true)}
                 <Dropdown
                     dropDownIcon={faBars}
