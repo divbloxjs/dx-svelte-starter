@@ -195,7 +195,7 @@
             {#if activeComponentTab == "dataTableExample"}
                 <div in:fade={{ duration: 500 }} class="pt-4">
                     <DataTable
-                        dataSource="src/base_components/data-series/tests/data.json"
+                        dataSource="https://assets.divblox.com/example_data/data.json"
                         {columns}
                         enableGlobalSearch={true}
                         enableFilters={true}
