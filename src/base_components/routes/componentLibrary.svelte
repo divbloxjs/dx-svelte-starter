@@ -7,20 +7,10 @@
     import DataTable from "$src/base_components/data-series/dataTable.svelte";
     import { faFileExcel, faFileCsv, faFileText, faTrash } from "@fortawesome/free-solid-svg-icons/index.es";
 
-    let columns = {
-        name: {
-            width: 20,
-            sortBy: true,
-            isSortAscending: true,
-            filterBy: {
-                filterText: {
-                    userInput: "Joeys",
-                    placeholder: "First Name",
-                    defaultValue: "Joeys",
-                },
-            },
-        },
-        age: {
+    let columns = [
+        {
+            columnHeading: "Age",
+            dataSourceAttributeName: "age",
             width: 15,
             sortBy: false,
             isSortAscending: true,
@@ -28,7 +18,9 @@
                 filterNumber: { userInput: "", placeholder: "Age is just a number", defaultValue: "" },
             },
         },
-        date: {
+        {
+            columnHeading: "Date",
+            dataSourceAttributeName: "date",
             width: 25,
             sortBy: false,
             isSortAscending: true,
@@ -42,8 +34,24 @@
                 toDate: { userInput: "", label: "To", placeholder: "To", defaultValue: "" },
             },
         },
-        category: {
-            width: 30,
+        {
+            columnHeading: "Name",
+            dataSourceAttributeName: "name",
+            width: 20,
+            sortBy: true,
+            isSortAscending: true,
+            filterBy: {
+                filterText: {
+                    userInput: "Joeys",
+                    placeholder: "First Name",
+                    defaultValue: "Joeys",
+                },
+            },
+        },
+        {
+            columnHeading: "Category",
+            dataSourceAttributeName: "category",
+            width: 20,
             sortBy: false,
             isSortAscending: true,
             filterBy: {
@@ -54,7 +62,7 @@
                 },
             },
         },
-    };
+    ];
 
     let multiSelectActions = [
         {

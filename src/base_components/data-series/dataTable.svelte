@@ -117,8 +117,12 @@
         sortBy = columnName;
         isSortAscending = !isSortAscending;
 
-        postBody.columns[columnName].sortBy = true;
-        postBody.columns[columnName].isSortAscending = isSortAscending;
+        columns.find((column) => {
+            if (column.dataSourceAttributeName === columnName) {
+                postBody.columns[column.dataSourceAttributeName].sortBy = true;
+                postBody.columns[column.dataSourceAttributeName].isSortAscending = isSortAscending;
+            }
+        });
 
         await refreshDataTable();
     };
@@ -175,8 +179,7 @@
             throw new Error("dataSourceReturnProp '" + dataSourceReturnProp + "' is not defined on the fetch result");
         }
         currentPage = data[dataSourceReturnProp];
-
-        currentPage.forEach((row) => {
+        currentPage.forEach((row, index) => {
             selectedRows[row.id] = false;
         });
 
@@ -219,14 +222,14 @@
         sortBy = undefined;
         isSortAscending = true;
 
-        for (const [columnName, columnInfo] of Object.entries(columns)) {
-            postBody.columns[columnName].isSortAscending = columnInfo.isSortAscending;
-            postBody.columns[columnName].sortBy = columnInfo.sortBy;
+        columns.forEach((column, index) => {
+            postBody.columns[column.dataSourceAttributeName].isSortAscending = column.isSortAscending;
+            postBody.columns[column.dataSourceAttributeName].sortBy = column.sortBy;
 
-            for (const [filterByName, filterByInfo] of Object.entries(columnInfo.filterBy)) {
-                postBody.columns[columnName].filterBy[filterByName] = filterByInfo.userInput;
+            for (const [filterByName, filterByInfo] of Object.entries(column.filterBy)) {
+                postBody.columns[column.dataSourceAttributeName].filterBy[filterByName] = filterByInfo.userInput;
             }
-        }
+        });
     };
 
     const initPostBody = async () => {
@@ -242,24 +245,24 @@
         postBody.pageNumber = pageNumber;
         postBody.columns = {};
 
-        for (const [columnName, columnInfo] of Object.entries(columns)) {
-            postBody.columns[columnName] = {};
-            postBody.columns[columnName].isSortAscending = columnInfo.isSortAscending;
-            postBody.columns[columnName].sortBy = columnInfo.sortBy;
+        columns.forEach((column, index) => {
+            postBody.columns[column.dataSourceAttributeName] = {};
+            postBody.columns[column.dataSourceAttributeName].isSortAscending = column.isSortAscending;
+            postBody.columns[column.dataSourceAttributeName].sortBy = column.sortBy;
 
-            requestPendingStates.filters[columnName] = {};
+            requestPendingStates.filters[column.dataSourceAttributeName] = {};
 
-            postBody.columns[columnName].filterBy = {};
-            if (columnInfo.hasOwnProperty("filterBy")) {
-                for (const [filterName, filterByInfo] of Object.entries(columnInfo.filterBy)) {
-                    postBody.columns[columnName].filterBy[filterName] = filterByInfo.userInput;
+            postBody.columns[column.dataSourceAttributeName].filterBy = {};
+            if (column.hasOwnProperty("filterBy")) {
+                for (const [filterName, filterByInfo] of Object.entries(column.filterBy)) {
+                    postBody.columns[column.dataSourceAttributeName].filterBy[filterName] = filterByInfo.userInput;
 
-                    requestPendingStates.filters[columnName][filterName] = {};
-                    requestPendingStates.filters[columnName][filterName].loading = false;
-                    requestPendingStates.filters[columnName][filterName].visible = false;
+                    requestPendingStates.filters[column.dataSourceAttributeName][filterName] = {};
+                    requestPendingStates.filters[column.dataSourceAttributeName][filterName].loading = false;
+                    requestPendingStates.filters[column.dataSourceAttributeName][filterName].visible = false;
                 }
             }
-        }
+        });
 
         if (!enableFilters) {
             showFilters = false;
@@ -328,33 +331,33 @@
         }
 
         let definedColWidths = {};
-        for (const [columnName, columnInfo] of Object.entries(columns)) {
-            if (columnInfo.hasOwnProperty("width")) {
-                definedColWidths[columnName] = columnInfo.width;
+
+        columns.forEach((column, index) => {
+            if (column.hasOwnProperty("width")) {
+                definedColWidths[column.dataSourceAttributeName] = column.width;
             }
 
-            columns[columnName].minWidth = "1px";
-            columns[columnName].maxWidth = "1px";
-        }
+            columns[index].minWidth = "1px";
+            columns[index].maxWidth = "1px";
+        });
 
         // Set all undefined column widths to the minimum defined width
-        for (const [columnName, columnInfo] of Object.entries(columns)) {
-            if (!columnInfo.hasOwnProperty("width")) {
-                columns[columnName].width = Math.min(...Object.values(definedColWidths));
+        columns.forEach((column, index) => {
+            if (!column.hasOwnProperty("width")) {
+                columns[index].width = Math.min(...Object.values(definedColWidths));
             }
-        }
+        });
 
-        let sumOfColumnDataColumnWidths = Object.values(columns).reduce(function (acc, column) {
+        let sumOfColumnDataColumnWidths = columns.reduce(function (acc, column) {
             return acc + column.width;
         }, 0);
 
         let allocatedDataColumnWidth = 100 - takenUpWidth;
         // Create widths according to ratio of defined width entries, constrained into defined data column width allocation
-        for (const [columnName, columnInfo] of Object.entries(columns)) {
-            columns[columnName].width =
-                (allocatedDataColumnWidth * columns[columnName].width) / sumOfColumnDataColumnWidths;
-            takenUpWidth += columns[columnName].width;
-        }
+        columns.forEach((column, index) => {
+            columns[index].width = (allocatedDataColumnWidth * columns[index].width) / sumOfColumnDataColumnWidths;
+            takenUpWidth += columns[index].width;
+        });
     };
     //#endregion
 </script>
@@ -603,30 +606,36 @@
                         </th>
                     {/if}
 
-                    {#each Object.entries(columns) as [columnName, columnInfo]}
+                    {#each columns as column, index}
                         <th
                             class="align-top"
-                            style="width: {columns[columnName].width}%; 
-                                min-width: {columns[columnName].minWidth}; 
-                                max-width:calc({columns[columnName].maxWidth} - 2rem);">
+                            style="width: {column.width}%; 
+                                min-width: {column.minWidth}; 
+                                max-width:calc({column.maxWidth} - 2rem);">
                             <button
-                                on:click={async () => handleSortBy(columnName)}
+                                on:click={async () => handleSortBy(column.dataSourceAttributeName)}
                                 class="btn btn-link  btn-xs pl-0 text-base-content"
                                 class:py-0={!showFilters}
-                                class:text-success={sortBy === columnName}>
-                                <span class="inline-block align-middle" class:mr-2={sortBy === columnName}>
-                                    {columnName}
+                                class:text-success={sortBy === column.dataSourceAttributeName}>
+                                <span
+                                    class="inline-block align-middle"
+                                    class:mr-2={sortBy === column.dataSourceAttributeName}>
+                                    {column.columnHeading}
                                 </span>
-                                <span class="inline-block align-middle" class:hidden={sortBy !== columnName}>
+                                <span
+                                    class="inline-block align-middle"
+                                    class:hidden={sortBy !== column.dataSourceAttributeName}>
                                     <Fa
                                         icon={faAngleDown}
                                         size="1.4x"
-                                        rotate={rotateDegrees[postBody.columns[columnName].isSortAscending ? 1 : 0]} />
+                                        rotate={rotateDegrees[
+                                            postBody.columns[column.dataSourceAttributeName].isSortAscending ? 1 : 0
+                                        ]} />
                                 </span>
                             </button>
 
-                            {#if columnInfo.hasOwnProperty("filterBy")}
-                                {#each Object.entries(columnInfo.filterBy) as [filterName, filterInfo]}
+                            {#if column.hasOwnProperty("filterBy")}
+                                {#each Object.entries(column.filterBy) as [filterName, filterInfo]}
                                     <div class:hidden={!showFilters} class="mt-1 transition-all">
                                         <div class="form-control my-auto">
                                             <div class="relative flex">
@@ -638,31 +647,39 @@
                                                 {#if filterName === "filterText"}
                                                     <input
                                                         type="text"
-                                                        bind:value={postBody.columns[columnName].filterBy[filterName]}
+                                                        bind:value={postBody.columns[column.dataSourceAttributeName]
+                                                            .filterBy[filterName]}
                                                         on:keypress={async (event) => {
                                                             if (event.keyCode === 13) {
-                                                                await handleFilterBy(columnName, filterName);
+                                                                await handleFilterBy(
+                                                                    column.dataSourceAttributeName,
+                                                                    filterName
+                                                                );
                                                             }
                                                         }}
                                                         on:change={async () => {
-                                                            await handleFilterBy(columnName, filterName);
+                                                            await handleFilterBy(
+                                                                column.dataSourceAttributeName,
+                                                                filterName
+                                                            );
                                                         }}
                                                         on:focus={(event) => {
                                                             event.target.select();
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = true;
+                                                            requestPendingStates.filters[
+                                                                column.dataSourceAttributeName
+                                                            ][filterName].visible = true;
                                                         }}
                                                         on:blur={(event) => {
                                                             if (
-                                                                !requestPendingStates.filters[columnName][filterName]
-                                                                    .loading &&
+                                                                !requestPendingStates.filters[
+                                                                    column.dataSourceAttributeName
+                                                                ][filterName].loading &&
                                                                 event.relatedTarget !==
                                                                     event.currentTarget.parentNode.lastChild
                                                             ) {
-                                                                requestPendingStates.filters[columnName][
-                                                                    filterName
-                                                                ].visible = false;
+                                                                requestPendingStates.filters[
+                                                                    column.dataSourceAttributeName
+                                                                ][filterName].visible = false;
                                                             }
                                                         }}
                                                         placeholder={filterInfo.placeholder}
@@ -670,41 +687,53 @@
                                                 {:else if filterName === "filterNumber"}
                                                     <input
                                                         type="text"
-                                                        bind:value={postBody.columns[columnName].filterBy[filterName]}
+                                                        bind:value={postBody.columns[column.dataSourceAttributeName]
+                                                            .filterBy[filterName]}
                                                         on:keypress={async (event) => {
                                                             disableNonNumericInput(event);
                                                             if (event.keyCode === 13) {
-                                                                await handleFilterBy(columnName, filterName);
+                                                                await handleFilterBy(
+                                                                    column.dataSourceAttributeName,
+                                                                    filterName
+                                                                );
                                                             }
                                                         }}
                                                         on:change={async () => {
-                                                            await handleFilterBy(columnName, filterName);
+                                                            await handleFilterBy(
+                                                                column.dataSourceAttributeName,
+                                                                filterName
+                                                            );
                                                         }}
                                                         on:focus={(event) => {
                                                             event.target.select();
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = true;
+                                                            requestPendingStates.filters[
+                                                                column.dataSourceAttributeName
+                                                            ][filterName].visible = true;
                                                         }}
                                                         on:blur={(event) => {
                                                             if (
-                                                                !requestPendingStates.filters[columnName][filterName]
-                                                                    .loading &&
+                                                                !requestPendingStates.filters[
+                                                                    column.dataSourceAttributeName
+                                                                ][filterName].loading &&
                                                                 event.relatedTarget !==
                                                                     event.currentTarget.parentNode.lastChild
                                                             ) {
-                                                                requestPendingStates.filters[columnName][
-                                                                    filterName
-                                                                ].visible = false;
+                                                                requestPendingStates.filters[
+                                                                    column.dataSourceAttributeName
+                                                                ][filterName].visible = false;
                                                             }
                                                         }}
                                                         placeholder={filterInfo.placeholder}
                                                         class="input input-bordered input-xs mb-0 w-full grow" />
                                                 {:else if filterName === "filterDropdown"}
                                                     <select
-                                                        bind:value={postBody.columns[columnName].filterBy[filterName]}
+                                                        bind:value={postBody.columns[column.dataSourceAttributeName]
+                                                            .filterBy[filterName]}
                                                         on:change={async () => {
-                                                            await handleFilterBy(columnName, filterName);
+                                                            await handleFilterBy(
+                                                                column.dataSourceAttributeName,
+                                                                filterName
+                                                            );
                                                         }}
                                                         class="select select-bordered select-xs mb-0 grow pr-8">
                                                         <option selected>{filterInfo.placeholder}</option>
@@ -715,25 +744,29 @@
                                                 {:else if filterName === "fromDate" || filterName === "toDate"}
                                                     <input
                                                         type="date"
-                                                        bind:value={postBody.columns[columnName].filterBy[filterName]}
+                                                        bind:value={postBody.columns[column.dataSourceAttributeName]
+                                                            .filterBy[filterName]}
                                                         on:change={async () => {
-                                                            await handleFilterBy(columnName, filterName);
+                                                            await handleFilterBy(
+                                                                column.dataSourceAttributeName,
+                                                                filterName
+                                                            );
                                                         }}
                                                         on:focus={(event) => {
                                                             event.target.select();
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = true;
+                                                            requestPendingStates.filters[
+                                                                column.dataSourceAttributeName
+                                                            ][filterName].visible = true;
                                                         }}
                                                         class="input input-xs mb-0 grow"
                                                         placeholder={filterInfo.placeholder} />{/if}
                                                 {#if ["fromDate", "toDate", "filterDropdown"].includes(filterName)}
-                                                    {#if requestPendingStates.filters[columnName][filterName].loading}
+                                                    {#if requestPendingStates.filters[column.dataSourceAttributeName][filterName].loading}
                                                         <button
                                                             transition:fly={{ x: 8, duration: 250 }}
-                                                            class:loading={requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].loading}
+                                                            class:loading={requestPendingStates.filters[
+                                                                column.dataSourceAttributeName
+                                                            ][filterName].loading}
                                                             class="custom-btn-loading btn btn-primary btn-xs absolute top-0 right-0 mr-0 rounded-l-none"
                                                             on:click={async () => {
                                                                 requestPendingStates.filters[columnName][
@@ -745,33 +778,36 @@
                                                                 ].visible = false;
                                                             }}>
                                                             <span
-                                                                class:hidden={requestPendingStates.filters[columnName][
-                                                                    filterName
-                                                                ].loading}>
+                                                                class:hidden={requestPendingStates.filters[
+                                                                    column.dataSourceAttributeName
+                                                                ][filterName].loading}>
                                                                 <Fa icon={faCheck} size="1.1x" />
                                                             </span>
                                                         </button>
                                                     {/if}
-                                                {:else if requestPendingStates.filters[columnName][filterName].visible}
+                                                {:else if requestPendingStates.filters[column.dataSourceAttributeName][filterName].visible}
                                                     <button
                                                         transition:fly={{ x: 8, duration: 250 }}
-                                                        class:loading={requestPendingStates.filters[columnName][
-                                                            filterName
-                                                        ].loading}
+                                                        class:loading={requestPendingStates.filters[
+                                                            column.dataSourceAttributeName
+                                                        ][filterName].loading}
                                                         class="custom-btn-loading btn btn-primary btn-xs absolute top-0 right-0 mr-0 rounded-l-none"
                                                         on:click={async () => {
-                                                            requestPendingStates.filters[columnName][
+                                                            requestPendingStates.filters[
+                                                                column.dataSourceAttributeName
+                                                            ][filterName].visible = true;
+                                                            await handleFilterBy(
+                                                                column.dataSourceAttributeName,
                                                                 filterName
-                                                            ].visible = true;
-                                                            await handleFilterBy(columnName, filterName);
-                                                            requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].visible = false;
+                                                            );
+                                                            requestPendingStates.filters[
+                                                                column.dataSourceAttributeName
+                                                            ][filterName].visible = false;
                                                         }}>
                                                         <span
-                                                            class:hidden={requestPendingStates.filters[columnName][
-                                                                filterName
-                                                            ].loading}>
+                                                            class:hidden={requestPendingStates.filters[
+                                                                column.dataSourceAttributeName
+                                                            ][filterName].loading}>
                                                             <Fa icon={faCheck} size="1.1x" />
                                                         </span>
                                                     </button>
@@ -831,24 +867,24 @@
                                     </label>
                                 </th>
                             {/if}
-                            {#each Object.entries(row) as [columnName, columnValue]}
-                                {#if columnName !== "id"}
-                                    {#if columnName === clickableColumn}
+                            {#each columns as column, index}
+                                {#if column.dataSourceAttributeName !== "id"}
+                                    {#if columns[index].dataSourceAttributeName === clickableColumn}
                                         <td
                                             class="overflow-hidden group-hover:bg-base-300 {clickableColumn ===
                                             undefined
                                                 ? 'group-hover:cursor-pointer'
                                                 : ''}"
-                                            style="width: {columns[columnName].width}%; 
-                                                min-width: {columns[columnName].minWidth}; 
-                                                max-width: calc({columns[columnName].maxWidth});">
+                                            style="width: {columns[index].width}%; 
+                                            min-width: {columns[index].minWidth}; 
+                                            max-width: calc({columns[index].maxWidth});">
                                             <span
                                                 class="text-nowrap inline-block overflow-hidden overflow-ellipsis"
                                                 style="max-width:calc(100% - 2rem);">
                                                 <button
                                                     on:click={(event) => handleRowClick(event, row.id)}
                                                     class="btn btn-link btn-xs text-base-content  underline">
-                                                    {columnValue}
+                                                    {row[column.dataSourceAttributeName]}
                                                 </button>
                                             </span>
                                         </td>
@@ -858,13 +894,13 @@
                                             undefined
                                                 ? 'group-hover:cursor-pointer'
                                                 : ''}"
-                                            style="width: {columns[columnName].width}%; 
-                                            min-width: {columns[columnName].minWidth}; 
-                                            max-width: calc({columns[columnName].maxWidth});">
+                                            style="width: {columns[index].width}%; 
+                                            min-width: {columns[index].minWidth}; 
+                                            max-width: calc({columns[index].maxWidth});">
                                             <div
                                                 class="text-nowrap inline-block  overflow-hidden overflow-ellipsis align-middle"
                                                 style="max-width:calc(100% - 2rem);">
-                                                {@html columnValue}
+                                                {@html row[column.dataSourceAttributeName]}
                                             </div>
                                         </td>
                                     {/if}
