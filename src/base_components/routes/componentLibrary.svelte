@@ -9,20 +9,6 @@
 
     let columns = [
         {
-            columnHeading: "Name",
-            dataSourceAttributeName: "name",
-            width: 20,
-            sortBy: true,
-            isSortAscending: true,
-            filterBy: {
-                filterText: {
-                    userInput: "Joeys",
-                    placeholder: "First Name",
-                    defaultValue: "Joeys",
-                },
-            },
-        },
-        {
             columnHeading: "Age",
             dataSourceAttributeName: "age",
             width: 15,
@@ -33,8 +19,8 @@
             },
         },
         {
-            columnHeading: "Category",
-            dataSourceAttributeName: "category",
+            columnHeading: "Date",
+            dataSourceAttributeName: "date",
             width: 25,
             sortBy: false,
             isSortAscending: true,
@@ -49,8 +35,22 @@
             },
         },
         {
-            columnHeading: "Date",
-            dataSourceAttributeName: "date",
+            columnHeading: "Name",
+            dataSourceAttributeName: "name",
+            width: 20,
+            sortBy: true,
+            isSortAscending: true,
+            filterBy: {
+                filterText: {
+                    userInput: "Joeys",
+                    placeholder: "First Name",
+                    defaultValue: "Joeys",
+                },
+            },
+        },
+        {
+            columnHeading: "Category",
+            dataSourceAttributeName: "category",
             width: 20,
             sortBy: false,
             isSortAscending: true,
