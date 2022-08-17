@@ -179,10 +179,7 @@
             throw new Error("dataSourceReturnProp '" + dataSourceReturnProp + "' is not defined on the fetch result");
         }
         currentPage = data[dataSourceReturnProp];
-        console.log(currentPage);
         currentPage.forEach((row, index) => {
-            console.log(row, index);
-            console.log(columns[index]);
             selectedRows[row.id] = false;
         });
 
