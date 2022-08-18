@@ -1015,10 +1015,10 @@
                         {#if enableMultiSelect}
                             <th />
                         {/if}
-                        {#each Object.entries(columns) as [columnName, footerColumnName]}
+                        {#each columns as column}
                             <th>
-                                {#if typeof footerColumns[columnName] !== "undefined"}
-                                    {footerColumns[columnName]}
+                                {#if typeof footerColumns[column.dataSourceAttributeName] !== "undefined"}
+                                    {footerColumns[column.dataSourceAttributeName]}
                                 {/if}
                             </th>
                         {/each}
