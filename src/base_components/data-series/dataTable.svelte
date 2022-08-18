@@ -769,13 +769,16 @@
                                                             ][filterName].loading}
                                                             class="custom-btn-loading btn btn-primary btn-xs absolute top-0 right-0 mr-0 rounded-l-none"
                                                             on:click={async () => {
-                                                                requestPendingStates.filters[columnName][
+                                                                requestPendingStates.filters[
+                                                                    column.dataSourceAttributeName
+                                                                ][filterName].visible = true;
+                                                                await handleFilterBy(
+                                                                    column.dataSourceAttributeName,
                                                                     filterName
-                                                                ].visible = true;
-                                                                await handleFilterBy(columnName, filterName);
-                                                                requestPendingStates.filters[columnName][
-                                                                    filterName
-                                                                ].visible = false;
+                                                                );
+                                                                requestPendingStates.filters[
+                                                                    column.dataSourceAttributeName
+                                                                ][filterName].visible = false;
                                                             }}>
                                                             <span
                                                                 class:hidden={requestPendingStates.filters[
