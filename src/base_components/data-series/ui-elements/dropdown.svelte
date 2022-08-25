@@ -44,7 +44,7 @@
     </button>
     <ul
         tabindex="0"
-        class="dropdown-content menu rounded-box menu-compact my-1 h-48 w-52 overflow-y-auto bg-base-300 p-1 shadow">
+        class="dropdown-content menu rounded-box menu-compact my-1 max-h-48 w-52 overflow-y-auto bg-base-300 p-1 shadow">
         {#each dropDownOptions as option}
             <li>
                 <!-- svelte-ignore a11y-missing-attribute -->
