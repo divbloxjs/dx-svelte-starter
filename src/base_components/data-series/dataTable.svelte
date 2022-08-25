@@ -159,6 +159,7 @@
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
+                credentials: "include",
             });
         } else if (httpRequestType === "POST") {
             var response = await fetch(dataSource, {
@@ -167,6 +168,7 @@
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
+                credentials: "include",
                 body: JSON.stringify(postBody),
             });
         } else {
@@ -611,7 +613,7 @@
                             class="align-top"
                             style="width: {column.width}%; 
                                 min-width: {column.minWidth}; 
-                                max-width:calc({column.maxWidth} - 2rem);">
+                                max-width:calc({column.maxWidth});">
                             <button
                                 on:click={async () => handleSortBy(column.dataSourceAttributeName)}
                                 class="btn btn-link  btn-xs pl-0 text-base-content"
@@ -880,7 +882,7 @@
                                             max-width: calc({columns[index].maxWidth});">
                                             <span
                                                 class="text-nowrap inline-block overflow-hidden overflow-ellipsis"
-                                                style="max-width:calc(100% - 2rem);">
+                                                style="max-width:100%;">
                                                 <button
                                                     on:click={(event) => handleRowClick(event, row.id)}
                                                     class="btn btn-link btn-xs text-base-content  underline">
@@ -899,7 +901,7 @@
                                             max-width: calc({columns[index].maxWidth});">
                                             <div
                                                 class="text-nowrap inline-block  overflow-hidden overflow-ellipsis align-middle"
-                                                style="max-width:calc(100% - 2rem);">
+                                                style="max-width:calc(100%);">
                                                 {@html row[column.dataSourceAttributeName]}
                                             </div>
                                         </td>
@@ -960,7 +962,7 @@
                                             class="animate-pulse"
                                             style="width: {columns[columnName].width}%; 
                                                 min-width: {columns[columnName].minWidth}; 
-                                                max-width: calc({columns[columnName].maxWidth} - 2rem);">
+                                                max-width: calc({columns[columnName].maxWidth});">
                                             <button
                                                 class="btn btn-link btn-xs bg-opacity-100 text-base-content text-opacity-50 underline hover:cursor-default" />
                                         </td>
@@ -969,7 +971,7 @@
                                             class="animate-pulse text-center text-base-content text-opacity-50"
                                             style="width: {columns[columnName].width}%; 
                                                 min-width: {columns[columnName].minWidth}; 
-                                                max-width: calc({columns[columnName].maxWidth} - 2rem);">
+                                                max-width: calc({columns[columnName].maxWidth});">
                                             <div
                                                 class="text-nowrap inline-block overflow-hidden rounded-lg border-opacity-50 bg-base-300 bg-opacity-100 align-middle text-transparent"
                                                 style="width: calc(100%);">
