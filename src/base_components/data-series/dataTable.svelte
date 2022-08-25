@@ -31,6 +31,7 @@
     export let pageNumber = 0;
     export let enableMultiSelect = true;
     export let enableGlobalSearch = true;
+    export let initialGlobalSearch = "";
     export let clickableColumn = undefined;
     export let enableRefresh = true;
     export let enableFilters = false;
@@ -118,6 +119,7 @@
         isSortAscending = !isSortAscending;
 
         columns.find((column) => {
+            postBody.columns[column.dataSourceAttributeName].sortBy = false;
             if (column.dataSourceAttributeName === columnName) {
                 postBody.columns[column.dataSourceAttributeName].sortBy = true;
                 postBody.columns[column.dataSourceAttributeName].isSortAscending = isSortAscending;
@@ -147,8 +149,8 @@
             await sleep(() => {}, dataSourceDelaySimulation);
         }
 
-        postBody.limit = itemsPerPage;
-        postBody.offset = (pageNumber - 1) * itemsPerPage;
+        postBody.limit = parseInt(postBody.itemsPerPage);
+        postBody.offset = pageNumber * parseInt(postBody.itemsPerPage);
 
         if (httpRequestType === "GET") {
             let encodedPostBody = encodeURIComponent(JSON.stringify(postBody));
@@ -224,12 +226,16 @@
         sortBy = undefined;
         isSortAscending = true;
 
+        postBody.globalSearchText = initialGlobalSearch;
+
         columns.forEach((column, index) => {
             postBody.columns[column.dataSourceAttributeName].isSortAscending = column.isSortAscending;
             postBody.columns[column.dataSourceAttributeName].sortBy = column.sortBy;
 
-            for (const [filterByName, filterByInfo] of Object.entries(column.filterBy)) {
-                postBody.columns[column.dataSourceAttributeName].filterBy[filterByName] = filterByInfo.userInput;
+            if (column.hasOwnProperty("filterBy")) {
+                for (const [filterByName, filterByInfo] of Object.entries(column.filterBy)) {
+                    postBody.columns[column.dataSourceAttributeName].filterBy[filterByName] = filterByInfo.userInput;
+                }
             }
         });
     };
@@ -243,6 +249,11 @@
             throw Error("columns have not been provided");
         }
 
+        if (!enableGlobalSearch) {
+            initialGlobalSearch = "";
+        }
+
+        postBody.globalSearchText = initialGlobalSearch;
         postBody.itemsPerPage = itemsPerPage;
         postBody.pageNumber = pageNumber;
         postBody.columns = {};
@@ -263,6 +274,8 @@
                     requestPendingStates.filters[column.dataSourceAttributeName][filterName].loading = false;
                     requestPendingStates.filters[column.dataSourceAttributeName][filterName].visible = false;
                 }
+            } else {
+                postBody.columns[column.dataSourceAttributeName].filterBy = {};
             }
         });
 
@@ -286,13 +299,13 @@
         return options;
     };
 
-    const handlePaginate = async (pageNumber) => {
+    const handlePaginate = async (newPageNumber) => {
         if (isLoading) {
             return;
         }
 
         paginationOptions = [];
-        postBody.pageNumber = pageNumber;
+        pageNumber = newPageNumber;
         await refreshDataTable();
     };
     //#endregion
@@ -364,7 +377,7 @@
     //#endregion
 </script>
 
-<div class="px-2">
+<div>
     <!-- #region Top Buttons -->
     <div class="mb-2 flex w-full lg:hidden">
         {#if enableFilters}
@@ -611,7 +624,7 @@
                     {#each columns as column, index}
                         <th
                             class="align-top"
-                            style="width: {column.width}%; 
+                            style="width: {column.width}%;
                                 min-width: {column.minWidth}; 
                                 max-width:calc({column.maxWidth});">
                             <button
@@ -738,7 +751,7 @@
                                                             );
                                                         }}
                                                         class="select select-bordered select-xs mb-0 grow pr-8">
-                                                        <option selected>{filterInfo.placeholder}</option>
+                                                        <option selected value="">{filterInfo.placeholder}</option>
                                                         {#each filterInfo.defaultOptions as value}
                                                             <option {value}>{value}</option>
                                                         {/each}
@@ -771,13 +784,16 @@
                                                             ][filterName].loading}
                                                             class="custom-btn-loading btn btn-primary btn-xs absolute top-0 right-0 mr-0 rounded-l-none"
                                                             on:click={async () => {
-                                                                requestPendingStates.filters[columnName][
+                                                                requestPendingStates.filters[
+                                                                    column.dataSourceAttributeName
+                                                                ][filterName].visible = true;
+                                                                await handleFilterBy(
+                                                                    column.dataSourceAttributeName,
                                                                     filterName
-                                                                ].visible = true;
-                                                                await handleFilterBy(columnName, filterName);
-                                                                requestPendingStates.filters[columnName][
-                                                                    filterName
-                                                                ].visible = false;
+                                                                );
+                                                                requestPendingStates.filters[
+                                                                    column.dataSourceAttributeName
+                                                                ][filterName].visible = false;
                                                             }}>
                                                             <span
                                                                 class:hidden={requestPendingStates.filters[
@@ -877,7 +893,7 @@
                                             undefined
                                                 ? 'group-hover:cursor-pointer'
                                                 : ''}"
-                                            style="width: {columns[index].width}%; 
+                                            style="width: {columns[index].width}%;
                                             min-width: {columns[index].minWidth}; 
                                             max-width: calc({columns[index].maxWidth});">
                                             <span
@@ -896,7 +912,7 @@
                                             undefined
                                                 ? 'group-hover:cursor-pointer'
                                                 : ''}"
-                                            style="width: {columns[index].width}%; 
+                                            style="width: {columns[index].width}%;
                                             min-width: {columns[index].minWidth}; 
                                             max-width: calc({columns[index].maxWidth});">
                                             <div
@@ -960,7 +976,7 @@
                                     {#if clickableColumn !== undefined && columnName === clickableColumn}
                                         <td
                                             class="animate-pulse"
-                                            style="width: {columns[columnName].width}%; 
+                                            style="width: {columns[columnName].width}%;
                                                 min-width: {columns[columnName].minWidth}; 
                                                 max-width: calc({columns[columnName].maxWidth});">
                                             <button
@@ -969,7 +985,7 @@
                                     {:else}
                                         <td
                                             class="animate-pulse text-center text-base-content text-opacity-50"
-                                            style="width: {columns[columnName].width}%; 
+                                            style="width: {columns[columnName].width}%;
                                                 min-width: {columns[columnName].minWidth}; 
                                                 max-width: calc({columns[columnName].maxWidth});">
                                             <div
