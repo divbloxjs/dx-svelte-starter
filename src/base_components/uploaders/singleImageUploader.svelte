@@ -10,6 +10,7 @@
     export let displayImagePath;
     export let uploadResponse = {};
     export let aspect = { x: 4, y: 3 };
+    export let forceCropAspectRatio = true;
     export let displayAsCircle = false;
     export let maxHeight = "300px";
     export let maxWidth = "500px";
@@ -30,7 +31,10 @@
     let modifiedCanvas;
     let imagePath;
 
-    let aspectRatio = displayAsCircle ? 1 : aspect.x / aspect.y;
+    let aspectRatio = displayAsCircle ? 1 : NaN;
+    if (forceCropAspectRatio) {
+        aspectRatio = displayAsCircle ? 1 : aspect.x / aspect.y;
+    }
 
     $: displayImagePathLocal = displayImagePath;
     $: displayImagePathLocal, handleDisplayImagePathChanged();
@@ -87,7 +91,7 @@
 
         cropper = undefined;
         cropper = new Cropper(imageEditorEl, {
-            aspectRatio: displayAsCircle ? 1 : NaN,
+            aspectRatio: aspectRatio,
             viewMode: 1,
             dragMode: "move",
         });
@@ -200,6 +204,17 @@
         </div>
     </div>
 {/if}
+
+<svelte:head>
+    {#if displayAsCircle}
+        <style>
+            .cropper-view-box,
+            .cropper-face {
+                border-radius: 50%;
+            }
+        </style>
+    {/if}
+</svelte:head>
 
 <style>
     @import "cropperjs/dist/cropper.css";
