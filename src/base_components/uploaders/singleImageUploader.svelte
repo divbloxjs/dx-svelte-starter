@@ -1,5 +1,5 @@
 <script>
-    import { defaultImagePath } from "../../lib/js/utilities/helpers.js";
+    import { defaultImagePath } from "$src/lib/js/utilities/helpers.js";
     import { fade } from "svelte/transition";
     import Fa from "svelte-fa";
     import { faPencil } from "@fortawesome/free-solid-svg-icons";
@@ -12,6 +12,8 @@
     export let aspect = { x: 4, y: 3 };
     export let displayAsCircle = false;
     export let maxHeight = "300px";
+    export let maxWidth = "500px";
+    export let objectFit = "contain"; // [contain / cover ]
     export let imageName = "Divblox Image";
     export let uploadEndpoint;
     export let credentials = "include";
@@ -144,15 +146,17 @@
     };
 </script>
 
-<div class="mx-auto max-w-full" style="max-height: {maxHeight}">
+<div class="mx-auto max-w-full" style="max-height: {maxHeight}; max-width: {maxWidth};">
     <div class="avatar">
         <div
-            style="aspect-ratio: {aspectRatio}; max-height: {maxHeight}"
+            style="aspect-ratio: {aspectRatio}; max-height: {maxHeight}; max-width: {maxWidth}"
             class:rounded-full={displayAsCircle}
             class:rounded-lg={!displayAsCircle}>
             <img
                 bind:this={displayedImageEl}
                 on:error={() => (imagePath = defaultImagePath)}
+                class:image-contain={objectFit === "contain"}
+                class:image-cover={objectFit === "cover"}
                 src={imagePath}
                 alt={imageName} />
         </div>
@@ -197,17 +201,6 @@
     </div>
 {/if}
 
-<svelte:head>
-    {#if displayAsCircle}
-        <style>
-            .cropper-view-box,
-            .cropper-face {
-                border-radius: 50%;
-            }
-        </style>
-    {/if}
-</svelte:head>
-
 <style>
     @import "cropperjs/dist/cropper.css";
 
@@ -224,5 +217,16 @@
         width: 0.1px;
         height: 0.1px;
         position: absolute;
+    }
+
+    .image-contain {
+        object-fit: contain;
+        object-position: center;
+        border-radius: 10px;
+    }
+
+    .image-cover {
+        object-fit: cover;
+        object-position: right top;
     }
 </style>
