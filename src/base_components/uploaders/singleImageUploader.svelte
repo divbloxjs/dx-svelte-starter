@@ -205,6 +205,17 @@
     </div>
 {/if}
 
+<svelte:head>
+    {#if displayAsCircle}
+        <style>
+            .cropper-view-box,
+            .cropper-face {
+                border-radius: 50%;
+            }
+        </style>
+    {/if}
+</svelte:head>
+
 <style>
     @import "cropperjs/dist/cropper.css";
 
