@@ -26,6 +26,7 @@
     export let dataSourceDelaySimulation = 0; //ms
     export let dataSourceReturnProp = "data";
     export let dataSourceFooterReturnProp = "footer";
+    export let dataSourceIncludeCredentials = false;
     export let dataSourceCountReturnProp = "count";
     export let itemsPerPage = 10;
     export let pageNumber = 0;
@@ -152,25 +153,26 @@
         postBody.limit = parseInt(postBody.itemsPerPage);
         postBody.offset = pageNumber * parseInt(postBody.itemsPerPage);
 
+        let response;
         if (httpRequestType === "GET") {
             let encodedPostBody = encodeURIComponent(JSON.stringify(postBody));
 
-            var response = await fetch(dataSource + "?encodedPostBody=" + encodedPostBody, {
+            response = await fetch(dataSource + "?encodedPostBody=" + encodedPostBody, {
                 method: httpRequestType,
                 headers: {
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
-                credentials: "include",
+                credentials: dataSourceIncludeCredentials ? "include" : "omit",
             });
         } else if (httpRequestType === "POST") {
-            var response = await fetch(dataSource, {
+            response = await fetch(dataSource, {
                 method: httpRequestType,
                 headers: {
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
-                credentials: "include",
+                credentials: dataSourceIncludeCredentials ? "include" : "omit",
                 body: JSON.stringify(postBody),
             });
         } else {
