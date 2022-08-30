@@ -14,7 +14,7 @@
         faFileExcel,
         faFileText,
         faBars,
-        faPlus,
+        faPlus
     } from "@fortawesome/free-solid-svg-icons/index.es";
     import { onMount, beforeUpdate } from "svelte";
     import { disableNonNumericInput, sleep } from "$src/lib/js/utilities/helpers";
@@ -49,7 +49,7 @@
         faIcon: faPlus,
         displayLabel: "New",
         faClasses: "sm:mr-2",
-        clickEvent: "add_new_clicked",
+        clickEvent: "add_new_clicked"
     };
 
     export let columns = undefined;
@@ -88,17 +88,17 @@
     const requestPendingStates = {
         globalSearch: {
             loading: false,
-            visible: false,
+            visible: false
         },
         editLimit: {
             loading: false,
-            visible: false,
+            visible: false
         },
         refresh: {
             loading: false,
-            visible: false,
+            visible: false
         },
-        filters: {}, // Populated dynamically based on incoming data
+        filters: {} // Populated dynamically based on incoming data
     };
 
     const handleGeneralStates = async (type) => {
@@ -147,7 +147,8 @@
         isLoading = true;
 
         if (dataSourceDelaySimulation > 0) {
-            await sleep(() => {}, dataSourceDelaySimulation);
+            await sleep(() => {
+            }, dataSourceDelaySimulation);
         }
 
         postBody.limit = parseInt(postBody.itemsPerPage);
@@ -161,19 +162,19 @@
                 method: httpRequestType,
                 headers: {
                     Accept: "application/json",
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                credentials: dataSourceIncludeCredentials ? "include" : "omit",
+                credentials: dataSourceIncludeCredentials ? "include" : "omit"
             });
         } else if (httpRequestType === "POST") {
             response = await fetch(dataSource, {
                 method: httpRequestType,
                 headers: {
                     Accept: "application/json",
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
                 credentials: dataSourceIncludeCredentials ? "include" : "omit",
-                body: JSON.stringify(postBody),
+                body: JSON.stringify(postBody)
             });
         } else {
             throw Error("Allowed HTTP request types are only 'POST' and 'GET'. Provided: " + httpRequestType);
@@ -293,7 +294,7 @@
             const optionInfo = {
                 params: { pageNumber: index },
                 displayLabel: "Page " + (index + 1).toString(),
-                clickEvent: "page_clicked",
+                clickEvent: "page_clicked"
             };
             return optionInfo;
         });
@@ -354,8 +355,17 @@
                 definedColWidths[column.dataSourceAttributeName] = column.width;
             }
 
-            columns[index].minWidth = "1px";
-            columns[index].maxWidth = "1px";
+            if (column.hasOwnProperty("minWidth")) {
+                columns[index].minWidth = column.minWidth;
+            } else {
+                columns[index].minWidth = "1px";
+            }
+
+            if (column.hasOwnProperty("maxWidth")) {
+                columns[index].maxWidth = column.maxWidth;
+            } else {
+                columns[index].maxWidth = "1px";
+            }
         });
 
         // Set all undefined column widths to the minimum defined width
@@ -365,7 +375,7 @@
             }
         });
 
-        let sumOfColumnDataColumnWidths = columns.reduce(function (acc, column) {
+        let sumOfColumnDataColumnWidths = columns.reduce(function(acc, column) {
             return acc + column.width;
         }, 0);
 
@@ -391,8 +401,9 @@
             </div>
         {/if}
         <div class="my-auto ml-auto flex flex-row">
-            <span class="badge my-auto border-base-300 bg-base-300 text-base-content"
-                >{totalItemCount !== undefined ? totalItemCount : "... "} items</span>
+            <span class="badge my-auto border-base-300 bg-base-300 text-base-content">
+                {totalItemCount !== undefined ? totalItemCount : "... "} items
+            </span>
             <div class="btn-group ml-2 {!enableNewButton ? 'hidden' : ''} sm:flex">
                 {#if enableNewButton}
                     <button
@@ -425,7 +436,7 @@
                                 await handlePaginate(postBody.pageNumber - 1);
                             }
                         }}
-                        >«
+                    >«
                     </button>
                     <Dropdown
                         dropDownText="Page {postBody.pageNumber + 1}"
@@ -440,7 +451,7 @@
                                 await handlePaginate(postBody.pageNumber + 1);
                             }
                         }}
-                        >»
+                    >»
                     </button>
                 {/if}
             </div>
@@ -534,8 +545,9 @@
                 </button>
             {/if}
             <div class="my-auto ml-auto flex flex-row">
-                <span class="badge my-auto mr-2 border-base-300 bg-base-300 text-base-content"
-                    >{totalItemCount !== undefined ? totalItemCount : "Loading"} items</span>
+                <span class="badge my-auto mr-2 border-base-300 bg-base-300 text-base-content">
+                    {totalItemCount !== undefined ? totalItemCount : "Loading"} items
+                </span>
 
                 <div class="btn-group">
                     {#if enableNewButton}
@@ -569,7 +581,7 @@
                                     await handlePaginate(postBody.pageNumber - 1);
                                 }
                             }}
-                            >«
+                        >«
                         </button>
                         <Dropdown
                             dropDownText="Page {postBody.pageNumber + 1}"
@@ -584,7 +596,7 @@
                                     await handlePaginate(postBody.pageNumber + 1);
                                 }
                             }}
-                            >»
+                        >»
                         </button>
                     {/if}
                 </div>
@@ -627,7 +639,7 @@
                         <th
                             class="align-top"
                             style="width: {column.width}%;
-                                min-width: {column.minWidth}; 
+                                min-width: {column.minWidth};
                                 max-width:calc({column.maxWidth});">
                             <button
                                 on:click={async () => handleSortBy(column.dataSourceAttributeName)}
@@ -896,7 +908,7 @@
                                                 ? 'group-hover:cursor-pointer'
                                                 : ''}"
                                             style="width: {columns[index].width}%;
-                                            min-width: {columns[index].minWidth}; 
+                                            min-width: {columns[index].minWidth};
                                             max-width: calc({columns[index].maxWidth});">
                                             <span
                                                 class="text-nowrap inline-block overflow-hidden overflow-ellipsis"
@@ -915,7 +927,7 @@
                                                 ? 'group-hover:cursor-pointer'
                                                 : ''}"
                                             style="width: {columns[index].width}%;
-                                            min-width: {columns[index].minWidth}; 
+                                            min-width: {columns[index].minWidth};
                                             max-width: calc({columns[index].maxWidth});">
                                             <div
                                                 class="text-nowrap inline-block  overflow-hidden overflow-ellipsis align-middle"
@@ -979,7 +991,7 @@
                                         <td
                                             class="animate-pulse"
                                             style="width: {columns[columnName].width}%;
-                                                min-width: {columns[columnName].minWidth}; 
+                                                min-width: {columns[columnName].minWidth};
                                                 max-width: calc({columns[columnName].maxWidth});">
                                             <button
                                                 class="btn btn-link btn-xs bg-opacity-100 text-base-content text-opacity-50 underline hover:cursor-default" />
@@ -988,7 +1000,7 @@
                                         <td
                                             class="animate-pulse text-center text-base-content text-opacity-50"
                                             style="width: {columns[columnName].width}%;
-                                                min-width: {columns[columnName].minWidth}; 
+                                                min-width: {columns[columnName].minWidth};
                                                 max-width: calc({columns[columnName].maxWidth});">
                                             <div
                                                 class="text-nowrap inline-block overflow-hidden rounded-lg border-opacity-50 bg-base-300 bg-opacity-100 align-middle text-transparent"
@@ -1063,7 +1075,7 @@
                             await handlePaginate(postBody.pageNumber - 1);
                         }
                     }}
-                    >«
+                >«
                 </button>
                 <Dropdown
                     dropDownText="Page {postBody.pageNumber + 1}"
@@ -1079,7 +1091,7 @@
                             await handlePaginate(postBody.pageNumber + 1);
                         }
                     }}
-                    >»
+                >»
                 </button>
             </div>
         </div>
@@ -1195,7 +1207,7 @@
                         await handlePaginate(postBody.pageNumber - 1);
                     }
                 }}
-                >«
+            >«
             </button>
             <Dropdown
                 dropDownText="Page {postBody.pageNumber + 1}"
@@ -1210,7 +1222,7 @@
                         await handlePaginate(postBody.pageNumber + 1);
                     }
                 }}
-                >»
+            >»
             </button>
         </div>
     </div>

@@ -22,7 +22,7 @@
     let dropDownOpen = false;
 </script>
 
-<div class="dropdown-end dropdown {dropdownClasses}">
+<div className="dropdown-end dropdown {dropdownClasses}">
     <button
         on:mouseup={() => {
             if (dropDownOpen === true) {
@@ -34,9 +34,9 @@
                 dropDownOpen = true;
             }
         }}
-        tabindex="0"
-        class="btn btn-sm flex w-full items-center justify-center {btnClasses}"
-        class:loading={dropDownOptions.length < 1}>
+        tabIndex="0"
+        className="btn btn-sm flex w-full items-center justify-center {btnClasses}"
+        class:loading={dropDownOptions === undefined}>
         {#if dropDownIcon}
             <Fa icon={dropDownIcon} size="1.1x" class={dropDownText === undefined ? "mr-2" : ""} />
         {/if}
@@ -44,7 +44,7 @@
     </button>
     <ul
         tabindex="0"
-        class="dropdown-content menu rounded-box menu-compact my-1 max-h-48 w-52 overflow-y-auto bg-base-300 p-1 shadow">
+        class="dropdown-content menu rounded-box menu-compact my-1 max-h-48 w-52 overflow-y-auto bg-base-300 p-1 mr-2 shadow">
         {#each dropDownOptions as option}
             <li>
                 <!-- svelte-ignore a11y-missing-attribute -->
