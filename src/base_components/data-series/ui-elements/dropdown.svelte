@@ -9,6 +9,7 @@
     export let dropDownOptions;
     export let btnClasses = "";
     export let dropdownClasses = "";
+    export let loading = true;
 
     const selectOption = (params) => {
         if (document.activeElement instanceof HTMLElement) {
@@ -34,9 +35,9 @@
                 dropDownOpen = true;
             }
         }}
-        tabindex="0"
+        tabIndex="0"
         class="btn btn-sm flex w-full items-center justify-center {btnClasses}"
-        class:loading={dropDownOptions.length < 1}>
+        class:loading={loading}>
         {#if dropDownIcon}
             <Fa icon={dropDownIcon} size="1.1x" class={dropDownText === undefined ? "mr-2" : ""} />
         {/if}
@@ -44,7 +45,7 @@
     </button>
     <ul
         tabindex="0"
-        class="dropdown-content menu rounded-box menu-compact my-1 max-h-48 w-52 overflow-y-auto bg-base-300 p-1 shadow">
+        class="dropdown-content menu rounded-box menu-compact my-1 max-h-48 w-52 overflow-y-auto bg-base-300 p-1 mr-2 shadow">
         {#each dropDownOptions as option}
             <li>
                 <!-- svelte-ignore a11y-missing-attribute -->
