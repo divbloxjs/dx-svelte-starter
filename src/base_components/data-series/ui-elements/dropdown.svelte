@@ -9,6 +9,7 @@
     export let dropDownOptions;
     export let btnClasses = "";
     export let dropdownClasses = "";
+    export let loading = true;
 
     const selectOption = (params) => {
         if (document.activeElement instanceof HTMLElement) {
@@ -22,7 +23,7 @@
     let dropDownOpen = false;
 </script>
 
-<div className="dropdown-end dropdown {dropdownClasses}">
+<div class="dropdown-end dropdown {dropdownClasses}">
     <button
         on:mouseup={() => {
             if (dropDownOpen === true) {
@@ -35,8 +36,8 @@
             }
         }}
         tabIndex="0"
-        className="btn btn-sm flex w-full items-center justify-center {btnClasses}"
-        class:loading={dropDownOptions === undefined}>
+        class="btn btn-sm flex w-full items-center justify-center {btnClasses}"
+        class:loading={loading}>
         {#if dropDownIcon}
             <Fa icon={dropDownIcon} size="1.1x" class={dropDownText === undefined ? "mr-2" : ""} />
         {/if}

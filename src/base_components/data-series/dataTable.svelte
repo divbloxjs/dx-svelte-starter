@@ -98,6 +98,9 @@
             loading: false,
             visible: false
         },
+        pagination: {
+            loading: false
+        },
         filters: {} // Populated dynamically based on incoming data
     };
 
@@ -214,7 +217,9 @@
     };
 
     onMount(async () => {
+        requestPendingStates.pagination.loading = true;
         await refreshDataTable();
+        requestPendingStates.pagination.loading = false;
     });
 
     beforeUpdate(async () => {
@@ -308,8 +313,11 @@
         }
 
         paginationOptions = [];
-        pageNumber = newPageNumber;
+        postBody.pageNumber = newPageNumber;
+
+        requestPendingStates.pagination.loading = true;
         await refreshDataTable();
+        requestPendingStates.pagination.loading = false;
     };
     //#endregion
 
@@ -442,6 +450,7 @@
                         dropDownText="Page {postBody.pageNumber + 1}"
                         dropDownOptions={paginationOptions}
                         btnClasses="rounded-none"
+                        loading={requestPendingStates.pagination.loading}
                         on:optionSelected={async (params) =>
                             await handlePaginate(parseInt(params.detail.params.pageNumber))} />
                     <button
@@ -587,6 +596,7 @@
                             dropDownText="Page {postBody.pageNumber + 1}"
                             dropDownOptions={paginationOptions}
                             btnClasses="rounded-none"
+                            loading={requestPendingStates.pagination.loading}
                             on:optionSelected={async (params) =>
                                 await handlePaginate(parseInt(params.detail.params.pageNumber))} />
                         <button
@@ -622,7 +632,7 @@
                 <tr class="child:bg-base-300">
                     {#if enableMultiSelect === true}
                         <th
-                            class="text-center align-middle"
+                            class="text-center align-middle sticky"
                             style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
                             <label>
                                 <input
@@ -974,7 +984,7 @@
                         <tr class="group">
                             {#if enableMultiSelect === true}
                                 <th
-                                    class="animate-pulse text-center align-middle"
+                                    class="animate-pulse text-center align-middle sticky"
                                     style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
                                     <label>
                                         <input
@@ -1045,7 +1055,7 @@
                 <tfoot>
                     <tr class="child:bg-base-300">
                         {#if enableMultiSelect}
-                            <th />
+                            <th class="sticky" />
                         {/if}
                         {#each columns as column}
                             <th>
@@ -1082,6 +1092,7 @@
                     dropDownOptions={paginationOptions}
                     dropdownClasses="dropdown-top"
                     btnClasses="rounded-none"
+                    loading={requestPendingStates.pagination.loading}
                     on:optionSelected={async (params) =>
                         await handlePaginate(parseInt(params.detail.params.pageNumber))} />
                 <button
@@ -1214,6 +1225,7 @@
                 dropDownOptions={paginationOptions}
                 dropdownClasses="dropdown-top"
                 btnClasses="rounded-none"
+                loading={requestPendingStates.pagination.loading}
                 on:optionSelected={async (params) => await handlePaginate(parseInt(params.detail.params.pageNumber))} />
             <button
                 class="btn btn-sm"
@@ -1228,3 +1240,10 @@
     </div>
     <!-- #endregion  -->
 </div>
+
+<style>
+    .table th:first-child {
+        position: inherit;
+    }
+
+</style>
