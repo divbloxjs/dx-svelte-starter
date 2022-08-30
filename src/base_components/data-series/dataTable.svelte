@@ -3,23 +3,18 @@
     import { fly } from "svelte/transition";
     import {
         faAngleDown,
+        faBars,
+        faCheck,
         faEdit,
         faEye,
-        faTrash,
-        faCheck,
         faMagnifyingGlass,
-        faRefresh,
+        faPlus,
         faTimes,
-        faFileCsv,
-        faFileExcel,
-        faFileText,
-        faBars,
-        faPlus
+        faTrash
     } from "@fortawesome/free-solid-svg-icons/index.es";
-    import { onMount, beforeUpdate } from "svelte";
+    import { beforeUpdate, createEventDispatcher, onMount } from "svelte";
     import { disableNonNumericInput, sleep } from "$src/lib/js/utilities/helpers";
     import Dropdown from "$src/base_components/data-series/ui-elements/dropdown.svelte";
-    import { createEventDispatcher } from "svelte";
 
     export let httpRequestType = "POST";
     export let dataSource;
@@ -77,6 +72,7 @@
     let allSelected = false;
 
     let isLoading = false;
+    let noResultsFound = true;
 
     let initComplete = false;
 
@@ -193,6 +189,17 @@
             selectedRows[row.id] = false;
         });
 
+        if (currentPage.length < 1) {
+            let currentRow = {};
+            currentRow.id = -1;
+            Object.keys(postBody.columns).forEach(columnName => {
+                currentRow[columnName] = "No results";
+            });
+            currentPage.push(currentRow);
+        } else {
+            noResultsFound = false;
+        }
+
         if (typeof data[dataSourceCountReturnProp] === "undefined") {
             throw new Error(
                 "dataSourceCountReturnProp '" + dataSourceCountReturnProp + "' is not defined on the fetch result"
@@ -295,16 +302,13 @@
     //#region Pagination
 
     const buildPaginationOptions = () => {
-        const options = Array.from(Array(totalPagesCount).keys()).map((_, index) => {
-            const optionInfo = {
+        return Array.from(Array(totalPagesCount === 0 ? 1 : totalPagesCount).keys()).map((_, index) => {
+            return {
                 params: { pageNumber: index },
                 displayLabel: "Page " + (index + 1).toString(),
                 clickEvent: "page_clicked"
             };
-            return optionInfo;
         });
-
-        return options;
     };
 
     const handlePaginate = async (newPageNumber) => {
@@ -878,46 +882,53 @@
 
             <tbody>
                 {#if !isLoading}
-                    {#each currentPage as row}
-                        <tr
-                            class="group"
-                            on:click={(event) => {
+                    {#if noResultsFound}
+                        <tr class="text-center">
+                            <td class="text-center" colspan={Object.keys(postBody.columns).length}>
+                                No results found
+                            </td>
+                        </tr>
+                    {:else}
+                        {#each currentPage as row}
+                            <tr
+                                class="group"
+                                on:click={(event) => {
                                 if (clickableColumn === undefined) {
                                     handleRowClick(event, row.id);
                                 }
                             }}>
-                            {#if enableMultiSelect === true}
-                                <th
-                                    class="text-center align-middle group-hover:bg-base-300 {clickableColumn ===
+                                {#if enableMultiSelect === true}
+                                    <th
+                                        class="text-center align-middle group-hover:bg-base-300 {clickableColumn ===
                                     undefined
                                         ? 'group-hover:cursor-pointer'
                                         : ''}"
-                                    style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
-                                    <label>
-                                        <input
-                                            on:click={(event) => {
+                                        style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
+                                        <label>
+                                            <input
+                                                on:click={(event) => {
                                                 event.stopPropagation();
                                             }}
-                                            on:change={(event) => {
+                                                on:change={(event) => {
                                                 if (!event.target.checked) {
                                                     allSelected = false;
                                                 }
                                             }}
-                                            bind:checked={selectedRows[row.id]}
-                                            type="checkbox"
-                                            class="checkbox checkbox-sm relative top-[-1px] align-middle" />
-                                    </label>
-                                </th>
-                            {/if}
-                            {#each columns as column, index}
-                                {#if column.dataSourceAttributeName !== "id"}
-                                    {#if columns[index].dataSourceAttributeName === clickableColumn}
-                                        <td
-                                            class="overflow-hidden group-hover:bg-base-300 {clickableColumn ===
+                                                bind:checked={selectedRows[row.id]}
+                                                type="checkbox"
+                                                class="checkbox checkbox-sm relative top-[-1px] align-middle" />
+                                        </label>
+                                    </th>
+                                {/if}
+                                {#each columns as column, index}
+                                    {#if column.dataSourceAttributeName !== "id"}
+                                        {#if columns[index].dataSourceAttributeName === clickableColumn}
+                                            <td
+                                                class="overflow-hidden group-hover:bg-base-300 {clickableColumn ===
                                             undefined
                                                 ? 'group-hover:cursor-pointer'
                                                 : ''}"
-                                            style="width: {columns[index].width}%;
+                                                style="width: {columns[index].width}%;
                                             min-width: {columns[index].minWidth};
                                             max-width: calc({columns[index].maxWidth});">
                                             <span
@@ -929,56 +940,58 @@
                                                     {row[column.dataSourceAttributeName]}
                                                 </button>
                                             </span>
-                                        </td>
-                                    {:else}
-                                        <td
-                                            class="overflow-hidden group-hover:bg-base-300 {clickableColumn ===
+                                            </td>
+                                        {:else}
+                                            <td
+                                                class="overflow-hidden group-hover:bg-base-300 {clickableColumn ===
                                             undefined
                                                 ? 'group-hover:cursor-pointer'
                                                 : ''}"
-                                            style="width: {columns[index].width}%;
+                                                style="width: {columns[index].width}%;
                                             min-width: {columns[index].minWidth};
                                             max-width: calc({columns[index].maxWidth});">
-                                            <div
-                                                class="text-nowrap inline-block  overflow-hidden overflow-ellipsis align-middle"
-                                                style="max-width:calc(100%);">
-                                                {@html row[column.dataSourceAttributeName]}
-                                            </div>
-                                        </td>
+                                                <div
+                                                    class="text-nowrap inline-block  overflow-hidden overflow-ellipsis align-middle"
+                                                    style="max-width:calc(100%);">
+                                                    {@html row[column.dataSourceAttributeName]}
+                                                </div>
+                                            </td>
+                                        {/if}
                                     {/if}
-                                {/if}
-                            {/each}
+                                {/each}
 
-                            {#if Object.keys(customActions).length > 1}
-                                <td
-                                    class="group-hover:bg-base-300 {clickableColumn === undefined
+                                {#if Object.keys(customActions).length > 1}
+                                    <td
+                                        class="group-hover:bg-base-300 {clickableColumn === undefined
                                         ? 'group-hover:cursor-pointer'
                                         : ''}"
-                                    style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
-                                    <div class="flex align-middle">
-                                        {#each customActions.actions as action}
-                                            <button
-                                                class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
-                                                on:click={(event) =>
+                                        style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
+                                        <div class="flex align-middle">
+                                            {#each customActions.actions as action}
+                                                <button
+                                                    class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
+                                                    on:click={(event) =>
                                                     handleCustomActionClick(event, action.clickEvent, row.id)}>
-                                                {#if action.faIcon === "faEye"}
-                                                    <Fa icon={faEye} size="1.1x" />
-                                                {:else if action.faIcon === "faTrash"}
-                                                    <Fa icon={faTrash} size="1.1x" />
-                                                {:else if action.faIcon === "faEdit"}
-                                                    <Fa icon={faEdit} size="1.1x" />
-                                                {/if}
+                                                    {#if action.faIcon === "faEye"}
+                                                        <Fa icon={faEye} size="1.1x" />
+                                                    {:else if action.faIcon === "faTrash"}
+                                                        <Fa icon={faTrash} size="1.1x" />
+                                                    {:else if action.faIcon === "faEdit"}
+                                                        <Fa icon={faEdit} size="1.1x" />
+                                                    {/if}
 
-                                                {#if action.hasOwnProperty("displayLabel")}
-                                                    <span class="ml-1">{action.displayLabel}</span>
-                                                {/if}
-                                            </button>
-                                        {/each}
-                                    </div>
-                                </td>
-                            {/if}
-                        </tr>
-                    {/each}
+                                                    {#if action.hasOwnProperty("displayLabel")}
+                                                        <span class="ml-1">{action.displayLabel}</span>
+                                                    {/if}
+                                                </button>
+                                            {/each}
+                                        </div>
+                                    </td>
+                                {/if}
+                            </tr>
+                        {/each}
+                    {/if}
+
                 {:else}
                     {#each Array(parseInt(postBody.itemsPerPage)) as _, index}
                         <tr class="group">
