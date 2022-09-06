@@ -13,7 +13,7 @@
         btnClasses: "",
         faIcon: faPlus,
         displayLabel: "New",
-        faClasses: "sm:mr-2",
+        faClasses: "xs:pr-2",
         clickEvent: "create_clicked"
     };
 
@@ -24,6 +24,7 @@
     const dispatch = createEventDispatcher();
 
     const actionTriggered = async (type) => {
+        globalLoading = true;
         requestPendingStates[type].visible = true;
         requestPendingStates[type].loading = true;
 
@@ -34,6 +35,7 @@
                 params = { clickEvent: "search_clicked", searchValue: searchValue };
                 break;
             case "refresh":
+                searchValue = "";
                 params = { clickEvent: "refresh_clicked" };
                 break;
             case "create":
@@ -48,8 +50,7 @@
 
         requestPendingStates[type].visible = false;
         requestPendingStates[type].loading = false;
-
-
+        globalLoading = false;
     };
 
     let requestPendingStates = {
@@ -70,9 +71,9 @@
 </script>
 
 <div class="w-full">
-    <div class="flow-root">
-        <div class="float-left flex items-end">
-            <div class="relative w-40 sm:w-80 md:w-80">
+    <div class="flex">
+        <div class="grow">
+            <div class="relative">
                 {#if enableSearch === true}
                     <div class="form-control my-auto mr-2">
                         <div class="relative -mb-2">
@@ -129,12 +130,12 @@
                     </div>
                 {/if}
             </div>
-            <div class="">
-                {#if enableRefresh === true}
-                    <button
-                        class="custom-btn-loading btn btn-sm"
-                        class:loading={requestPendingStates.refresh.loading}
-                        on:click={async () => {
+        </div>
+        {#if enableRefresh === true}
+            <button
+                class="custom-btn-loading btn btn-sm mr-2"
+                class:loading={requestPendingStates.refresh.loading}
+                on:click={async () => {
                     if (globalLoading) {
                         return;
                     }
@@ -144,34 +145,29 @@
                 <span class:hidden={requestPendingStates.refresh.loading}>
                     <Fa icon={faTimes} size="1.1x" />
                 </span>
-                    </button>
-                {/if}
-            </div>
-        </div>
-        <div class="float-right">
-            <div class="">
-                {#if enableNewButton}
-                    <button
-                        class="btn btn-primary btn-sm {newButtonOptions.hasOwnProperty('btnClasses')
+            </button>
+        {/if}
+        {#if enableNewButton}
+            <button
+                class="btn btn-primary btn-sm {newButtonOptions.hasOwnProperty('btnClasses')
                                 ? newButtonOptions.btnClasses
                                 : ''}"
-                        on:click={() => {
+                on:click={() => {
                                 actionTriggered("create");
                             }}>
-                        {#if newButtonOptions.hasOwnProperty("faIcon")}
-                            <Fa
-                                icon={newButtonOptions.faIcon}
-                                size="1.1x"
-                                class={newButtonOptions.hasOwnProperty("faClasses")
+                {#if newButtonOptions.hasOwnProperty("faIcon")}
+                    <Fa
+                        icon={newButtonOptions.faIcon}
+                        size="1.1x"
+                        class={newButtonOptions.hasOwnProperty("faClasses")
                                         ? newButtonOptions.faClasses
-                                        : ""} />
-                        {/if}
-                        {#if newButtonOptions.hasOwnProperty("displayLabel")}
-                            <span class="hidden xs:flex">{newButtonOptions.displayLabel}</span>
-                        {/if}
-                    </button>
+                                        : ""}
+                    />
                 {/if}
-            </div>
-        </div>
+                {#if newButtonOptions.hasOwnProperty("displayLabel")}
+                    <span class="hidden xs:flex">{newButtonOptions.displayLabel}</span>
+                {/if}
+            </button>
+        {/if}
     </div>
 </div>
