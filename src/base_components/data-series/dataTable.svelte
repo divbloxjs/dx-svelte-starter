@@ -899,7 +899,7 @@
                             }}>
                                 {#if enableMultiSelect === true}
                                     <th
-                                        class="text-center align-middle group-hover:bg-base-300 {clickableColumn ===
+                                        class="text-center align-middle group-hover:bg-base-300/80 {clickableColumn ===
                                     undefined
                                         ? 'group-hover:cursor-pointer'
                                         : ''}"
@@ -924,7 +924,7 @@
                                     {#if column.dataSourceAttributeName !== "id"}
                                         {#if columns[index].dataSourceAttributeName === clickableColumn}
                                             <td
-                                                class="overflow-hidden group-hover:bg-base-300 {clickableColumn ===
+                                                class="overflow-hidden group-hover:bg-base-300/80 {clickableColumn ===
                                             undefined
                                                 ? 'group-hover:cursor-pointer'
                                                 : ''}"
@@ -943,7 +943,7 @@
                                             </td>
                                         {:else}
                                             <td
-                                                class="overflow-hidden group-hover:bg-base-300 {clickableColumn ===
+                                                class="overflow-hidden group-hover:bg-base-300/80 {clickableColumn ===
                                             undefined
                                                 ? 'group-hover:cursor-pointer'
                                                 : ''}"
@@ -962,7 +962,7 @@
 
                                 {#if Object.keys(customActions).length > 1}
                                     <td
-                                        class="group-hover:bg-base-300 {clickableColumn === undefined
+                                        class="group-hover:bg-base-300/80 {clickableColumn === undefined
                                         ? 'group-hover:cursor-pointer'
                                         : ''}"
                                         style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
