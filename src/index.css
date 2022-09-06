@@ -40,6 +40,31 @@
         .btn.loading.custom-btn-loading:before {
             margin: 0;
         }
+
+        .minimal-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        .minimal-scrollbar::-webkit-scrollbar:hover {
+            width: 8px;
+            height: 8px;
+        }
+
+        .minimal-scrollbar::-webkit-scrollbar-track {
+            border-radius: 100vh;
+            background: #00000022;
+        }
+
+        .minimal-scrollbar::-webkit-scrollbar-thumb {
+            background: #00000066;
+            border-radius: 100vh;
+        }
+
+        .minimal-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #000000aa;
+            cursor: pointer;
+        }
     }
 }
 

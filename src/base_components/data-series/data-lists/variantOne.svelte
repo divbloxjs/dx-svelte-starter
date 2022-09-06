@@ -28,14 +28,14 @@
             faIcon: "faEdit",
             btnClasses: "btn-link text-base-content hover:text-success",
             // displayLabel: "Edit",
-            clickEvent: "edit_clicked"
+            clickEvent: "edit_clicked",
         },
         {
             faIcon: "faTrash",
             // displayLabel: "Delete",
             btnClasses: "btn-link text-base-content hover:text-error",
-            clickEvent: "delete_clicked"
-        }
+            clickEvent: "delete_clicked",
+        },
     ];
 
     let totalRowCount = 0;
@@ -48,7 +48,6 @@
         await refreshDataList();
     });
 
-
     /**
      * Handles refreshing the data list with the latest search and display configuration
      */
@@ -56,14 +55,13 @@
         globalLoading = true;
 
         if (dataSourceDelaySimulation > 0) {
-            await sleep(() => {
-            }, dataSourceDelaySimulation);
+            await sleep(() => {}, dataSourceDelaySimulation);
         }
 
         let postBody = {
             offset: currentNumberOfRows,
             limit: initialNumberOfRows,
-            searchValue: searchValue
+            searchValue: searchValue,
         };
 
         let response;
@@ -74,19 +72,19 @@
                 method: httpRequestType,
                 headers: {
                     Accept: "application/json",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                credentials: dataSourceIncludeCredentials ? "include" : "omit"
+                credentials: dataSourceIncludeCredentials ? "include" : "omit",
             });
         } else if (httpRequestType === "POST") {
             response = await fetch(dataSource, {
                 method: httpRequestType,
                 headers: {
                     Accept: "application/json",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
                 credentials: dataSourceIncludeCredentials ? "include" : "omit",
-                body: JSON.stringify(postBody)
+                body: JSON.stringify(postBody),
             });
         } else {
             throw Error("Allowed HTTP request types are only 'POST' and 'GET'. Provided: " + httpRequestType);
@@ -160,36 +158,39 @@
         actionTriggered({ clickEvent: "row_clicked", rowId: rowId });
     };
     //endregion
-
 </script>
 
 <div class="w-full" style="max-height:{dataListMaxHeight}">
-    <div class="w-full my-3">
+    <div class="my-3 w-full">
         <DataListHeader
-            enableRefresh={enableRefresh}
-            enableSearch={enableSearch}
-            enableCreate={enableCreate}
-            searchValue={searchValue}
-            globalLoading={globalLoading}
-            on:actionTriggered={params => propagateActionTriggered(params)} />
+            {enableRefresh}
+            {enableSearch}
+            {enableCreate}
+            {searchValue}
+            {globalLoading}
+            on:actionTriggered={(params) => propagateActionTriggered(params)} />
     </div>
 
-    <ul class="divide-y-2 divide-gray-200 min-w-[300px] overflow-y-auto rounded-lg border-2 border-gray-200"
+    <ul
+        class="minimal-scrollbar min-w-[300px] divide-y-2 divide-gray-200 overflow-y-auto rounded-lg border-2 border-gray-200"
         style="max-height: inherit;">
         {#each currentPage as row}
-            <li class="flex justify-between items-center py-4 px-4 bg-transparent
+            <li
+                class="flex items-center justify-between bg-transparent py-4 px-4
                 hover:bg-gray-200 {clickableRow ? 'hover:cursor-pointer' : ''}"
-                on:click={(event) => {if (clickableRow) {handleRowClick(event, row.id);}
-            }}>
+                on:click={(event) => {
+                    if (clickableRow) {
+                        handleRowClick(event, row.id);
+                    }
+                }}>
                 <div>
                     <div class="text-lg">
                         {row[rowTitle]}
                     </div>
                 </div>
-                <div class="flex justify-center items-center">
+                <div class="flex items-center justify-center">
                     {#each actions as action}
-                        {#if row.actions}
-                            {/if}
+                        {#if row.actions}{/if}
                         <button
                             class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
                             on:click={(event) => handleCustomActionClick(event, action.clickEvent, row.id)}>
@@ -202,8 +203,9 @@
                             {/if}
 
                             {#if action.hasOwnProperty("displayLabel")}
-                                <span class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]': ''}
-                                {action.faIcon === 'faTrash' ? 'mt-[2px]': ''}">{action.displayLabel}</span>
+                                <span
+                                    class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
+                                {action.faIcon === 'faTrash' ? 'mt-[2px]' : ''}">{action.displayLabel}</span>
                             {/if}
                         </button>
                     {/each}
@@ -211,17 +213,18 @@
             </li>
         {/each}
         {#if noResultsFound}
-            <li class="flex justify-between items-center py-2 px-4 bg-gray-100 rounded-lg">
-                <div class="text-center mx-auto">
-                    No Results
-                </div>
+            <li class="flex items-center justify-between rounded-lg bg-gray-100 py-2 px-4">
+                <div class="mx-auto text-center">No Results</div>
             </li>
         {/if}
     </ul>
     {#if currentPage.length < totalRowCount && !noResultsFound}
-        <div class="w-full mt-2 text-center">
-            <button class="btn-link"
-                    on:click={async () => {await refreshDataList()}}>
+        <div class="mt-2 w-full text-center">
+            <button
+                class="btn-link"
+                on:click={async () => {
+                    await refreshDataList();
+                }}>
                 Load More
             </button>
         </div>
