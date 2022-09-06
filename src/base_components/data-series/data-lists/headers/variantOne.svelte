@@ -1,6 +1,6 @@
 <script>
     import Fa from "svelte-fa";
-    import { faMagnifyingGlass, faTimes, faPlus } from "@fortawesome/free-solid-svg-icons/index.es";
+    import { faMagnifyingGlass, faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
     import { fly } from "svelte/transition";
     import { createEventDispatcher } from "svelte";
     import { sleep } from "$src/lib/js/utilities/helpers.js";

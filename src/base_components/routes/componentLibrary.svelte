@@ -7,6 +7,7 @@
     import DataTable from "$src/base_components/data-series/dataTable.svelte";
     import { faFileExcel, faFileCsv, faFileText, faTrash } from "@fortawesome/free-solid-svg-icons";
     import QuickActionModal from "$src/base_components/modals/quickActionModal.svelte";
+    import VariantOne from "$src/base_components/data-series/data-lists/headers/variantOne.svelte";
 
     let columns = [
         {
@@ -198,7 +199,13 @@
                     Data Table
                 </span>
                 <span
-                    class="tab tab-bordered"
+                    class="tab tab-bordered mr-2"
+                    class:tab-active={activeComponentTab === "dataListExample"}
+                    on:click={(event) => tabToggle(event, "dataListExample")}>
+                    Data List
+                </span>
+                <span
+                    class="tab tab-bordered mr-2"
                     class:tab-active={activeComponentTab === "validatedInputs"}
                     on:click={(event) => tabToggle(event, "validatedInputs")}>
                     Validated Inputs
@@ -227,6 +234,12 @@
                         {multiSelectActions}
                         dataSourceDelaySimulation={1000}
                         on:actionTriggered={async (params) => handleActionTriggered(params)} />
+                </div>
+            {:else if activeComponentTab == "dataListExample"}
+                <div in:fade={{ duration: 500 }} class="flex flex-row gap-5 pt-4">
+                    <VariantOne
+                        on:actionTriggered={params => handleActionTriggered(params)}>
+                    </VariantOne>
                 </div>
             {:else if activeComponentTab == "validatedInputs"}
                 <div in:fade={{ duration: 500 }} class="flex flex-row gap-5 pt-4">
