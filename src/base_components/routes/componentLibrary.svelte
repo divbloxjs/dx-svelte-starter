@@ -7,7 +7,7 @@
     import DataTable from "$src/base_components/data-series/dataTable.svelte";
     import { faFileExcel, faFileCsv, faFileText, faTrash } from "@fortawesome/free-solid-svg-icons";
     import QuickActionModal from "$src/base_components/modals/quickActionModal.svelte";
-    import VariantOne from "$src/base_components/data-series/data-lists/headers/variantOne.svelte";
+    import DataListOne from "$src/base_components/data-series/data-lists/variantOne.svelte";
 
     let columns = [
         {
@@ -17,8 +17,8 @@
             sortBy: false,
             isSortAscending: true,
             filterBy: {
-                filterNumber: { userInput: "", placeholder: "Age is just a number", defaultValue: "" },
-            },
+                filterNumber: { userInput: "", placeholder: "Age is just a number", defaultValue: "" }
+            }
         },
         {
             columnHeading: "Date",
@@ -31,10 +31,10 @@
                     userInput: "",
                     label: "From",
                     placeholder: "From",
-                    defaultValue: "",
+                    defaultValue: ""
                 },
-                toDate: { userInput: "", label: "To", placeholder: "To", defaultValue: "" },
-            },
+                toDate: { userInput: "", label: "To", placeholder: "To", defaultValue: "" }
+            }
         },
         {
             columnHeading: "Name",
@@ -46,9 +46,9 @@
                 filterText: {
                     userInput: "Joeys",
                     placeholder: "First Name",
-                    defaultValue: "Joeys",
-                },
-            },
+                    defaultValue: "Joeys"
+                }
+            }
         },
         {
             columnHeading: "Category",
@@ -60,10 +60,10 @@
                 filterDropdown: {
                     userInput: "Miller",
                     placeholder: "-All-",
-                    defaultOptions: ["Miller", "Tinkerer", "Hotdog", "Oven"],
-                },
-            },
-        },
+                    defaultOptions: ["Miller", "Tinkerer", "Hotdog", "Oven"]
+                }
+            }
+        }
     ];
 
     let multiSelectActions = [
@@ -72,21 +72,21 @@
             displayLabel: "Delete",
             optionClasses: "",
             faClasses: "text-error",
-            clickEvent: "delete_clicked",
+            clickEvent: "delete_clicked"
         },
         {
             faIcon: faFileText,
             displayLabel: "Export (Text)",
             optionClasses: "",
             faClasses: "text-success",
-            clickEvent: "export_txt_clicked",
+            clickEvent: "export_txt_clicked"
         },
         {
             faIcon: faFileExcel,
             displayLabel: "Export (Excel)",
             optionClasses: "",
             faClasses: "text-success",
-            clickEvent: "export_excel_clicked",
+            clickEvent: "export_excel_clicked"
         },
         {
             faIcon: faFileCsv,
@@ -94,8 +94,8 @@
             params: {},
             optionClasses: "",
             faClasses: "text-success",
-            clickEvent: "export_csv_clicked",
-        },
+            clickEvent: "export_csv_clicked"
+        }
     ];
 
     let customActions = {
@@ -104,20 +104,20 @@
             {
                 faIcon: "faEye",
                 btnClasses: "btn-info",
-                clickEvent: "open_clicked",
+                clickEvent: "open_clicked"
             },
             {
                 faIcon: "faEdit",
                 btnClasses: "btn-success",
                 displayLabel: "Edit",
-                clickEvent: "edit_clicked",
+                clickEvent: "edit_clicked"
             },
             {
                 faIcon: "faTrash",
                 btnClasses: "btn-error",
-                clickEvent: "delete_clicked",
-            },
-        ],
+                clickEvent: "delete_clicked"
+            }
+        ]
     };
 
     const handleActionTriggered = async (params) => {
@@ -158,15 +158,15 @@
 
     let values = {
         defaultValue: {
-            notSelected: "-Please Select-",
+            notSelected: "-Please Select-"
         },
         options: {
             "Star Wars": "Star Wars",
             "Harry Potter": "Harry Potter",
             "Lord of the Rings": "Lord of the Rings",
             "Planet of the Apes": "Planet of the Apes",
-            "Star Trek": "Star Trek",
-        },
+            "Star Trek": "Star Trek"
+        }
     };
 
     let quickActionModal;
@@ -236,10 +236,29 @@
                         on:actionTriggered={async (params) => handleActionTriggered(params)} />
                 </div>
             {:else if activeComponentTab == "dataListExample"}
-                <div in:fade={{ duration: 500 }} class="flex flex-row gap-5 pt-4">
-                    <VariantOne
-                        on:actionTriggered={params => handleActionTriggered(params)}>
-                    </VariantOne>
+                <div in:fade={{ duration: 500 }} class="">
+                    <DataListOne
+                        on:actionTriggered={async (params) => await handleActionTriggered(params)}
+                        dataSource="src/base_components/data-series/tests/data.json"
+                        enableSearch={true}
+                        enableCreate={true}
+                        enableRefresh={true}
+                        clickableRow={true}
+                        rowTitle="name"
+                        actions={[
+                            {
+                                faIcon: "faEdit",
+                                btnClasses: "btn-link text-base-content hover:text-success",
+                                clickEvent: "edit_clicked"
+                            },
+                            {
+                                faIcon: "faTrash",
+                                btnClasses: "btn-link text-base-content hover:text-error",
+                                clickEvent: "delete_clicked"
+                            }
+                        ]}
+                        initialNumberOfRows="4">
+                    </DataListOne>
                 </div>
             {:else if activeComponentTab == "validatedInputs"}
                 <div in:fade={{ duration: 500 }} class="flex flex-row gap-5 pt-4">
@@ -289,7 +308,8 @@
                         class="btn btn-primary"
                         on:click={() => {
                             quickActionModal.toggleModal(true);
-                        }}>Quick Action Modal</button>
+                        }}>Quick Action Modal
+                    </button>
                 </div>
             {/if}
         </div>

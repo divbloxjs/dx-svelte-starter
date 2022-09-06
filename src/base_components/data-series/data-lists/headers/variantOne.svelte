@@ -3,13 +3,13 @@
     import { faMagnifyingGlass, faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
     import { fly } from "svelte/transition";
     import { createEventDispatcher } from "svelte";
-    import { sleep } from "$src/lib/js/utilities/helpers.js";
 
+    export let globalLoading = false; // TODO convert to store if becoming more complicated with state management of subcomponents
     export let enableSearch = true;
     export let enableRefresh = true;
-    export let enableNewButton = true;
+    export let enableCreate = true;
 
-    export let newButtonOptions = {
+    export let createButtonOptions = {
         btnClasses: "",
         faIcon: faPlus,
         displayLabel: "New",
@@ -19,7 +19,16 @@
 
     export let searchValue = "";
     export let searchPlaceholder = "Search...";
-    export let globalLoading = false;
+    $: globalLoading, resetPendingStates();
+
+    const resetPendingStates = () => {
+        if (!globalLoading) {
+            for (const [type, pendingStateInfo] of Object.entries(requestPendingStates)) {
+                requestPendingStates[type].visible = false;
+                requestPendingStates[type].loading = false;
+            }
+        }
+    };
 
     const dispatch = createEventDispatcher();
 
@@ -27,7 +36,6 @@
         globalLoading = true;
         requestPendingStates[type].visible = true;
         requestPendingStates[type].loading = true;
-
 
         let params;
         switch (type) {
@@ -44,13 +52,7 @@
         }
 
         dispatch("actionTriggered", params);
-
-        await sleep(() => {
-        });
-
-        requestPendingStates[type].visible = false;
-        requestPendingStates[type].loading = false;
-        globalLoading = false;
+        // Return state change handled by resetPendingStates()
     };
 
     let requestPendingStates = {
@@ -147,25 +149,25 @@
                 </span>
             </button>
         {/if}
-        {#if enableNewButton}
+        {#if enableCreate}
             <button
-                class="btn btn-primary btn-sm {newButtonOptions.hasOwnProperty('btnClasses')
-                                ? newButtonOptions.btnClasses
+                class="btn btn-primary btn-sm {createButtonOptions.hasOwnProperty('btnClasses')
+                                ? createButtonOptions.btnClasses
                                 : ''}"
                 on:click={() => {
                                 actionTriggered("create");
                             }}>
-                {#if newButtonOptions.hasOwnProperty("faIcon")}
+                {#if createButtonOptions.hasOwnProperty("faIcon")}
                     <Fa
-                        icon={newButtonOptions.faIcon}
+                        icon={createButtonOptions.faIcon}
                         size="1.1x"
-                        class={newButtonOptions.hasOwnProperty("faClasses")
-                                        ? newButtonOptions.faClasses
+                        class={createButtonOptions.hasOwnProperty("faClasses")
+                                        ? createButtonOptions.faClasses
                                         : ""}
                     />
                 {/if}
-                {#if newButtonOptions.hasOwnProperty("displayLabel")}
-                    <span class="hidden xs:flex">{newButtonOptions.displayLabel}</span>
+                {#if createButtonOptions.hasOwnProperty("displayLabel")}
+                    <span class="hidden xs:flex">{createButtonOptions.displayLabel}</span>
                 {/if}
             </button>
         {/if}
