@@ -172,7 +172,8 @@
     </div>
 
     <ul
-        class="minimal-scrollbar min-w-[300px] divide-y-2 divide-gray-200 overflow-y-auto rounded-lg border-2 border-gray-200"
+        class="minimal-scrollbar min-w-[300px] divide-y-2 divide-gray-200 overflow-y-auto rounded-lg
+         {currentPage.length === 0 && globalLoading ? '': 'border-2 border-gray-200'}"
         style="max-height: inherit;">
         {#each currentPage as row}
             <li
@@ -213,19 +214,24 @@
             </li>
         {/each}
         {#if noResultsFound}
-            <li class="flex items-center justify-between rounded-lg bg-gray-100 py-2 px-4">
+            <li class="flex items-center justify-between rounded-lg bg-gray-100 py-4 px-4">
                 <div class="mx-auto text-center">No Results</div>
             </li>
         {/if}
     </ul>
-    {#if currentPage.length < totalRowCount && !noResultsFound}
+    {#if (currentPage.length < totalRowCount && !noResultsFound) || globalLoading}
         <div class="mt-2 w-full text-center">
             <button
-                class="btn-link"
+                class="btn btn-link"
+                class:loading={globalLoading}
                 on:click={async () => {
                     await refreshDataList();
                 }}>
-                Load More
+                {#if globalLoading}
+                    Loading...
+                {:else}
+                    Load More
+                {/if}
             </button>
         </div>
     {/if}
