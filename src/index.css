@@ -42,3 +42,33 @@
         }
     }
 }
+
+body::-webkit-scrollbar,
+div::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+body::-webkit-scrollbar:hover,
+div::-webkit-scrollbar:hover {
+    width: 8px;
+    height: 8px;
+}
+
+body::-webkit-scrollbar-track,
+div::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    background: #00000022;
+}
+
+body::-webkit-scrollbar-thumb,
+div::-webkit-scrollbar-thumb {
+    background: #00000066;
+    border-radius: 100vh;
+}
+
+body::-webkit-scrollbar-thumb:hover,
+div::-webkit-scrollbar-thumb:hover {
+    background: #000000aa;
+    cursor: pointer;
+}

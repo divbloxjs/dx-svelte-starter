@@ -11,7 +11,7 @@
         faPlus,
         faTimes,
         faTrash
-    } from "@fortawesome/free-solid-svg-icons/index.es";
+    } from "@fortawesome/free-solid-svg-icons";
     import { beforeUpdate, createEventDispatcher, onMount } from "svelte";
     import { disableNonNumericInput, sleep } from "$src/lib/js/utilities/helpers";
     import Dropdown from "$src/base_components/data-series/ui-elements/dropdown.svelte";

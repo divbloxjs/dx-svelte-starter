@@ -1,6 +1,6 @@
 <script>
     import Fa from "svelte-fa";
-    import { faEllipsisV, faGrip, faPowerOff } from "@fortawesome/free-solid-svg-icons/index.es";
+    import { faEllipsisV, faGrip, faPowerOff } from "@fortawesome/free-solid-svg-icons";
     import { profilePicturePath } from "$src/lib/js/stores/userData";
     import { logout } from "$src/lib/js/stores/authentication";
     let dropDownEl;
@@ -9,7 +9,7 @@
 </script>
 
 <div class="fixed bottom-[30vh] right-0 md:hidden">
-    <div class="dropdown-end dropdown dropdown-top">
+    <div class="dropdown-end dropdown-top dropdown">
         <div
             bind:this={dropDownEl}
             on:click={() => {

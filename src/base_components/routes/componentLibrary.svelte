@@ -5,7 +5,8 @@
     import ValidatedInput from "../forms/validatedInput.svelte";
     import ValidatedSelectInput from "../forms/validatedSelectInput.svelte";
     import DataTable from "$src/base_components/data-series/dataTable.svelte";
-    import { faFileExcel, faFileCsv, faFileText, faTrash } from "@fortawesome/free-solid-svg-icons/index.es";
+    import { faFileExcel, faFileCsv, faFileText, faTrash } from "@fortawesome/free-solid-svg-icons";
+    import QuickActionModal from "$src/base_components/modals/quickActionModal.svelte";
 
     let columns = [
         {
@@ -166,7 +167,11 @@
             "Star Trek": "Star Trek",
         },
     };
+
+    let quickActionModal;
 </script>
+
+<QuickActionModal bind:this={quickActionModal} mustConfirm={true} />
 
 <PageTransitionFade>
     <RoutingExampleNav />
@@ -197,6 +202,12 @@
                     class:tab-active={activeComponentTab === "validatedInputs"}
                     on:click={(event) => tabToggle(event, "validatedInputs")}>
                     Validated Inputs
+                </span>
+                <span
+                    class="tab tab-bordered"
+                    class:tab-active={activeComponentTab === "modals"}
+                    on:click={(event) => tabToggle(event, "modals")}>
+                    Modals
                 </span>
             </div>
 
@@ -258,6 +269,14 @@
                             bind:this={validatedInputArray[2]} />
                         <button class="btn btn-primary float-right mt-2" on:click={pretendSubmit}>Test</button>
                     </div>
+                </div>
+            {:else if activeComponentTab == "modals"}
+                <div in:fade={{ duration: 500 }} class="flex flex-row gap-5 pt-4">
+                    <button
+                        class="btn btn-primary"
+                        on:click={() => {
+                            quickActionModal.toggleModal(true);
+                        }}>Quick Action Modal</button>
                 </div>
             {/if}
         </div>

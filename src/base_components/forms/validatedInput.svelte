@@ -41,6 +41,8 @@
     export let passwordValidationOption = "default";
     export let keypress = "none";
 
+    let element;
+
     $: compareValueLocal = compareValue;
     $: compareValueLocal, handleCompareValueChanged();
 
@@ -136,6 +138,10 @@
         keypress = event.keyCode;
     };
 
+    export const focus = () => {
+        element.focus();
+    };
+
     onMount(async () => {
         // If a label is provided without a name ('name' attribute is used to match the label to it's
         // corresponding input), the label name is set to the label.
@@ -173,5 +179,6 @@
         {...$$restProps}
         on:input={handleInput}
         on:change={handleInput}
-        on:keypress={(event) => handleKeypress(event)} />
+        on:keypress={(event) => handleKeypress(event)}
+        bind:this={element} />
 </div>
