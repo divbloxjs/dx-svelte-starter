@@ -7,7 +7,7 @@
     import DataTable from "$src/base_components/data-series/dataTable.svelte";
     import { faFileExcel, faFileCsv, faFileText, faTrash } from "@fortawesome/free-solid-svg-icons";
     import QuickActionModal from "$src/base_components/modals/quickActionModal.svelte";
-    import VariantOne from "$src/base_components/data-series/data-lists/headers/variantOne.svelte";
+    import DataListOne from "$src/base_components/data-series/data-lists/variantOne.svelte";
 
     let columns = [
         {
@@ -17,8 +17,8 @@
             sortBy: false,
             isSortAscending: true,
             filterBy: {
-                filterNumber: { userInput: "", placeholder: "Age is just a number", defaultValue: "" },
-            },
+                filterNumber: { userInput: "", placeholder: "Age is just a number", defaultValue: "" }
+            }
         },
         {
             columnHeading: "Date",
@@ -240,8 +240,29 @@
                         on:actionTriggered={async (params) => handleActionTriggered(params)} />
                 </div>
             {:else if activeComponentTab == "dataListExample"}
-                <div in:fade={{ duration: 500 }} class="flex flex-row gap-5 pt-4">
-                    <VariantOne on:actionTriggered={(params) => handleActionTriggered(params)} />
+                <div in:fade={{ duration: 500 }} class="">
+                    <DataListOne
+                        on:actionTriggered={async (params) => await handleActionTriggered(params)}
+                        dataSource="src/base_components/data-series/tests/data.json"
+                        enableSearch={true}
+                        enableCreate={true}
+                        enableRefresh={true}
+                        clickableRow={true}
+                        rowTitle="name"
+                        actions={[
+                            {
+                                faIcon: "faEdit",
+                                btnClasses: "btn-link text-base-content hover:text-success",
+                                clickEvent: "edit_clicked"
+                            },
+                            {
+                                faIcon: "faTrash",
+                                btnClasses: "btn-link text-base-content hover:text-error",
+                                clickEvent: "delete_clicked"
+                            }
+                        ]}
+                        initialNumberOfRows="4">
+                    </DataListOne>
                 </div>
             {:else if activeComponentTab == "validatedInputs"}
                 <div in:fade={{ duration: 500 }} class="flex flex-row gap-5 pt-4">

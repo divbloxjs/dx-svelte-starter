@@ -3,30 +3,39 @@
     import { faMagnifyingGlass, faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
     import { fly } from "svelte/transition";
     import { createEventDispatcher } from "svelte";
-    import { sleep } from "$src/lib/js/utilities/helpers.js";
 
+    export let globalLoading = false; // TODO convert to store if becoming more complicated with state management of subcomponents
     export let enableSearch = true;
     export let enableRefresh = true;
-    export let enableNewButton = true;
+    export let enableCreate = true;
 
-    export let newButtonOptions = {
+    export let createButtonOptions = {
         btnClasses: "",
         faIcon: faPlus,
         displayLabel: "New",
-        faClasses: "sm:mr-2",
+        faClasses: "xs:pr-2",
         clickEvent: "create_clicked"
     };
 
     export let searchValue = "";
     export let searchPlaceholder = "Search...";
-    export let globalLoading = false;
+    $: globalLoading, resetPendingStates();
+
+    const resetPendingStates = () => {
+        if (!globalLoading) {
+            for (const [type, pendingStateInfo] of Object.entries(requestPendingStates)) {
+                requestPendingStates[type].visible = false;
+                requestPendingStates[type].loading = false;
+            }
+        }
+    };
 
     const dispatch = createEventDispatcher();
 
     const actionTriggered = async (type) => {
+        globalLoading = true;
         requestPendingStates[type].visible = true;
         requestPendingStates[type].loading = true;
-
 
         let params;
         switch (type) {
@@ -34,6 +43,7 @@
                 params = { clickEvent: "search_clicked", searchValue: searchValue };
                 break;
             case "refresh":
+                searchValue = "";
                 params = { clickEvent: "refresh_clicked" };
                 break;
             case "create":
@@ -42,14 +52,7 @@
         }
 
         dispatch("actionTriggered", params);
-
-        await sleep(() => {
-        });
-
-        requestPendingStates[type].visible = false;
-        requestPendingStates[type].loading = false;
-
-
+        // Return state change handled by resetPendingStates()
     };
 
     let requestPendingStates = {
@@ -70,9 +73,9 @@
 </script>
 
 <div class="w-full">
-    <div class="flow-root">
-        <div class="float-left flex items-end">
-            <div class="relative w-40 sm:w-80 md:w-80">
+    <div class="flex">
+        <div class="grow">
+            <div class="relative">
                 {#if enableSearch === true}
                     <div class="form-control my-auto mr-2">
                         <div class="relative -mb-2">
@@ -129,12 +132,12 @@
                     </div>
                 {/if}
             </div>
-            <div class="">
-                {#if enableRefresh === true}
-                    <button
-                        class="custom-btn-loading btn btn-sm"
-                        class:loading={requestPendingStates.refresh.loading}
-                        on:click={async () => {
+        </div>
+        {#if enableRefresh === true}
+            <button
+                class="custom-btn-loading btn btn-sm mr-2"
+                class:loading={requestPendingStates.refresh.loading}
+                on:click={async () => {
                     if (globalLoading) {
                         return;
                     }
@@ -144,34 +147,29 @@
                 <span class:hidden={requestPendingStates.refresh.loading}>
                     <Fa icon={faTimes} size="1.1x" />
                 </span>
-                    </button>
-                {/if}
-            </div>
-        </div>
-        <div class="float-right">
-            <div class="">
-                {#if enableNewButton}
-                    <button
-                        class="btn btn-primary btn-sm {newButtonOptions.hasOwnProperty('btnClasses')
-                                ? newButtonOptions.btnClasses
+            </button>
+        {/if}
+        {#if enableCreate}
+            <button
+                class="btn btn-primary btn-sm {createButtonOptions.hasOwnProperty('btnClasses')
+                                ? createButtonOptions.btnClasses
                                 : ''}"
-                        on:click={() => {
+                on:click={() => {
                                 actionTriggered("create");
                             }}>
-                        {#if newButtonOptions.hasOwnProperty("faIcon")}
-                            <Fa
-                                icon={newButtonOptions.faIcon}
-                                size="1.1x"
-                                class={newButtonOptions.hasOwnProperty("faClasses")
-                                        ? newButtonOptions.faClasses
-                                        : ""} />
-                        {/if}
-                        {#if newButtonOptions.hasOwnProperty("displayLabel")}
-                            <span class="hidden xs:flex">{newButtonOptions.displayLabel}</span>
-                        {/if}
-                    </button>
+                {#if createButtonOptions.hasOwnProperty("faIcon")}
+                    <Fa
+                        icon={createButtonOptions.faIcon}
+                        size="1.1x"
+                        class={createButtonOptions.hasOwnProperty("faClasses")
+                                        ? createButtonOptions.faClasses
+                                        : ""}
+                    />
                 {/if}
-            </div>
-        </div>
+                {#if createButtonOptions.hasOwnProperty("displayLabel")}
+                    <span class="hidden xs:flex">{createButtonOptions.displayLabel}</span>
+                {/if}
+            </button>
+        {/if}
     </div>
 </div>
