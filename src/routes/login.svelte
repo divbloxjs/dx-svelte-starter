@@ -4,14 +4,15 @@
     import { checkAuthentication, authenticate, isAuthenticated } from "$src/lib/js/stores/authentication";
     import { onMount } from "svelte";
     import PageTransitionFade from "$src/base_components/page_transitions/pageTransitionFade.svelte";
+    import { successToast, errorAlert, errorToast } from "$src/lib/js/utilities/swalMixins";
     import ValidatedInput from "$src/base_components/forms/validatedInput.svelte";
+
+    export let params = {};
 
     let username = "";
     let password = "";
-
-    onMount(async () => {
-        await checkAuthentication();
-    });
+    let isProcessingAuthentication = false;
+    let redirectPath = defaultLandingPage;
 
     let validatedInputArray = [];
 
@@ -24,11 +25,69 @@
         return formIsValid;
     };
 
+    onMount(async () => {
+        if (params.message !== undefined) {
+            switch (params.message) {
+                case "registration-success":
+                    displayPostRegistrationMessage(true);
+                    break;
+                case "registration-failed":
+                    displayPostRegistrationMessage(false);
+                    break;
+                case "password-reset-success":
+                    displayPostPasswordResetMessage(true);
+                    break;
+                case "password-reset-failed":
+                    displayPostPasswordResetMessage(false);
+                    break;
+                case "account-verification-authentication-failed":
+                    displayRedirectReasonMessage("Please login before confirming email address");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (params.redirect !== undefined) {
+            redirectPath = "/" + decodeURI(params.redirect);
+        }
+
+        await checkAuthentication(null, redirectPath);
+    });
+
     const doAuthentication = async () => {
+        isProcessingAuthentication = true;
         if (!validateForm()) {
+            isProcessingAuthentication = false;
             return;
         }
-        await authenticate(username, password);
+
+        await authenticate(username, password, redirectPath);
+        isProcessingAuthentication = false;
+    };
+
+    const displayPostRegistrationMessage = (isSuccess = false) => {
+        isSuccess
+            ? successToast.fire({ title: "Registration successful" })
+            : errorAlert.fire({
+                  icon: "error",
+                  html: "Something went wrong with your registration. <br>Please try again.",
+                  confirmButtonText: "OK",
+              });
+    };
+
+    const displayPostPasswordResetMessage = (isSuccess = true) => {
+        isSuccess
+            ? successToast.fire({ title: "Password reset successfully" })
+            : errorAlert.fire({
+                  icon: "error",
+                  html: "Something went wrong while resetting your password. <br>Please try again.",
+                  confirmButtonText: "OK",
+              });
+    };
+
+    const displayRedirectReasonMessage = (message) => {
+        errorToast.fire({ title: message, timer: 5000 });
     };
 
     $: keypress = null;
@@ -53,6 +112,7 @@
                     <h2 class="text-center text-xl font-bold">
                         Sign in to {appName}
                     </h2>
+
                     <ValidatedInput
                         bind:keypress
                         placeholder="Username or Email"
@@ -71,9 +131,26 @@
                         label="Password"
                         validationMessage="Required"
                         bind:this={validatedInputArray[1]} />
+
                     <div class="card-actions justify-between">
-                        <a href="#/forgot-password" class="btn btn-link pl-0 text-gray-600"> Forgot Password? </a>
-                        <button class="btn btn-primary" on:click={doAuthentication}> Sign in </button>
+                        <a
+                            href="#/forgot-password"
+                            class="btn btn-link pl-0 text-gray-600"
+                            class:hidden={isProcessingAuthentication}>
+                            Forgot Password?
+                        </a>
+                        <button
+                            class:mx-auto={isProcessingAuthentication}
+                            class:mr-0={!isProcessingAuthentication}
+                            class:loading={isProcessingAuthentication}
+                            class="btn btn-primary"
+                            on:click={doAuthentication}>
+                            {#if isProcessingAuthentication}
+                                Working...
+                            {:else}
+                                Sign in
+                            {/if}
+                        </button>
                         <div class="alert flex-col justify-center">
                             <span class="flex-shrink font-extrabold">
                                 New to {appName}?

@@ -172,7 +172,11 @@
     let quickActionModal;
 </script>
 
-<QuickActionModal bind:this={quickActionModal} mustConfirm={true} />
+<QuickActionModal
+    bind:this={quickActionModal}
+    mustConfirm={true}
+    introText="Some introduction message here"
+    inputLabel="Input Label" />
 
 <PageTransitionFade>
     <RoutingExampleNav />
@@ -237,9 +241,7 @@
                 </div>
             {:else if activeComponentTab == "dataListExample"}
                 <div in:fade={{ duration: 500 }} class="flex flex-row gap-5 pt-4">
-                    <VariantOne
-                        on:actionTriggered={params => handleActionTriggered(params)}>
-                    </VariantOne>
+                    <VariantOne on:actionTriggered={(params) => handleActionTriggered(params)} />
                 </div>
             {:else if activeComponentTab == "validatedInputs"}
                 <div in:fade={{ duration: 500 }} class="flex flex-row gap-5 pt-4">
