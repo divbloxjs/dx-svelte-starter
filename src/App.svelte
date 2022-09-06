@@ -21,6 +21,8 @@
         "/": Home,
         "/home": Home,
         "/login": Login,
+        "/login/:message": Login,
+        "/login/:message/:redirect": Login,
         "/create-account": CreateAccount,
         "/forgot-password": ForgotPassword,
         "/reset-password/:token": ResetPassword,

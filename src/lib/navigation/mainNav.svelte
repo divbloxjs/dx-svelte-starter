@@ -1,8 +1,18 @@
 <script>
     import { logout } from "$src/lib/js/stores/authentication";
     import { profilePicturePath } from "$src/lib/js/stores/userData";
-    import { domainRoot, appLogo, appName } from "$src/lib/js/stores/configurations";
+    import {
+        domainRoot,
+        appLogo,
+        appName,
+        toggleUserSelectedTheme,
+        userSelectedTheme,
+    } from "$src/lib/js/stores/configurations";
     import { push, pop, replace } from "svelte-spa-router";
+    import Fa from "svelte-fa";
+    import { faMoon } from "@fortawesome/free-solid-svg-icons";
+
+    let checked = $userSelectedTheme === "dark";
 
     const doNavigate = (event, page) => {
         push("/" + page);
@@ -18,8 +28,14 @@
             class="max-h-10 px-3 hover:cursor-pointer" />
     </div>
 
+    <input on:change={toggleUserSelectedTheme} type="checkbox" class="toggle toggle-xs" {checked} />
+
+    <div class="mx-1">
+        <Fa icon={faMoon} size="1x" />
+    </div>
+
     <div class="flex-none lg:hidden">
-        <div class="dropdown dropdown-end">
+        <div class="dropdown-end dropdown">
             <!-- svelte-ignore a11y-label-has-associated-control -->
             <label tabindex="0" class="btn btn-ghost">
                 <svg
@@ -69,7 +85,7 @@
             </li>
         </ul>
 
-        <div class="dropdown dropdown-end">
+        <div class="dropdown-end dropdown">
             <!-- svelte-ignore a11y-label-has-associated-control -->
             <label tabindex="0" class="avatar btn btn-ghost btn-circle">
                 <div class="w-10 rounded-full">

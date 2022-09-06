@@ -31,10 +31,10 @@
                     userInput: "",
                     label: "From",
                     placeholder: "From",
-                    defaultValue: ""
+                    defaultValue: "",
                 },
-                toDate: { userInput: "", label: "To", placeholder: "To", defaultValue: "" }
-            }
+                toDate: { userInput: "", label: "To", placeholder: "To", defaultValue: "" },
+            },
         },
         {
             columnHeading: "Name",
@@ -46,9 +46,9 @@
                 filterText: {
                     userInput: "Joeys",
                     placeholder: "First Name",
-                    defaultValue: "Joeys"
-                }
-            }
+                    defaultValue: "Joeys",
+                },
+            },
         },
         {
             columnHeading: "Category",
@@ -60,10 +60,10 @@
                 filterDropdown: {
                     userInput: "Miller",
                     placeholder: "-All-",
-                    defaultOptions: ["Miller", "Tinkerer", "Hotdog", "Oven"]
-                }
-            }
-        }
+                    defaultOptions: ["Miller", "Tinkerer", "Hotdog", "Oven"],
+                },
+            },
+        },
     ];
 
     let multiSelectActions = [
@@ -72,21 +72,21 @@
             displayLabel: "Delete",
             optionClasses: "",
             faClasses: "text-error",
-            clickEvent: "delete_clicked"
+            clickEvent: "delete_clicked",
         },
         {
             faIcon: faFileText,
             displayLabel: "Export (Text)",
             optionClasses: "",
             faClasses: "text-success",
-            clickEvent: "export_txt_clicked"
+            clickEvent: "export_txt_clicked",
         },
         {
             faIcon: faFileExcel,
             displayLabel: "Export (Excel)",
             optionClasses: "",
             faClasses: "text-success",
-            clickEvent: "export_excel_clicked"
+            clickEvent: "export_excel_clicked",
         },
         {
             faIcon: faFileCsv,
@@ -94,8 +94,8 @@
             params: {},
             optionClasses: "",
             faClasses: "text-success",
-            clickEvent: "export_csv_clicked"
-        }
+            clickEvent: "export_csv_clicked",
+        },
     ];
 
     let customActions = {
@@ -104,20 +104,20 @@
             {
                 faIcon: "faEye",
                 btnClasses: "btn-info",
-                clickEvent: "open_clicked"
+                clickEvent: "open_clicked",
             },
             {
                 faIcon: "faEdit",
                 btnClasses: "btn-success",
                 displayLabel: "Edit",
-                clickEvent: "edit_clicked"
+                clickEvent: "edit_clicked",
             },
             {
                 faIcon: "faTrash",
                 btnClasses: "btn-error",
-                clickEvent: "delete_clicked"
-            }
-        ]
+                clickEvent: "delete_clicked",
+            },
+        ],
     };
 
     const handleActionTriggered = async (params) => {
@@ -158,21 +158,25 @@
 
     let values = {
         defaultValue: {
-            notSelected: "-Please Select-"
+            notSelected: "-Please Select-",
         },
         options: {
             "Star Wars": "Star Wars",
             "Harry Potter": "Harry Potter",
             "Lord of the Rings": "Lord of the Rings",
             "Planet of the Apes": "Planet of the Apes",
-            "Star Trek": "Star Trek"
-        }
+            "Star Trek": "Star Trek",
+        },
     };
 
     let quickActionModal;
 </script>
 
-<QuickActionModal bind:this={quickActionModal} mustConfirm={true} />
+<QuickActionModal
+    bind:this={quickActionModal}
+    mustConfirm={true}
+    introText="Some introduction message here"
+    inputLabel="Input Label" />
 
 <PageTransitionFade>
     <RoutingExampleNav />
@@ -308,8 +312,7 @@
                         class="btn btn-primary"
                         on:click={() => {
                             quickActionModal.toggleModal(true);
-                        }}>Quick Action Modal
-                    </button>
+                        }}>Quick Action Modal</button>
                 </div>
             {/if}
         </div>
