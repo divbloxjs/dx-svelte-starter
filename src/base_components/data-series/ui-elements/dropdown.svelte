@@ -1,15 +1,18 @@
 <script>
     import Fa from "svelte-fa";
+    import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
     import { createEventDispatcher } from "svelte";
 
     const dispatch = createEventDispatcher();
 
     export let dropDownText;
+    export let dropDownTextClasses = "";
     export let dropDownIcon;
     export let dropDownOptions;
     export let btnClasses = "";
     export let dropdownClasses = "";
     export let loading = true;
+    export let includeDropDownChevron = false;
 
     const selectOption = (params) => {
         if (document.activeElement instanceof HTMLElement) {
@@ -21,9 +24,11 @@
     };
 
     let dropDownOpen = false;
+    const dropDownPositions = ["static", "relative"];
+    let dropDownPosition = dropDownPositions[0];
 </script>
 
-<div class="dropdown {dropdownClasses}">
+<div class="dropdown {dropdownClasses} {dropDownPosition}">
     <button
         on:mouseup={() => {
             if (dropDownOpen === true) {
@@ -35,14 +40,25 @@
                 dropDownOpen = true;
             }
         }}
-        on:click={(event) => event.stopPropagation()}
+        on:click={(event) => {
+            event.stopPropagation();
+            if (dropDownPosition === dropDownPositions[0]) {
+                dropDownPosition = dropDownPositions[1];
+            } else {
+                dropDownPosition = dropDownPositions[0]
+            }
+        }}
         tabIndex="0"
         class="btn btn-sm flex w-full items-center justify-center {btnClasses}"
         class:loading={loading}>
         {#if dropDownIcon}
             <Fa icon={dropDownIcon} size="1.1x" class={dropDownText === undefined ? "mr-2" : ""} />
         {/if}
-        {dropDownText}
+        <span class="{dropDownTextClasses}"> {dropDownText}</span>
+
+        {#if includeDropDownChevron}
+            <Fa icon={faChevronDown} class="ml-2"></Fa>
+        {/if}
     </button>
     <ul
         tabindex="0"

@@ -241,7 +241,7 @@
                         on:actionTriggered={async (params) => handleActionTriggered(params)} />
                 </div>
             {:else if activeComponentTab == "dataListExample"}
-                <div in:fade={{ duration: 500 }} class="grid grid-cols-2 gap-2">
+                <div in:fade={{ duration: 500 }} class="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div class="">
                         <DataListOne
                             on:actionTriggered={async (params) => await handleActionTriggered(params)}
