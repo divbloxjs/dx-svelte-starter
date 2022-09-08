@@ -8,6 +8,7 @@
     import { faFileExcel, faFileCsv, faFileText, faTrash } from "@fortawesome/free-solid-svg-icons";
     import QuickActionModal from "$src/base_components/modals/quickActionModal.svelte";
     import DataListOne from "$src/base_components/data-series/data-lists/variantOne.svelte";
+    import DataListTwo from "$src/base_components/data-series/data-lists/variantTwo.svelte";
 
     let columns = [
         {
@@ -17,8 +18,8 @@
             sortBy: false,
             isSortAscending: true,
             filterBy: {
-                filterNumber: { userInput: "", placeholder: "Age is just a number", defaultValue: "" }
-            }
+                filterNumber: { userInput: "", placeholder: "Age is just a number", defaultValue: "" },
+            },
         },
         {
             columnHeading: "Date",
@@ -240,29 +241,60 @@
                         on:actionTriggered={async (params) => handleActionTriggered(params)} />
                 </div>
             {:else if activeComponentTab == "dataListExample"}
-                <div in:fade={{ duration: 500 }} class="">
-                    <DataListOne
-                        on:actionTriggered={async (params) => await handleActionTriggered(params)}
-                        dataSource="src/base_components/data-series/tests/data.json"
-                        enableSearch={true}
-                        enableCreate={true}
-                        enableRefresh={true}
-                        clickableRow={true}
-                        rowTitle="name"
-                        actions={[
+                <div in:fade={{ duration: 500 }} class="grid grid-cols-2 gap-2">
+                    <div class="">
+                        <DataListOne
+                            on:actionTriggered={async (params) => await handleActionTriggered(params)}
+                            dataSource="src/base_components/data-series/tests/data.json"
+                            enableSearch={true}
+                            enableCreate={true}
+                            enableRefresh={true}
+                            clickableRow={true}
+                            rowTitle="name"
+                            actions={[
                             {
+                                type: "edit",
                                 faIcon: "faEdit",
                                 btnClasses: "btn-link text-base-content hover:text-success",
                                 clickEvent: "edit_clicked"
                             },
                             {
+                                type: "delete",
                                 faIcon: "faTrash",
                                 btnClasses: "btn-link text-base-content hover:text-error",
                                 clickEvent: "delete_clicked"
                             }
                         ]}
-                        initialNumberOfRows="4">
-                    </DataListOne>
+                            initialNumberOfRows="4">
+                        </DataListOne>
+                    </div>
+                    <div class="">
+                        <DataListTwo
+                            on:actionTriggered={async (params) => await handleActionTriggered(params)}
+                            dataSource="src/base_components/data-series/tests/data-list-var-two.json"
+                            categoryUpdateEndpoint=""
+                            enableSearch={true}
+                            enableCreate={true}
+                            enableRefresh={true}
+                            clickableRow={true}
+                            rowTitle="name"
+                            actions={[
+                            {
+                                type: "edit",
+                                faIcon: "faEdit",
+                                btnClasses: "btn-link text-base-content hover:text-success",
+                                clickEvent: "edit_clicked"
+                            },
+                            {
+                                type: "delete",
+                                faIcon: "faTrash",
+                                btnClasses: "btn-link text-base-content hover:text-error",
+                                clickEvent: "delete_clicked"
+                            }
+                        ]}
+                            initialNumberOfRows="4">
+                        </DataListTwo>
+                    </div>
                 </div>
             {:else if activeComponentTab == "validatedInputs"}
                 <div in:fade={{ duration: 500 }} class="flex flex-row gap-5 pt-4">
@@ -312,7 +344,8 @@
                         class="btn btn-primary"
                         on:click={() => {
                             quickActionModal.toggleModal(true);
-                        }}>Quick Action Modal</button>
+                        }}>Quick Action Modal
+                    </button>
                 </div>
             {/if}
         </div>

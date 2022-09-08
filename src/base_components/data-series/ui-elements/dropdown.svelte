@@ -23,7 +23,7 @@
     let dropDownOpen = false;
 </script>
 
-<div class="dropdown-end dropdown {dropdownClasses}">
+<div class="dropdown {dropdownClasses}">
     <button
         on:mouseup={() => {
             if (dropDownOpen === true) {
@@ -35,6 +35,7 @@
                 dropDownOpen = true;
             }
         }}
+        on:click={(event) => event.stopPropagation()}
         tabIndex="0"
         class="btn btn-sm flex w-full items-center justify-center {btnClasses}"
         class:loading={loading}>
@@ -45,11 +46,14 @@
     </button>
     <ul
         tabindex="0"
-        class="dropdown-content menu rounded-box menu-compact my-1 max-h-48 w-52 overflow-y-auto bg-base-300 p-1 mr-2 shadow">
+        class="dropdown-content menu rounded-box menu-compact my-1 max-h-48 w-52 overflow-y-auto bg-base-300 p-1 mr-2 shadow minimal-scrollbar">
         {#each dropDownOptions as option}
             <li>
                 <!-- svelte-ignore a11y-missing-attribute -->
-                <a on:click={() => selectOption({ clickEvent: option.clickEvent, params: option.params })}>
+                <a on:click={(event) => {
+                        event.stopPropagation();
+                        selectOption({ clickEvent: option.clickEvent, params: option.params });
+                    }}>
                     {#if option.hasOwnProperty("faIcon")}
                         <Fa icon={option.faIcon} size="1.1x" class={option.faClasses} />
                     {/if}

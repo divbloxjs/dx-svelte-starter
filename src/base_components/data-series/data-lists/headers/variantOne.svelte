@@ -77,7 +77,7 @@
         <div class="grow">
             <div class="relative">
                 {#if enableSearch === true}
-                    <div class="form-control my-auto mr-2">
+                    <div class="form-control my-auto">
                         <div class="relative -mb-2">
                             <input
                                 type="text"
@@ -135,7 +135,7 @@
         </div>
         {#if enableRefresh === true}
             <button
-                class="custom-btn-loading btn btn-sm mr-2"
+                class="custom-btn-loading btn btn-sm ml-2"
                 class:loading={requestPendingStates.refresh.loading}
                 on:click={async () => {
                     if (globalLoading) {
@@ -151,7 +151,7 @@
         {/if}
         {#if enableCreate}
             <button
-                class="btn btn-primary btn-sm {createButtonOptions.hasOwnProperty('btnClasses')
+                class="btn btn-primary btn-sm ml-2 {createButtonOptions.hasOwnProperty('btnClasses')
                                 ? createButtonOptions.btnClasses
                                 : ''}"
                 on:click={() => {
