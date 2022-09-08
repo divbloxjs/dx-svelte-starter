@@ -1,0 +1,399 @@
+<script>
+    import { faEdit, faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
+    import Fa from "svelte-fa";
+    import { createEventDispatcher, onMount } from "svelte";
+    import { sleep } from "$src/lib/js/utilities/helpers.js";
+    import DataListHeader from "$src/base_components/data-series/data-lists/headers/variantOne.svelte";
+    import Dropdown from "$src/base_components/data-series/ui-elements/dropdown.svelte";
+    import { errorToast, successToast } from "$src/lib/js/utilities/swalMixins.js";
+
+    export let httpRequestType = "POST";
+    export let dataSource;
+    export let categoryUpdateEndpoint;
+    export let dataSourceDelaySimulation = 200; // ms
+    export let dataSourceReturnProp = "data";
+    export let dataSourceCountReturnProp = "count";
+    export let dataSourcePossibleCategoriesProp = "possibleCategories";
+    export let dataSourceIncludeCredentials = "include";
+
+    export let dataListMaxHeight = "400px";
+    export let rowTitle = "name";
+    export let rowSubTitle = "emailAddress";
+    export let imageUrl = "imageUrl";
+    export let category = "roleName";
+
+    let possibleCategories = [];
+
+    export let initialNumberOfRows = 4;
+    let currentNumberOfRows = initialNumberOfRows;
+
+    export let enableSearch = true;
+    export let enableCreate = true;
+    export let enableRefresh = true;
+    export let searchValue = "";
+    export let clickableRow = true;
+
+    export let actions = [
+        {
+            type: "edit",
+            faIcon: "faEdit",
+            btnClasses: "btn-link text-base-content hover:text-success",
+            // displayLabel: "Edit",
+            clickEvent: "edit_clicked",
+        },
+        {
+            type: "delete",
+            faIcon: "faTrash",
+            // displayLabel: "Delete",
+            btnClasses: "btn-link text-base-content hover:text-error",
+            clickEvent: "delete_clicked",
+        },
+    ];
+
+    let totalRowCount = 0;
+    let rowsLeftCount = 0;
+    let currentPage = [];
+    let rowStates = {};
+    let globalLoading = false; // TODO convert to store if becoming more complicated with state management of subcomponents
+    let initialLoading = true;
+    let noResultsFound = false;
+
+    onMount(async () => {
+        await refreshDataList();
+    });
+
+    /**
+     * Handles refreshing the data list with the latest search and display configuration
+     */
+    const refreshDataList = async () => {
+        globalLoading = true;
+
+        if (dataSourceDelaySimulation > 0) {
+            await sleep(() => {}, dataSourceDelaySimulation);
+        }
+
+        let postBody = {
+            offset: currentNumberOfRows,
+            limit: initialNumberOfRows,
+            searchValue: searchValue,
+        };
+
+        let response;
+        if (httpRequestType === "GET") {
+            let encodedPostBody = encodeURIComponent(JSON.stringify(postBody));
+
+            response = await fetch(dataSource + "?encodedPostBody=" + encodedPostBody, {
+                method: httpRequestType,
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+                credentials: dataSourceIncludeCredentials ? "include" : "omit",
+            });
+        } else if (httpRequestType === "POST") {
+            response = await fetch(dataSource, {
+                method: httpRequestType,
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+                credentials: dataSourceIncludeCredentials ? "include" : "omit",
+                body: JSON.stringify(postBody),
+            });
+        } else {
+            throw Error("Allowed HTTP request types are only 'POST' and 'GET'. Provided: " + httpRequestType);
+        }
+
+        let data = await response.json();
+
+        if (typeof data[dataSourceReturnProp] === "undefined") {
+            throw new Error("dataSourceReturnProp '" + dataSourceReturnProp + "' is not defined on the fetch result");
+        }
+
+        if (typeof data[dataSourceCountReturnProp] === "undefined") {
+            throw new Error(
+                "dataSourceCountReturnProp '" + dataSourceCountReturnProp + "' is not defined on the fetch result"
+            );
+        }
+
+        if (typeof data[dataSourcePossibleCategoriesProp] === "undefined") {
+            throw new Error(
+                "dataSourceCountReturnProp '" + dataSourceCountReturnProp + "' is not defined on the fetch result"
+            );
+        }
+
+        currentPage.push(...data[dataSourceReturnProp]);
+
+        currentPage.forEach((row) => {
+            rowStates[row.id] = { id: row.id, loading: false, category: row[category] };
+        });
+
+        console.log(rowStates);
+        data[dataSourcePossibleCategoriesProp].forEach((category) => {
+            possibleCategories.push({
+                params: { category: category },
+                displayLabel: category,
+                clickEvent: "category_change_clicked",
+            });
+        });
+
+        if (currentPage.length < 1) {
+            noResultsFound = true;
+        }
+
+        totalRowCount = data[dataSourceCountReturnProp];
+        rowsLeftCount = Math.ceil(totalRowCount - currentNumberOfRows);
+
+        currentNumberOfRows = currentPage.length;
+        currentPage = currentPage;
+        globalLoading = false;
+        initialLoading = false;
+    };
+
+    const updateCategory = async (id, category) => {
+        if (dataSourceDelaySimulation > 0) {
+            await sleep(() => {}, dataSourceDelaySimulation);
+        }
+
+        let postBody = {
+            category: category,
+        };
+
+        let response = await fetch(categoryUpdateEndpoint + "?id=" + id, {
+            method: "PUT",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            credentials: dataSourceIncludeCredentials ? "include" : "omit",
+            body: JSON.stringify(postBody),
+        });
+
+        if (response.status !== 200) {
+            errorToast.fire({ title: "Could not save changes. Please try again" });
+            return false;
+        }
+
+        successToast.fire({ title: "Successfully saved changes" });
+        return true;
+    };
+
+    const handleCategoryChange = async (rowId, newCategory) => {
+        rowStates[rowId].loading = true;
+
+        if (await updateCategory(rowId, newCategory)) {
+            rowStates[rowId].category = newCategory;
+        }
+
+        rowStates[rowId].loading = false;
+    };
+
+    //region Event handlers
+    const dispatch = createEventDispatcher();
+    const actionTriggered = (params) => {
+        dispatch("actionTriggered", params);
+    };
+
+    /**
+     * Handles clicks on any of the custom actions, passing an event up to the parent component
+     * @param event - The JS event of the click, used to prevent default click on the row behind it.
+     * @param customAction - The custom action event name to be referenced by parent component
+     * @param  rowId - ID of the row the custom action was called on ]
+     */
+    const handleCustomActionClick = (event, customAction, rowId) => {
+        actionTriggered({ clickEvent: customAction, rowId: rowId });
+        event.stopPropagation(); // Stops the click on table row element
+    };
+
+    /**
+     * Propagates actions from subcomponents of the datalist to the parent
+     * @param {object} params - Whatever parameters where sent from the subcomponent
+     */
+    const propagateActionTriggered = async (params) => {
+        switch (params.detail.clickEvent) {
+            case "refresh_clicked":
+            case "search_clicked":
+                await refreshDataList();
+                break;
+            case "create_clicked":
+                dispatch("actionTriggered", params);
+                break;
+        }
+    };
+
+    /**
+     * Handles clicks on the row itself, passing an event up to the parent component
+     * @param event - clickEvent name to be referenced by parent
+     * @param rowId - ID of the row clicked
+     */
+    const handleRowClick = (event, rowId) => {
+        actionTriggered({ clickEvent: "row_clicked", rowId: rowId });
+    };
+    //endregion
+</script>
+
+<div class="w-full" style="max-height:{dataListMaxHeight}">
+    <div class="my-3 w-full">
+        <DataListHeader
+            {enableRefresh}
+            {enableSearch}
+            {enableCreate}
+            {searchValue}
+            {globalLoading}
+            on:actionTriggered={(params) => propagateActionTriggered(params)} />
+    </div>
+
+    <ul
+        class="minimal-scrollbar w-full divide-y-2 divide-gray-200 overflow-y-auto rounded-lg border-2 border-gray-200"
+        style="max-height: inherit; max-width: 100%;">
+        {#if initialLoading}
+            {#each Array(2) as index}
+                <li
+                    class="flex items-center justify-between bg-transparent py-2 px-4 hover:bg-gray-200 sm:py-4
+                sm:px-4 {clickableRow ? 'hover:cursor-pointer' : ''}">
+                    <div class="flex flex-row items-center">
+                        <div class="avatar">
+                            <div
+                                class="bg-base-200 w-12 animate-pulse rounded-full rounded-lg  text-transparent sm:w-24" />
+                        </div>
+                        <div class="ml-3 text-sm sm:text-base">
+                            <div class="bg-base-200 w-24 animate-pulse rounded-lg  text-lg text-transparent sm:text-xl">
+                                Loading...
+                            </div>
+                            <div
+                                class="bg-base-200 mt-2 w-40 max-w-[18ch] animate-pulse overflow-x-hidden overflow-ellipsis rounded-lg italic text-transparent sm:max-w-[40ch]">
+                                Loading....................
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {/each}
+        {:else}
+            {#each currentPage as row}
+                <li
+                    class="flex items-center justify-between overflow-x-hidden bg-transparent py-2 px-4 hover:bg-gray-200 sm:py-4
+                sm:px-4 {clickableRow ? 'hover:cursor-pointer' : ''}"
+                    style="width: 100%;"
+                    on:click={(event) => {
+                        if (clickableRow) {
+                            handleRowClick(event, row.id);
+                        }
+                    }}>
+                    <div class="flex flex-row items-center" style="width: 60%; max-width: 60%;">
+                        <div class="avatar" style="width: 30%; max-width: 30%;">
+                            <div class="w-12 rounded-full sm:w-24">
+                                <img src={row[imageUrl]} alt="User Profile Picture " />
+                            </div>
+                        </div>
+                        <div class="ml-3 text-sm sm:text-base" style="width: 70%; max-width: 70%;">
+                            <div class="text-lg sm:text-xl">
+                                {row[rowTitle]}
+                            </div>
+                            <div class="max-w-[18ch] overflow-x-hidden overflow-ellipsis italic sm:max-w-[40ch]">
+                                {row[rowSubTitle]}
+                            </div>
+                            <div class="sm:hidden">
+                                {#if row.enableEdit}
+                                    <Dropdown
+                                        dropDownText={rowStates[row.id].category}
+                                        dropDownOptions={possibleCategories}
+                                        dropdownClasses=""
+                                        btnClasses="btn-xs mt-2 py-1 px-2 capitalize"
+                                        loading={rowStates[row.id].loading}
+                                        on:optionSelected={async (params) => {
+                                            await handleCategoryChange(row.id, params.detail.params.category);
+                                        }} />
+                                {:else}
+                                    <button class="btn btn-xs btn-link text-base-content pl-0">
+                                        {rowStates[row.id].category}
+                                    </button>
+                                {/if}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-end" style="width: 40%; max-width: 40%;">
+                        <div class="hidden sm:flex">
+                            {#if row.enableEdit}
+                                <Dropdown
+                                    dropDownText={rowStates[row.id].category}
+                                    dropDownOptions={possibleCategories}
+                                    dropdownClasses="dropdown-end sm:dropdown-left"
+                                    btnClasses="btn-link text-base-content"
+                                    loading={rowStates[row.id].loading}
+                                    on:optionSelected={async (params) => {
+                                        await handleCategoryChange(row.id, params.detail.params.category);
+                                    }} />
+                            {:else}
+                                <button class="btn btn-link text-base-content disabled">
+                                    {rowStates[row.id].category}
+                                </button>
+                            {/if}
+                        </div>
+
+                        {#each actions as action}
+                            {#if (action.type === "edit" && row.enableEdit) || (action.type === "delete" && row.enableDelete)}
+                                <button
+                                    class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
+                                    on:click={(event) => handleCustomActionClick(event, action.clickEvent, row.id)}>
+                                    {#if action.faIcon === "faEye"}
+                                        <Fa icon={faEye} size="1.1x" />
+                                    {:else if action.faIcon === "faTrash"}
+                                        <Fa icon={faTrash} size="1.1x" />
+                                    {:else if action.faIcon === "faEdit"}
+                                        <Fa icon={faEdit} size="1.1x" />
+                                    {/if}
+
+                                    {#if action.hasOwnProperty("displayLabel")}
+                                        <span
+                                            class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
+                                {action.faIcon === 'faTrash' ? 'mt-[2px]' : ''}">{action.displayLabel}</span>
+                                    {/if}
+                                </button>
+                            {:else}
+                                <button
+                                    class="btn btn-xs mr-1 flex-nowrap {action.btnClasses} hover:cursor:default cursor-default border-transparent bg-transparent text-transparent hover:border-transparent hover:bg-transparent hover:text-transparent">
+                                    {#if action.faIcon === "faEye"}
+                                        <Fa icon={faEye} size="1.1x" />
+                                    {:else if action.faIcon === "faTrash"}
+                                        <Fa icon={faTrash} size="1.1x" />
+                                    {:else if action.faIcon === "faEdit"}
+                                        <Fa icon={faEdit} size="1.1x" />
+                                    {/if}
+
+                                    {#if action.hasOwnProperty("displayLabel")}
+                                        <span
+                                            class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
+                                {action.faIcon === 'faTrash' ? 'mt-[2px]' : ''}">{action.displayLabel}</span>
+                                    {/if}
+                                </button>
+                            {/if}
+                        {/each}
+                    </div>
+                </li>
+            {/each}
+        {/if}
+
+        {#if noResultsFound}
+            <li class="flex items-center justify-between rounded-lg bg-gray-100 py-4 px-4">
+                <div class="mx-auto text-center">No Results</div>
+            </li>
+        {/if}
+    </ul>
+
+    {#if (currentPage.length < totalRowCount && !noResultsFound) || globalLoading}
+        <div class="mt-2 w-full text-center">
+            <button
+                class="btn btn-link"
+                class:loading={globalLoading}
+                on:click={async () => {
+                    await refreshDataList();
+                }}>
+                {#if globalLoading}
+                    Loading...
+                {:else}
+                    Load More
+                {/if}
+            </button>
+        </div>
+    {/if}
+</div>

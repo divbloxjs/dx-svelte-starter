@@ -42,6 +42,7 @@
     let rowsLeftCount = 0;
     let currentPage = [];
     let globalLoading = false; // TODO convert to store if becoming more complicated with state management of subcomponents
+    let initialLoading = true;
     let noResultsFound = false;
 
     onMount(async () => {
@@ -55,7 +56,8 @@
         globalLoading = true;
 
         if (dataSourceDelaySimulation > 0) {
-            await sleep(() => {}, dataSourceDelaySimulation);
+            await sleep(() => {
+            }, dataSourceDelaySimulation);
         }
 
         let postBody = {
@@ -98,7 +100,7 @@
 
         if (typeof data[dataSourceCountReturnProp] === "undefined") {
             throw new Error(
-                "dataSourceCountReturnProp '" + dataSourceCountReturnProp + "' is not defined on the fetch result"
+                "dataSourceCountReturnProp '" + dataSourceCountReturnProp + "' is not defined on the fetch result",
             );
         }
 
@@ -114,6 +116,7 @@
         currentNumberOfRows = currentPage.length;
         currentPage = currentPage;
         globalLoading = false;
+        initialLoading = false;
     };
 
     //region Event handlers
@@ -174,58 +177,77 @@
     <ul
         class="minimal-scrollbar min-w-[300px] divide-y-2 divide-gray-200 overflow-y-auto rounded-lg border-2 border-gray-200"
         style="max-height: inherit;">
-        {#each currentPage as row}
-            <li
-                class="flex items-center justify-between bg-transparent py-4 px-4
+        {#if initialLoading}
+            {#each Array(2) as index}
+                <li
+                    class="flex items-center justify-between bg-transparent py-2 sm:py-4 px-4 sm:px-4
+                hover:bg-gray-200 {clickableRow ? 'hover:cursor-pointer' : ''}">
+                    <div>
+                        <div class="text-lg animate-pulse rounded-lg bg-base-200 text-transparent">
+                            Loading...
+                        </div>
+                    </div>
+                </li>
+            {/each}
+        {:else}
+            {#each currentPage as row}
+                <li
+                    class="flex items-center justify-between bg-transparent py-4 px-4
                 hover:bg-gray-200 {clickableRow ? 'hover:cursor-pointer' : ''}"
-                on:click={(event) => {
+                    on:click={(event) => {
                     if (clickableRow) {
                         handleRowClick(event, row.id);
                     }
                 }}>
-                <div>
-                    <div class="text-lg">
-                        {row[rowTitle]}
+                    <div>
+                        <div class="text-lg">
+                            {row[rowTitle]}
+                        </div>
                     </div>
-                </div>
-                <div class="flex items-center justify-center">
-                    {#each actions as action}
-                        {#if row.actions}{/if}
-                        <button
-                            class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
-                            on:click={(event) => handleCustomActionClick(event, action.clickEvent, row.id)}>
-                            {#if action.faIcon === "faEye"}
-                                <Fa icon={faEye} size="1.1x" />
-                            {:else if action.faIcon === "faTrash"}
-                                <Fa icon={faTrash} size="1.1x" />
-                            {:else if action.faIcon === "faEdit"}
-                                <Fa icon={faEdit} size="1.1x" />
-                            {/if}
+                    <div class="flex items-center justify-center">
+                        {#each actions as action}
+                            {#if row.actions}{/if}
+                            <button
+                                class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
+                                on:click={(event) => handleCustomActionClick(event, action.clickEvent, row.id)}>
+                                {#if action.faIcon === "faEye"}
+                                    <Fa icon={faEye} size="1.1x" />
+                                {:else if action.faIcon === "faTrash"}
+                                    <Fa icon={faTrash} size="1.1x" />
+                                {:else if action.faIcon === "faEdit"}
+                                    <Fa icon={faEdit} size="1.1x" />
+                                {/if}
 
-                            {#if action.hasOwnProperty("displayLabel")}
+                                {#if action.hasOwnProperty("displayLabel")}
                                 <span
                                     class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
                                 {action.faIcon === 'faTrash' ? 'mt-[2px]' : ''}">{action.displayLabel}</span>
-                            {/if}
-                        </button>
-                    {/each}
-                </div>
-            </li>
-        {/each}
+                                {/if}
+                            </button>
+                        {/each}
+                    </div>
+                </li>
+            {/each}
+        {/if}
         {#if noResultsFound}
-            <li class="flex items-center justify-between rounded-lg bg-gray-100 py-2 px-4">
+            <li class="flex items-center justify-between rounded-lg bg-gray-100 py-4 px-4">
                 <div class="mx-auto text-center">No Results</div>
             </li>
         {/if}
     </ul>
-    {#if currentPage.length < totalRowCount && !noResultsFound}
+    {#if (currentPage.length < totalRowCount && !noResultsFound) || globalLoading}
         <div class="mt-2 w-full text-center">
             <button
-                class="btn-link"
+                class="btn btn-link"
+                class:loading={globalLoading}
                 on:click={async () => {
                     await refreshDataList();
                 }}>
-                Load More
+                {#if globalLoading}
+                    Loading...
+                {:else}
+                    Load More
+                {/if}
             </button>
         </div>
     {/if}

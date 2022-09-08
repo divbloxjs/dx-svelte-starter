@@ -453,6 +453,7 @@
                     <Dropdown
                         dropDownText="Page {postBody.pageNumber + 1}"
                         dropDownOptions={paginationOptions}
+                        dropdownClasses="dropdown-end"
                         btnClasses="rounded-none"
                         loading={requestPendingStates.pagination.loading}
                         on:optionSelected={async (params) =>
@@ -546,6 +547,8 @@
             {#if Object.keys(multiSelectActions).length > 0 && Object.values(selectedRows).some((value) => value === true)}
                 <span class="mr-2">
                     <Dropdown
+                        loading={false}
+                        dropdownClasses="dropdown-end"
                         dropDownText="Options"
                         dropDownOptions={multiSelectActions}
                         on:optionSelected={(params) => handleMultiSelect(params)} />
@@ -597,6 +600,7 @@
                         >«
                         </button>
                         <Dropdown
+                            dropdownClasses="dropdown-end"
                             dropDownText="Page {postBody.pageNumber + 1}"
                             dropDownOptions={paginationOptions}
                             btnClasses="rounded-none"
@@ -619,10 +623,11 @@
         <div class="lg:hidden">
             {#if Object.keys(multiSelectActions).length > 0 && Object.values(selectedRows).some((value) => value === true)}
                 <Dropdown
+                    loading={false}
                     dropDownIcon={faBars}
                     dropDownText=""
                     dropDownOptions={multiSelectActions}
-                    dropdownClasses={"ml-2"}
+                    dropdownClasses={"dropdown-end ml-2"}
                     on:optionSelected={(params) => handleMultiSelect(params)} />
             {/if}
         </div>
@@ -1103,7 +1108,7 @@
                 <Dropdown
                     dropDownText="Page {postBody.pageNumber + 1}"
                     dropDownOptions={paginationOptions}
-                    dropdownClasses="dropdown-top"
+                    dropdownClasses="dropdown-top dropdown-end"
                     btnClasses="rounded-none"
                     loading={requestPendingStates.pagination.loading}
                     on:optionSelected={async (params) =>
@@ -1236,7 +1241,7 @@
             <Dropdown
                 dropDownText="Page {postBody.pageNumber + 1}"
                 dropDownOptions={paginationOptions}
-                dropdownClasses="dropdown-top"
+                dropdownClasses="dropdown-top dropdown-end"
                 btnClasses="rounded-none"
                 loading={requestPendingStates.pagination.loading}
                 on:optionSelected={async (params) => await handlePaginate(parseInt(params.detail.params.pageNumber))} />
