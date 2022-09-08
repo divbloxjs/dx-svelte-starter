@@ -39,15 +39,15 @@
             faIcon: "faEdit",
             btnClasses: "btn-link text-base-content hover:text-success",
             // displayLabel: "Edit",
-            clickEvent: "edit_clicked"
+            clickEvent: "edit_clicked",
         },
         {
             type: "delete",
             faIcon: "faTrash",
             // displayLabel: "Delete",
             btnClasses: "btn-link text-base-content hover:text-error",
-            clickEvent: "delete_clicked"
-        }
+            clickEvent: "delete_clicked",
+        },
     ];
 
     let totalRowCount = 0;
@@ -69,14 +69,13 @@
         globalLoading = true;
 
         if (dataSourceDelaySimulation > 0) {
-            await sleep(() => {
-            }, dataSourceDelaySimulation);
+            await sleep(() => {}, dataSourceDelaySimulation);
         }
 
         let postBody = {
             offset: currentNumberOfRows,
             limit: initialNumberOfRows,
-            searchValue: searchValue
+            searchValue: searchValue,
         };
 
         let response;
@@ -87,19 +86,19 @@
                 method: httpRequestType,
                 headers: {
                     Accept: "application/json",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                credentials: dataSourceIncludeCredentials ? "include" : "omit"
+                credentials: dataSourceIncludeCredentials ? "include" : "omit",
             });
         } else if (httpRequestType === "POST") {
             response = await fetch(dataSource, {
                 method: httpRequestType,
                 headers: {
                     Accept: "application/json",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
                 credentials: dataSourceIncludeCredentials ? "include" : "omit",
-                body: JSON.stringify(postBody)
+                body: JSON.stringify(postBody),
             });
         } else {
             throw Error("Allowed HTTP request types are only 'POST' and 'GET'. Provided: " + httpRequestType);
@@ -125,7 +124,7 @@
 
         currentPage.push(...data[dataSourceReturnProp]);
 
-        currentPage.forEach(row => {
+        currentPage.forEach((row) => {
             rowStates[row.id] = { id: row.id, loading: false, category: row[category] };
         });
 
@@ -134,7 +133,7 @@
             possibleCategories.push({
                 params: { category: category },
                 displayLabel: category,
-                clickEvent: "category_change_clicked"
+                clickEvent: "category_change_clicked",
             });
         });
 
@@ -153,22 +152,21 @@
 
     const updateCategory = async (id, category) => {
         if (dataSourceDelaySimulation > 0) {
-            await sleep(() => {
-            }, dataSourceDelaySimulation);
+            await sleep(() => {}, dataSourceDelaySimulation);
         }
 
         let postBody = {
-            category: category
+            category: category,
         };
 
         let response = await fetch(categoryUpdateEndpoint + "?id=" + id, {
             method: "PUT",
             headers: {
                 Accept: "application/json",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
             credentials: dataSourceIncludeCredentials ? "include" : "omit",
-            body: JSON.stringify(postBody)
+            body: JSON.stringify(postBody),
         });
 
         if (response.status !== 200) {
@@ -179,7 +177,6 @@
         successToast.fire({ title: "Successfully saved changes" });
         return true;
     };
-
 
     const handleCategoryChange = async (rowId, newCategory) => {
         rowStates[rowId].loading = true;
@@ -247,23 +244,24 @@
     </div>
 
     <ul
-        class="minimal-scrollbar divide-y-2 divide-gray-200 overflow-y-auto rounded-lg w-full border-2 border-gray-200"
+        class="minimal-scrollbar w-full divide-y-2 divide-gray-200 overflow-y-auto rounded-lg border-2 border-gray-200"
         style="max-height: inherit; max-width: 100%;">
         {#if initialLoading}
             {#each Array(2) as index}
                 <li
-                    class="flex items-center justify-between bg-transparent py-2 sm:py-4 px-4 sm:px-4
-                hover:bg-gray-200 {clickableRow ? 'hover:cursor-pointer' : ''}">
+                    class="flex items-center justify-between bg-transparent py-2 px-4 hover:bg-gray-200 sm:py-4
+                sm:px-4 {clickableRow ? 'hover:cursor-pointer' : ''}">
                     <div class="flex flex-row items-center">
                         <div class="avatar">
-                            <div class="w-12 sm:w-24 rounded-full animate-pulse rounded-lg  bg-base-200 text-transparent">
-                            </div>
+                            <div
+                                class="bg-base-200 w-12 animate-pulse rounded-full rounded-lg  text-transparent sm:w-24" />
                         </div>
                         <div class="ml-3 text-sm sm:text-base">
-                            <div class="text-lg sm:text-xl animate-pulse rounded-lg  bg-base-200 text-transparent w-24">
+                            <div class="bg-base-200 w-24 animate-pulse rounded-lg  text-lg text-transparent sm:text-xl">
                                 Loading...
                             </div>
-                            <div class="italic w-40 mt-2 max-w-[18ch] sm:max-w-[40ch] overflow-x-hidden overflow-ellipsis animate-pulse rounded-lg bg-base-200 text-transparent">
+                            <div
+                                class="bg-base-200 mt-2 w-40 max-w-[18ch] animate-pulse overflow-x-hidden overflow-ellipsis rounded-lg italic text-transparent sm:max-w-[40ch]">
                                 Loading....................
                             </div>
                         </div>
@@ -273,17 +271,17 @@
         {:else}
             {#each currentPage as row}
                 <li
-                    class="flex items-center justify-between bg-transparent py-2 sm:py-4 px-4 sm:px-4 overflow-x-hidden
-                hover:bg-gray-200 {clickableRow ? 'hover:cursor-pointer' : ''}"
+                    class="flex items-center justify-between overflow-x-hidden bg-transparent py-2 px-4 hover:bg-gray-200 sm:py-4
+                sm:px-4 {clickableRow ? 'hover:cursor-pointer' : ''}"
                     style="width: 100%;"
                     on:click={(event) => {
-                    if (clickableRow) {
-                        handleRowClick(event, row.id);
-                    }
-                }}>
+                        if (clickableRow) {
+                            handleRowClick(event, row.id);
+                        }
+                    }}>
                     <div class="flex flex-row items-center" style="width: 60%; max-width: 60%;">
                         <div class="avatar" style="width: 30%; max-width: 30%;">
-                            <div class="w-12 sm:w-24 rounded-full">
+                            <div class="w-12 rounded-full sm:w-24">
                                 <img src={row[imageUrl]} alt="User Profile Picture " />
                             </div>
                         </div>
@@ -291,7 +289,7 @@
                             <div class="text-lg sm:text-xl">
                                 {row[rowTitle]}
                             </div>
-                            <div class="italic max-w-[18ch] sm:max-w-[40ch] overflow-x-hidden overflow-ellipsis">
+                            <div class="max-w-[18ch] overflow-x-hidden overflow-ellipsis italic sm:max-w-[40ch]">
                                 {row[rowSubTitle]}
                             </div>
                             <div class="sm:hidden">
@@ -303,8 +301,8 @@
                                         btnClasses="btn-xs mt-2 py-1 px-2 capitalize"
                                         loading={rowStates[row.id].loading}
                                         on:optionSelected={async (params) => {
-                            await handleCategoryChange(row.id, params.detail.params.category);
-                            }} />
+                                            await handleCategoryChange(row.id, params.detail.params.category);
+                                        }} />
                                 {:else}
                                     <button class="btn btn-xs btn-link text-base-content pl-0">
                                         {rowStates[row.id].category}
@@ -313,7 +311,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center justify-end"  style="width: 40%; max-width: 40%;">
+                    <div class="flex items-center justify-end" style="width: 40%; max-width: 40%;">
                         <div class="hidden sm:flex">
                             {#if row.enableEdit}
                                 <Dropdown
@@ -323,15 +321,14 @@
                                     btnClasses="btn-link text-base-content"
                                     loading={rowStates[row.id].loading}
                                     on:optionSelected={async (params) => {
-                            await handleCategoryChange(row.id, params.detail.params.category);
-                            }} />
+                                        await handleCategoryChange(row.id, params.detail.params.category);
+                                    }} />
                             {:else}
                                 <button class="btn btn-link text-base-content disabled">
                                     {rowStates[row.id].category}
                                 </button>
                             {/if}
                         </div>
-
 
                         {#each actions as action}
                             {#if (action.type === "edit" && row.enableEdit) || (action.type === "delete" && row.enableDelete)}
@@ -347,14 +344,14 @@
                                     {/if}
 
                                     {#if action.hasOwnProperty("displayLabel")}
-                                <span
-                                    class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
+                                        <span
+                                            class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
                                 {action.faIcon === 'faTrash' ? 'mt-[2px]' : ''}">{action.displayLabel}</span>
                                     {/if}
                                 </button>
                             {:else}
                                 <button
-                                    class="btn btn-xs mr-1 flex-nowrap {action.btnClasses} bg-transparent text-transparent hover:bg-transparent border-transparent hover:text-transparent hover:border-transparent cursor-default hover:cursor:default">
+                                    class="btn btn-xs mr-1 flex-nowrap {action.btnClasses} hover:cursor:default cursor-default border-transparent bg-transparent text-transparent hover:border-transparent hover:bg-transparent hover:text-transparent">
                                     {#if action.faIcon === "faEye"}
                                         <Fa icon={faEye} size="1.1x" />
                                     {:else if action.faIcon === "faTrash"}
@@ -364,13 +361,12 @@
                                     {/if}
 
                                     {#if action.hasOwnProperty("displayLabel")}
-                                <span
-                                    class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
+                                        <span
+                                            class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
                                 {action.faIcon === 'faTrash' ? 'mt-[2px]' : ''}">{action.displayLabel}</span>
                                     {/if}
                                 </button>
                             {/if}
-
                         {/each}
                     </div>
                 </li>
