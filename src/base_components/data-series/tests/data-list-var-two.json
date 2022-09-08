@@ -1,0 +1,58 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "name": "Tommy is a little man with big name",
+            "imageUrl": "https://loremflickr.com/240/240",
+            "emailAddress": "dani.simeonov@stratusolve.com",
+            "roleName": "Admin",
+            "enableEdit": true, "enableDelete": true
+        },
+        {
+            "id": 2,
+            "name": "Diggy",
+            "imageUrl": "https://loremflickr.com/240/240/brazil",
+            "emailAddress": "Diggydiggy@haha.yoloHaaahaawhyismyemailsolong",
+            "roleName": "Admin",
+            "enableEdit": false, "enableDelete": false
+        },
+        {
+            "id": 3,
+            "name": "smity",
+            "imageUrl": "https://placeimg.com/192/192/people",
+            "emailAddress": "smity@smuty.za",
+            "roleName": "Billing Admin",
+            "enableEdit": true, "enableDelete": true
+        },
+        {
+            "id": 4,
+            "name": "Linter",
+            "imageUrl": "https://loremflickr.com/240/240/dog",
+            "emailAddress": "Linter@splinter.com",
+            "roleName": "Owner",
+            "enableEdit": true, "enableDelete": true
+        },
+        {
+            "id": 5,
+            "name": "Hinter",
+            "imageUrl": "https://loremflickr.com/240/240/fox",
+            "emailAddress": "Hinter@not-splinter.com",
+            "roleName": "Owner",
+            "enableEdit": false, "enableDelete": false
+        },
+        {
+            "id": 6,
+            "name": "Stickler",
+            "imageUrl": "https://loremflickr.com/240/240/dog",
+            "emailAddress": "Stickler@linkler.com",
+            "roleName": "Admin",
+            "enableEdit": true, "enableDelete": true
+        }
+    ],
+    "count": 40,
+    "possibleCategories": [
+        "Owner",
+        "Admin",
+        "Billing Admin"
+    ]
+}
