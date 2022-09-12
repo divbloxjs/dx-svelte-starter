@@ -69,8 +69,7 @@
         globalLoading = true;
 
         if (dataSourceDelaySimulation > 0) {
-            await sleep(() => {
-            }, dataSourceDelaySimulation);
+            await sleep(() => {}, dataSourceDelaySimulation);
         }
 
         let postBody = {
@@ -113,13 +112,13 @@
 
         if (typeof data[dataSourceCountReturnProp] === "undefined") {
             throw new Error(
-                "dataSourceCountReturnProp '" + dataSourceCountReturnProp + "' is not defined on the fetch result",
+                "dataSourceCountReturnProp '" + dataSourceCountReturnProp + "' is not defined on the fetch result"
             );
         }
 
         if (typeof data[dataSourcePossibleCategoriesProp] === "undefined") {
             throw new Error(
-                "dataSourceCountReturnProp '" + dataSourceCountReturnProp + "' is not defined on the fetch result",
+                "dataSourceCountReturnProp '" + dataSourceCountReturnProp + "' is not defined on the fetch result"
             );
         }
 
@@ -153,8 +152,7 @@
 
     const updateCategory = async (id, category) => {
         if (dataSourceDelaySimulation > 0) {
-            await sleep(() => {
-            }, dataSourceDelaySimulation);
+            await sleep(() => {}, dataSourceDelaySimulation);
         }
 
         let postBody = {
@@ -238,7 +236,7 @@
     let widthMedium = 800;
 </script>
 
-<div class="w-full static" style="max-height:{dataListMaxHeight}">
+<div class="static w-full" style="max-height:{dataListMaxHeight}">
     <div class="my-3 w-full">
         <DataListHeader
             {enableRefresh}
@@ -257,23 +255,25 @@
                 {#each Array(2) as index}
                     <li
                         class:p-4={listWidth < widthSmall}
-                        class="flex items-center justify-between bg-transparent py-2 px-4 hover:bg-gray-200 {clickableRow ? 'hover:cursor-pointer' : ''}">
+                        class="flex items-center justify-between bg-transparent py-2 px-4 hover:bg-gray-200 {clickableRow
+                            ? 'hover:cursor-pointer'
+                            : ''}">
                         <div class="flex flex-row items-center">
                             <div class="avatar">
                                 <div
                                     class:w-24={listWidth < widthSmall}
-                                    class="bg-base-200 w-12 animate-pulse rounded-full rounded-lg  text-transparent"></div>
+                                    class="w-12 animate-pulse rounded-full rounded-lg bg-base-200  text-transparent" />
                             </div>
-                            <div
-                                class:text-base={listWidth < widthSmall}
-                                class="ml-3 text-sm">
+                            <div class:text-base={listWidth < widthSmall} class="ml-3 text-sm">
                                 <div
                                     class:text-xl={listWidth < widthSmall}
-                                    class="bg-base-200 w-24 animate-pulse rounded-lg  text-lg text-transparent">
+                                    class="w-24 animate-pulse rounded-lg bg-base-200  text-lg text-transparent">
                                     Loading...
                                 </div>
                                 <div
-                                    class="bg-base-200 mt-2 w-40 max-w-[18ch] animate-pulse {listWidth < widthSmall ? 'max-w-[40ch]' : ''}
+                                    class="mt-2 w-40 max-w-[18ch] animate-pulse bg-base-200 {listWidth < widthSmall
+                                        ? 'max-w-[40ch]'
+                                        : ''}
                                 overflow-x-hidden overflow-ellipsis rounded-lg italic text-transparent">
                                     Loading....................
                                 </div>
@@ -284,28 +284,30 @@
             {:else}
                 {#each currentPage as row, index}
                     <li
-                        class="flex items-center justify-between bg-transparent p-4 hover:bg-gray-200 w-full
+                        class="flex w-full items-center justify-between bg-transparent p-4 hover:bg-gray-200
                     {clickableRow ? 'hover:cursor-pointer' : ''}"
                         class:py-2={listWidth < widthSmall}
                         on:click={(event) => {
-                        if (clickableRow) {
-                            handleRowClick(event, row.id);
-                        }
-                    }}>
+                            if (clickableRow) {
+                                handleRowClick(event, row.id);
+                            }
+                        }}>
                         <div class="flex flex-row items-center {listWidth < widthSmall ? 'w-9/12' : 'w-6/12'}">
                             <div class="avatar  justify-center {listWidth < widthSmall ? 'w-3/12' : 'w-2/12'}">
                                 <div class="w-24 rounded-full">
                                     <img src={row[imageUrl]} alt="User Profile Picture " />
                                 </div>
                             </div>
-                            <div class:text-base={listWidth < widthSmall}
-                                 class="ml-3 text-sm {listWidth < widthSmall ? 'w-9/12' : 'w-10/12'}">
-                                <div class:text-xl={listWidth < widthSmall}
-                                     class="text-lg">
+                            <div
+                                class:text-base={listWidth < widthSmall}
+                                class="ml-3 text-sm {listWidth < widthSmall ? 'w-9/12' : 'w-10/12'}">
+                                <div class:text-xl={listWidth < widthSmall} class="text-lg">
                                     {row[rowTitle]}
                                 </div>
                                 <div
-                                    class="overflow-x-hidden overflow-ellipsis italic {listWidth < widthSmall ? '' : ''}">
+                                    class="overflow-x-hidden overflow-ellipsis italic {listWidth < widthSmall
+                                        ? ''
+                                        : ''}">
                                     {row[rowSubTitle]}
                                 </div>
                                 <div class:hidden={listWidth > widthSmall}>
@@ -314,15 +316,17 @@
                                             dropDownText={rowStates[row.id].category}
                                             dropDownTextClasses="overflow-hidden overflow-ellipsis max-w-[9ch] whitespace-nowrap"
                                             dropDownOptions={possibleCategories}
-                                            dropdownClasses="z-100 {index > currentPage.length - 2 && index > 3 ? '': ''}"
+                                            dropdownClasses="z-100 {index > currentPage.length - 2 && index > 3
+                                                ? ''
+                                                : ''}"
                                             btnClasses="btn-xs mt-2 capitalize text-right"
                                             loading={rowStates[row.id].loading}
                                             includeDropDownChevron={true}
                                             on:optionSelected={async (params) => {
-                                            await handleCategoryChange(row.id, params.detail.params.category);
-                                        }} />
+                                                await handleCategoryChange(row.id, params.detail.params.category);
+                                            }} />
                                     {:else}
-                                        <button class="btn btn-xs btn-link text-base-content pl-0">
+                                        <button class="btn btn-link btn-xs pl-0 text-base-content">
                                             {rowStates[row.id].category}
                                         </button>
                                     {/if}
@@ -334,17 +338,19 @@
                                 {#if row.enableEdit}
                                     <Dropdown
                                         dropDownText={rowStates[row.id].category}
-                                        dropDownTextClasses="overflow-hidden overflow-ellipsis  {listWidth > widthMedium ? 'max-w-[20ch]' : 'max-w-[11ch]'} whitespace-nowrap"
+                                        dropDownTextClasses="overflow-hidden overflow-ellipsis  {listWidth > widthMedium
+                                            ? 'max-w-[20ch]'
+                                            : 'max-w-[11ch]'} whitespace-nowrap"
                                         dropDownOptions={possibleCategories}
                                         dropdownClasses="dropdown-end mr-2"
                                         btnClasses="text-right"
                                         includeDropDownChevron={true}
                                         loading={rowStates[row.id].loading}
                                         on:optionSelected={async (params) => {
-                                        await handleCategoryChange(row.id, params.detail.params.category);
-                                    }} />
+                                            await handleCategoryChange(row.id, params.detail.params.category);
+                                        }} />
                                 {:else}
-                                    <button class="btn btn-link text-base-content disabled">
+                                    <button class="btn disabled btn-link text-base-content">
                                         {rowStates[row.id].category}
                                     </button>
                                 {/if}
@@ -364,8 +370,8 @@
                                         {/if}
 
                                         {#if action.hasOwnProperty("displayLabel")}
-                                        <span
-                                            class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
+                                            <span
+                                                class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
                                 {action.faIcon === 'faTrash' ? 'mt-[2px]' : ''}">{action.displayLabel}</span>
                                         {/if}
                                     </button>
@@ -381,8 +387,8 @@
                                         {/if}
 
                                         {#if action.hasOwnProperty("displayLabel")}
-                                        <span
-                                            class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
+                                            <span
+                                                class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
                                 {action.faIcon === 'faTrash' ? 'mt-[2px]' : ''}">{action.displayLabel}</span>
                                         {/if}
                                     </button>

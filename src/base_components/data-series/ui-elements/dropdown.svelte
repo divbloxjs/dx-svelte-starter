@@ -73,7 +73,7 @@
     </button>
     <ul
         tabindex="0"
-        class="dropdown-content menu rounded-box menu-compact bg-base-300 minimal-scrollbar my-1 mr-2 max-h-48 w-52 overflow-y-auto p-1 shadow">
+        class="minimal-scrollbar dropdown-content menu rounded-box menu-compact my-1 mr-2 max-h-48 w-52 overflow-y-auto bg-base-300 p-1 shadow">
         {#each dropDownOptions as option}
             <li>
                 <!-- svelte-ignore a11y-missing-attribute -->

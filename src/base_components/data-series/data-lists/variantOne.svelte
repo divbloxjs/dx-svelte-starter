@@ -180,12 +180,10 @@
         {#if initialLoading}
             {#each Array(2) as index}
                 <li
-                    class="flex items-center justify-between bg-transparent py-2 sm:py-4 px-4 sm:px-4
-                hover:bg-gray-200 {clickableRow ? 'hover:cursor-pointer' : ''}">
+                    class="flex items-center justify-between bg-transparent py-2 px-4 hover:bg-gray-200 sm:py-4
+                sm:px-4 {clickableRow ? 'hover:cursor-pointer' : ''}">
                     <div>
-                        <div class="text-lg animate-pulse rounded-lg bg-base-200 text-transparent">
-                            Loading...
-                        </div>
+                        <div class="animate-pulse rounded-lg bg-base-200 text-lg text-transparent">Loading...</div>
                     </div>
                 </li>
             {/each}
@@ -195,10 +193,10 @@
                     class="flex items-center justify-between bg-transparent py-4 px-4
                 hover:bg-gray-200 {clickableRow ? 'hover:cursor-pointer' : ''}"
                     on:click={(event) => {
-                    if (clickableRow) {
-                        handleRowClick(event, row.id);
-                    }
-                }}>
+                        if (clickableRow) {
+                            handleRowClick(event, row.id);
+                        }
+                    }}>
                     <div>
                         <div class="text-lg">
                             {row[rowTitle]}
@@ -219,8 +217,8 @@
                                 {/if}
 
                                 {#if action.hasOwnProperty("displayLabel")}
-                                <span
-                                    class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
+                                    <span
+                                        class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
                                 {action.faIcon === 'faTrash' ? 'mt-[2px]' : ''}">{action.displayLabel}</span>
                                 {/if}
                             </button>
