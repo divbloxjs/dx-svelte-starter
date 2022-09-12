@@ -10,7 +10,7 @@
         faMagnifyingGlass,
         faPlus,
         faTimes,
-        faTrash
+        faTrash,
     } from "@fortawesome/free-solid-svg-icons";
     import { beforeUpdate, createEventDispatcher, onMount } from "svelte";
     import { disableNonNumericInput, sleep } from "$src/lib/js/utilities/helpers";
@@ -44,7 +44,7 @@
         faIcon: faPlus,
         displayLabel: "New",
         faClasses: "sm:mr-2",
-        clickEvent: "add_new_clicked"
+        clickEvent: "add_new_clicked",
     };
 
     export let columns = undefined;
@@ -84,20 +84,20 @@
     const requestPendingStates = {
         globalSearch: {
             loading: false,
-            visible: false
+            visible: false,
         },
         editLimit: {
             loading: false,
-            visible: false
+            visible: false,
         },
         refresh: {
             loading: false,
-            visible: false
+            visible: false,
         },
         pagination: {
-            loading: false
+            loading: false,
         },
-        filters: {} // Populated dynamically based on incoming data
+        filters: {}, // Populated dynamically based on incoming data
     };
 
     const handleGeneralStates = async (type) => {
@@ -146,8 +146,7 @@
         isLoading = true;
 
         if (dataSourceDelaySimulation > 0) {
-            await sleep(() => {
-            }, dataSourceDelaySimulation);
+            await sleep(() => {}, dataSourceDelaySimulation);
         }
 
         postBody.limit = parseInt(postBody.itemsPerPage);
@@ -161,19 +160,19 @@
                 method: httpRequestType,
                 headers: {
                     Accept: "application/json",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                credentials: dataSourceIncludeCredentials ? "include" : "omit"
+                credentials: dataSourceIncludeCredentials ? "include" : "omit",
             });
         } else if (httpRequestType === "POST") {
             response = await fetch(dataSource, {
                 method: httpRequestType,
                 headers: {
                     Accept: "application/json",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
                 credentials: dataSourceIncludeCredentials ? "include" : "omit",
-                body: JSON.stringify(postBody)
+                body: JSON.stringify(postBody),
             });
         } else {
             throw Error("Allowed HTTP request types are only 'POST' and 'GET'. Provided: " + httpRequestType);
@@ -192,7 +191,7 @@
         if (currentPage.length < 1) {
             let currentRow = {};
             currentRow.id = -1;
-            Object.keys(postBody.columns).forEach(columnName => {
+            Object.keys(postBody.columns).forEach((columnName) => {
                 currentRow[columnName] = "No results";
             });
             currentPage.push(currentRow);
@@ -306,7 +305,7 @@
             return {
                 params: { pageNumber: index },
                 displayLabel: "Page " + (index + 1).toString(),
-                clickEvent: "page_clicked"
+                clickEvent: "page_clicked",
             };
         });
     };
@@ -387,7 +386,7 @@
             }
         });
 
-        let sumOfColumnDataColumnWidths = columns.reduce(function(acc, column) {
+        let sumOfColumnDataColumnWidths = columns.reduce(function (acc, column) {
             return acc + column.width;
         }, 0);
 
@@ -448,7 +447,7 @@
                                 await handlePaginate(postBody.pageNumber - 1);
                             }
                         }}
-                    >«
+                        >«
                     </button>
                     <Dropdown
                         dropDownText="Page {postBody.pageNumber + 1}"
@@ -465,7 +464,7 @@
                                 await handlePaginate(postBody.pageNumber + 1);
                             }
                         }}
-                    >»
+                        >»
                     </button>
                 {/if}
             </div>
@@ -597,7 +596,7 @@
                                     await handlePaginate(postBody.pageNumber - 1);
                                 }
                             }}
-                        >«
+                            >«
                         </button>
                         <Dropdown
                             dropdownClasses="dropdown-end"
@@ -614,7 +613,7 @@
                                     await handlePaginate(postBody.pageNumber + 1);
                                 }
                             }}
-                        >»
+                            >»
                         </button>
                     {/if}
                 </div>
@@ -641,7 +640,7 @@
                 <tr class="child:bg-base-300">
                     {#if enableMultiSelect === true}
                         <th
-                            class="text-center align-middle sticky"
+                            class="sticky text-center align-middle"
                             style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
                             <label>
                                 <input
@@ -898,27 +897,27 @@
                             <tr
                                 class="group"
                                 on:click={(event) => {
-                                if (clickableColumn === undefined) {
-                                    handleRowClick(event, row.id);
-                                }
-                            }}>
+                                    if (clickableColumn === undefined) {
+                                        handleRowClick(event, row.id);
+                                    }
+                                }}>
                                 {#if enableMultiSelect === true}
                                     <th
                                         class="text-center align-middle group-hover:bg-base-300/80 {clickableColumn ===
-                                    undefined
-                                        ? 'group-hover:cursor-pointer'
-                                        : ''}"
+                                        undefined
+                                            ? 'group-hover:cursor-pointer'
+                                            : ''}"
                                         style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
                                         <label>
                                             <input
                                                 on:click={(event) => {
-                                                event.stopPropagation();
-                                            }}
+                                                    event.stopPropagation();
+                                                }}
                                                 on:change={(event) => {
-                                                if (!event.target.checked) {
-                                                    allSelected = false;
-                                                }
-                                            }}
+                                                    if (!event.target.checked) {
+                                                        allSelected = false;
+                                                    }
+                                                }}
                                                 bind:checked={selectedRows[row.id]}
                                                 type="checkbox"
                                                 class="checkbox checkbox-sm relative top-[-1px] align-middle" />
@@ -930,28 +929,28 @@
                                         {#if columns[index].dataSourceAttributeName === clickableColumn}
                                             <td
                                                 class="overflow-hidden group-hover:bg-base-300/80 {clickableColumn ===
-                                            undefined
-                                                ? 'group-hover:cursor-pointer'
-                                                : ''}"
+                                                undefined
+                                                    ? 'group-hover:cursor-pointer'
+                                                    : ''}"
                                                 style="width: {columns[index].width}%;
                                             min-width: {columns[index].minWidth};
                                             max-width: calc({columns[index].maxWidth});">
-                                            <span
-                                                class="text-nowrap inline-block overflow-hidden overflow-ellipsis"
-                                                style="max-width:100%;">
-                                                <button
-                                                    on:click={(event) => handleRowClick(event, row.id)}
-                                                    class="btn btn-link btn-xs text-base-content  underline">
-                                                    {row[column.dataSourceAttributeName]}
-                                                </button>
-                                            </span>
+                                                <span
+                                                    class="text-nowrap inline-block overflow-hidden overflow-ellipsis"
+                                                    style="max-width:100%;">
+                                                    <button
+                                                        on:click={(event) => handleRowClick(event, row.id)}
+                                                        class="btn btn-link btn-xs text-base-content  underline">
+                                                        {row[column.dataSourceAttributeName]}
+                                                    </button>
+                                                </span>
                                             </td>
                                         {:else}
                                             <td
                                                 class="overflow-hidden group-hover:bg-base-300/80 {clickableColumn ===
-                                            undefined
-                                                ? 'group-hover:cursor-pointer'
-                                                : ''}"
+                                                undefined
+                                                    ? 'group-hover:cursor-pointer'
+                                                    : ''}"
                                                 style="width: {columns[index].width}%;
                                             min-width: {columns[index].minWidth};
                                             max-width: calc({columns[index].maxWidth});">
@@ -968,15 +967,15 @@
                                 {#if Object.keys(customActions).length > 1}
                                     <td
                                         class="group-hover:bg-base-300/80 {clickableColumn === undefined
-                                        ? 'group-hover:cursor-pointer'
-                                        : ''}"
+                                            ? 'group-hover:cursor-pointer'
+                                            : ''}"
                                         style="width:{customActionsColumnWidth}%; min-width:{customActionsColumnMinWidth}%;">
                                         <div class="flex align-middle">
                                             {#each customActions.actions as action}
                                                 <button
                                                     class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
                                                     on:click={(event) =>
-                                                    handleCustomActionClick(event, action.clickEvent, row.id)}>
+                                                        handleCustomActionClick(event, action.clickEvent, row.id)}>
                                                     {#if action.faIcon === "faEye"}
                                                         <Fa icon={faEye} size="1.1x" />
                                                     {:else if action.faIcon === "faTrash"}
@@ -996,13 +995,12 @@
                             </tr>
                         {/each}
                     {/if}
-
                 {:else}
                     {#each Array(parseInt(postBody.itemsPerPage)) as _, index}
                         <tr class="group">
                             {#if enableMultiSelect === true}
                                 <th
-                                    class="animate-pulse text-center align-middle sticky"
+                                    class="sticky animate-pulse text-center align-middle"
                                     style="width:{multiActionsColumnWidth}%; min-width:{multiActionsColumnMinWidth}%;">
                                     <label>
                                         <input
@@ -1103,7 +1101,7 @@
                             await handlePaginate(postBody.pageNumber - 1);
                         }
                     }}
-                >«
+                    >«
                 </button>
                 <Dropdown
                     dropDownText="Page {postBody.pageNumber + 1}"
@@ -1120,7 +1118,7 @@
                             await handlePaginate(postBody.pageNumber + 1);
                         }
                     }}
-                >»
+                    >»
                 </button>
             </div>
         </div>
@@ -1236,7 +1234,7 @@
                         await handlePaginate(postBody.pageNumber - 1);
                     }
                 }}
-            >«
+                >«
             </button>
             <Dropdown
                 dropDownText="Page {postBody.pageNumber + 1}"
@@ -1252,7 +1250,7 @@
                         await handlePaginate(postBody.pageNumber + 1);
                     }
                 }}
-            >»
+                >»
             </button>
         </div>
     </div>
@@ -1263,5 +1261,4 @@
     .table th:first-child {
         position: inherit;
     }
-
 </style>

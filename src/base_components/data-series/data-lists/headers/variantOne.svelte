@@ -14,7 +14,7 @@
         faIcon: faPlus,
         displayLabel: "New",
         faClasses: "xs:pr-2",
-        clickEvent: "create_clicked"
+        clickEvent: "create_clicked",
     };
 
     export let searchValue = "";
@@ -58,18 +58,17 @@
     let requestPendingStates = {
         search: {
             visible: false,
-            loading: false
+            loading: false,
         },
         refresh: {
             visible: false,
-            loading: false
+            loading: false,
         },
         create: {
             visible: false,
-            loading: false
-        }
+            loading: false,
+        },
     };
-
 </script>
 
 <div class="w-full">
@@ -83,31 +82,31 @@
                                 type="text"
                                 bind:value={searchValue}
                                 on:keypress={async (event) => {
-                            if (globalLoading) {
-                                return;
-                            }
-                            if (event.keyCode === 13) {
-                                await actionTriggered("search");
-                            }
-                        }}
+                                    if (globalLoading) {
+                                        return;
+                                    }
+                                    if (event.keyCode === 13) {
+                                        await actionTriggered("search");
+                                    }
+                                }}
                                 on:change={async () => {
-                            if (globalLoading) {
-                                return;
-                            }
-                            await actionTriggered("search");
-                        }}
+                                    if (globalLoading) {
+                                        return;
+                                    }
+                                    await actionTriggered("search");
+                                }}
                                 on:focus={(event) => {
-                            event.target.select();
-                            requestPendingStates.search.visible = true;
-                        }}
+                                    event.target.select();
+                                    requestPendingStates.search.visible = true;
+                                }}
                                 on:blur={(event) => {
-                            if (
-                                !requestPendingStates.search.loading &&
-                                event.relatedTarget !== event.currentTarget.parentNode.lastChild
-                            ) {
-                                requestPendingStates.search.visible = false;
-                            }
-                        }}
+                                    if (
+                                        !requestPendingStates.search.loading &&
+                                        event.relatedTarget !== event.currentTarget.parentNode.lastChild
+                                    ) {
+                                        requestPendingStates.search.visible = false;
+                                    }
+                                }}
                                 placeholder={searchPlaceholder}
                                 class="input input-bordered input-sm w-full pr-16" />
                             {#if requestPendingStates.search.loading || requestPendingStates.search.visible}
@@ -116,16 +115,16 @@
                                     class:loading={requestPendingStates.search.loading}
                                     class="custom-btn-loading btn btn-primary btn-sm absolute top-0 right-0 mr-0 rounded-l-none"
                                     on:click={async () => {
-                                if (globalLoading) {
-                                    return;
-                                }
-                                requestPendingStates.search.visible = true;
-                                await actionTriggered("search");
-                                requestPendingStates.search.visible = false;
-                            }}>
-                            <span class:hidden={requestPendingStates.search.loading}>
-                                <Fa icon={faMagnifyingGlass} size="1.1x" />
-                            </span>
+                                        if (globalLoading) {
+                                            return;
+                                        }
+                                        requestPendingStates.search.visible = true;
+                                        await actionTriggered("search");
+                                        requestPendingStates.search.visible = false;
+                                    }}>
+                                    <span class:hidden={requestPendingStates.search.loading}>
+                                        <Fa icon={faMagnifyingGlass} size="1.1x" />
+                                    </span>
                                 </button>
                             {/if}
                         </div>
@@ -152,19 +151,16 @@
         {#if enableCreate}
             <button
                 class="btn btn-primary btn-sm ml-2 {createButtonOptions.hasOwnProperty('btnClasses')
-                                ? createButtonOptions.btnClasses
-                                : ''}"
+                    ? createButtonOptions.btnClasses
+                    : ''}"
                 on:click={() => {
-                                actionTriggered("create");
-                            }}>
+                    actionTriggered("create");
+                }}>
                 {#if createButtonOptions.hasOwnProperty("faIcon")}
                     <Fa
                         icon={createButtonOptions.faIcon}
                         size="1.1x"
-                        class={createButtonOptions.hasOwnProperty("faClasses")
-                                        ? createButtonOptions.faClasses
-                                        : ""}
-                    />
+                        class={createButtonOptions.hasOwnProperty("faClasses") ? createButtonOptions.faClasses : ""} />
                 {/if}
                 {#if createButtonOptions.hasOwnProperty("displayLabel")}
                     <span class="hidden xs:flex">{createButtonOptions.displayLabel}</span>

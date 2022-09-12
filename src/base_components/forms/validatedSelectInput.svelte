@@ -57,15 +57,13 @@
             <span class={addLabelClass}>{label}</span>
         {/if}
         {#if !isValid && isValidated && !hideValidation}
-            <span
-                class:-mb-2={label !== null}
-                class="label-text-alt text-red-500  ml-auto text-xs">
+            <span class:-mb-2={label !== null} class="label-text-alt ml-auto  text-xs text-red-500">
                 {validationMessage}
             </span>
         {:else if !isValidated && requiredLabel !== null && requiredLabel !== undefined && requiredLabel.length > 0}
             <span
                 class:-mb-2={label !== null}
-                class="label-text-alt text-red-500  ml-auto text-xs {addRequiredLabelClass}">
+                class="label-text-alt ml-auto  text-xs text-red-500 {addRequiredLabelClass}">
                 {requiredLabel}
             </span>
         {/if}
@@ -80,8 +78,7 @@
         on:change={() => {
             validate(false);
         }}>
-        <option disabled value={initValue}>
-            {Object.values(values.defaultValue)[0]}</option>
+        <option disabled value={initValue}> {Object.values(values.defaultValue)[0]}</option>
         {#each Object.entries(values.options) as [value, displayedText]}
             <option {value}>{displayedText}</option>
         {/each}
