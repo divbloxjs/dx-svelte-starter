@@ -21,7 +21,7 @@
             "name": "smity",
             "imageUrl": "https://placeimg.com/192/192/people",
             "emailAddress": "smity@smuty.za",
-            "roleName": "Billing Admin",
+            "roleName": "Billing Admin Hoorah for cool things",
             "enableEdit": true, "enableDelete": true
         },
         {
@@ -37,7 +37,7 @@
             "name": "Hinter",
             "imageUrl": "https://loremflickr.com/240/240/fox",
             "emailAddress": "Hinter@not-splinter.com",
-            "roleName": "Owner",
+            "roleName": "Billing Admin",
             "enableEdit": false, "enableDelete": false
         },
         {
@@ -45,7 +45,7 @@
             "name": "Stickler",
             "imageUrl": "https://loremflickr.com/240/240/dog",
             "emailAddress": "Stickler@linkler.com",
-            "roleName": "Admin",
+            "roleName": "Billing Admin",
             "enableEdit": true, "enableDelete": true
         }
     ],
