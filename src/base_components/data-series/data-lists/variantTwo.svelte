@@ -10,7 +10,7 @@
     export let httpRequestType = "POST";
     export let dataSource;
     export let categoryUpdateEndpoint;
-    export let dataSourceDelaySimulation = 200; // ms
+    export let dataSourceDelaySimulation = 0; // ms
     export let dataSourceReturnProp = "data";
     export let dataSourceCountReturnProp = "count";
     export let dataSourcePossibleCategoriesProp = "possibleCategories";
@@ -24,8 +24,8 @@
 
     let possibleCategories = [];
 
-    export let initialNumberOfRows = 4;
-    let currentNumberOfRows = initialNumberOfRows;
+    export let rowsPerPage = 3;
+    let pageNumber = 1;
 
     export let enableSearch = true;
     export let enableCreate = true;
@@ -51,7 +51,6 @@
     ];
 
     let totalRowCount = 0;
-    let rowsLeftCount = 0;
     let currentPage = [];
     let rowStates = {};
     let globalLoading = false; // TODO convert to store if becoming more complicated with state management of subcomponents
@@ -73,8 +72,8 @@
         }
 
         let postBody = {
-            offset: currentNumberOfRows,
-            limit: initialNumberOfRows,
+            offset: rowsPerPage * (pageNumber - 1),
+            limit: rowsPerPage,
             searchValue: searchValue,
         };
 
@@ -118,17 +117,18 @@
 
         if (typeof data[dataSourcePossibleCategoriesProp] === "undefined") {
             throw new Error(
-                "dataSourceCountReturnProp '" + dataSourceCountReturnProp + "' is not defined on the fetch result"
+                "dataSourcePossibleCategoriesProp '" +
+                    dataSourcePossibleCategoriesProp +
+                    "' is not defined on the fetch result"
             );
         }
 
         currentPage.push(...data[dataSourceReturnProp]);
-
         currentPage.forEach((row) => {
             rowStates[row.id] = { id: row.id, loading: false, category: row[category] };
         });
 
-        console.log(rowStates);
+        possibleCategories = [];
         data[dataSourcePossibleCategoriesProp].forEach((category) => {
             possibleCategories.push({
                 params: { category: category },
@@ -139,12 +139,12 @@
 
         if (currentPage.length < 1) {
             noResultsFound = true;
+        } else {
+            noResultsFound = false;
         }
 
         totalRowCount = data[dataSourceCountReturnProp];
-        rowsLeftCount = Math.ceil(totalRowCount - currentNumberOfRows);
 
-        currentNumberOfRows = currentPage.length;
         currentPage = currentPage;
         globalLoading = false;
         initialLoading = false;
@@ -213,7 +213,12 @@
         switch (params.detail.clickEvent) {
             case "refresh_clicked":
             case "search_clicked":
+                initialLoading = true;
+                pageNumber = 1;
+                searchValue = params.detail.searchValue;
+                currentPage = [];
                 await refreshDataList();
+                initialLoading = false;
                 break;
             case "create_clicked":
                 dispatch("actionTriggered", params);
@@ -236,7 +241,7 @@
     let widthMedium = 800;
 </script>
 
-<div class="static w-full" style="max-height:{dataListMaxHeight}">
+<div class="static w-full">
     <div class="my-3 w-full">
         <DataListHeader
             {enableRefresh}
@@ -255,7 +260,7 @@
                 {#each Array(2) as index}
                     <li
                         class:p-4={listWidth < widthSmall}
-                        class="flex items-center justify-between bg-transparent py-2 px-4 hover:bg-gray-200 {clickableRow
+                        class="flex w-full items-center justify-between bg-transparent p-4 hover:bg-gray-200 {clickableRow
                             ? 'hover:cursor-pointer'
                             : ''}">
                         <div class="flex flex-row items-center">
@@ -399,7 +404,7 @@
                 {/each}
             {/if}
 
-            {#if noResultsFound}
+            {#if noResultsFound && !globalLoading}
                 <li class="flex items-center justify-between rounded-lg bg-gray-100 py-4 px-4">
                     <div class="mx-auto text-center">No Results</div>
                 </li>
@@ -413,6 +418,7 @@
                 class="btn btn-link"
                 class:loading={globalLoading}
                 on:click={async () => {
+                    pageNumber++;
                     await refreshDataList();
                 }}>
                 {#if globalLoading}
