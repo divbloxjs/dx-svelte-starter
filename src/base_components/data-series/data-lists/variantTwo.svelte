@@ -59,13 +59,13 @@
     let noResultsFound = false;
 
     onMount(async () => {
-        await refreshDataList();
+        await resetDataList();
     });
 
     /**
      * Handles refreshing the data list with the latest search and display configuration
      */
-    export const refreshDataList = async () => {
+    export const loadData = async () => {
         globalLoading = true;
 
         if (dataSourceDelaySimulation > 0) {
@@ -151,6 +151,14 @@
         initialLoading = false;
     };
 
+    export const resetDataList = async () => {
+        initialLoading = true;
+        pageNumber = 1;
+        currentPage = [];
+        loadData();
+        initialLoading = false;
+    };
+
     const updateCategory = async (id, category) => {
         if (dataSourceDelaySimulation > 0) {
             await sleep(() => {}, dataSourceDelaySimulation);
@@ -164,6 +172,7 @@
         for (const [name, value] of Object.entries(additionalCategoryParams)) {
             additionalUrlParms += "&" + name + "=" + value;
         }
+
         let response = await fetch(categoryUpdateEndpoint + "?id=" + id + additionalUrlParms, {
             method: "PUT",
             headers: {
@@ -185,7 +194,6 @@
 
     const handleCategoryChange = async (rowId, categoryInfo) => {
         rowStates[rowId].loading = true;
-
         if (await updateCategory(rowId, categoryInfo.id)) {
             rowStates[rowId].category = categoryInfo.name;
         }
@@ -216,14 +224,10 @@
      */
     const propagateActionTriggered = async (params) => {
         switch (params.detail.clickEvent) {
-            case "refresh_clicked":
             case "search_clicked":
-                initialLoading = true;
-                pageNumber = 1;
                 searchValue = params.detail.searchValue;
-                currentPage = [];
-                await refreshDataList();
-                initialLoading = false;
+            case "refresh_clicked":
+                resetDataList();
                 break;
             case "create_clicked":
                 dispatch("actionTriggered", params.detail);
@@ -272,7 +276,7 @@
                             <div class="avatar">
                                 <div
                                     class:w-24={listWidth < widthSmall}
-                                    class="w-12 animate-pulse rounded-full rounded-lg bg-base-200  text-transparent" />
+                                    class="w-12 animate-pulse rounded-full bg-base-200  text-transparent" />
                             </div>
                             <div class:text-base={listWidth < widthSmall} class="ml-3 text-sm">
                                 <div
@@ -427,7 +431,7 @@
                 class:loading={globalLoading}
                 on:click={async () => {
                     pageNumber++;
-                    await refreshDataList();
+                    await loadData();
                 }}>
                 {#if globalLoading}
                     Loading...
