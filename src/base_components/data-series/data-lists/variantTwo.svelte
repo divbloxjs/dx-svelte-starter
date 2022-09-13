@@ -21,6 +21,7 @@
     export let rowSubTitle = "emailAddress";
     export let imageUrl = "imageUrl";
     export let category = "roleName";
+    export let additionalCategoryParams = {};
 
     let possibleCategories = [];
 
@@ -64,7 +65,7 @@
     /**
      * Handles refreshing the data list with the latest search and display configuration
      */
-    const refreshDataList = async () => {
+    export const refreshDataList = async () => {
         globalLoading = true;
 
         if (dataSourceDelaySimulation > 0) {
@@ -131,8 +132,8 @@
         possibleCategories = [];
         data[dataSourcePossibleCategoriesProp].forEach((category) => {
             possibleCategories.push({
-                params: { category: category },
-                displayLabel: category,
+                params: { id: category.id, name: category.name },
+                displayLabel: category.name,
                 clickEvent: "category_change_clicked",
             });
         });
@@ -159,7 +160,11 @@
             category: category,
         };
 
-        let response = await fetch(categoryUpdateEndpoint + "?id=" + id, {
+        let additionalUrlParms = "";
+        for (const [name, value] of Object.entries(additionalCategoryParams)) {
+            additionalUrlParms += "&" + name + "=" + value;
+        }
+        let response = await fetch(categoryUpdateEndpoint + "?id=" + id + additionalUrlParms, {
             method: "PUT",
             headers: {
                 Accept: "application/json",
@@ -178,11 +183,11 @@
         return true;
     };
 
-    const handleCategoryChange = async (rowId, newCategory) => {
+    const handleCategoryChange = async (rowId, categoryInfo) => {
         rowStates[rowId].loading = true;
 
-        if (await updateCategory(rowId, newCategory)) {
-            rowStates[rowId].category = newCategory;
+        if (await updateCategory(rowId, categoryInfo.id)) {
+            rowStates[rowId].category = categoryInfo.name;
         }
 
         rowStates[rowId].loading = false;
@@ -221,7 +226,7 @@
                 initialLoading = false;
                 break;
             case "create_clicked":
-                dispatch("actionTriggered", params);
+                dispatch("actionTriggered", params.detail);
                 break;
         }
     };
@@ -328,7 +333,7 @@
                                             loading={rowStates[row.id].loading}
                                             includeDropDownChevron={true}
                                             on:optionSelected={async (params) => {
-                                                await handleCategoryChange(row.id, params.detail.params.category);
+                                                await handleCategoryChange(row.id, params.detail.params);
                                             }} />
                                     {:else}
                                         <button class="btn btn-link btn-xs pl-0 text-base-content">
@@ -352,7 +357,10 @@
                                         includeDropDownChevron={true}
                                         loading={rowStates[row.id].loading}
                                         on:optionSelected={async (params) => {
-                                            await handleCategoryChange(row.id, params.detail.params.category);
+                                            console.log("params", params);
+                                            console.log(params.detail.params);
+
+                                            await handleCategoryChange(row.id, params.detail.params);
                                         }} />
                                 {:else}
                                     <button class="btn disabled btn-link text-base-content">
@@ -412,7 +420,7 @@
         </ul>
     </div>
 
-    {#if (currentPage.length < totalRowCount && !noResultsFound) || globalLoading}
+    {#if currentPage.length < totalRowCount && !noResultsFound}
         <div class="mt-2 w-full text-center">
             <button
                 class="btn btn-link"

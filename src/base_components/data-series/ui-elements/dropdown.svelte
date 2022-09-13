@@ -59,6 +59,7 @@
             } else {
             }
         }}
+        on:click|stopPropagation={() => {}}
         tabIndex="0"
         class="btn btn-sm flex w-full items-center justify-center {btnClasses}"
         class:loading>
