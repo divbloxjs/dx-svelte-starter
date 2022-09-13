@@ -16,7 +16,7 @@
     export let dataSourcePossibleCategoriesProp = "possibleCategories";
     export let dataSourceIncludeCredentials = "include";
 
-    export let dataListMaxHeight = "400px";
+    export let dataListMaxHeight = "none";
     export let rowTitle = "name";
     export let rowSubTitle = "emailAddress";
     export let imageUrl = "imageUrl";
