@@ -89,7 +89,11 @@
                         bind:this={validatedInputArray[2]} />
 
                     <div class="card-actions justify-between">
-                        <button on:click={routeUtilities.goBack} class="btn btn-link pl-0 text-gray-600">
+                        <button
+                            on:click={() => {
+                                routeUtilities.goToLogin();
+                            }}
+                            class="btn btn-link pl-0 text-gray-600">
                             Cancel
                         </button>
                         <button

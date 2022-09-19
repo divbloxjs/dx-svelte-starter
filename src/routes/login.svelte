@@ -6,6 +6,7 @@
     import PageTransitionFade from "$src/base_components/page_transitions/pageTransitionFade.svelte";
     import { successToast, errorAlert, errorToast } from "$src/lib/js/utilities/swalMixins";
     import ValidatedInput from "$src/base_components/forms/validatedInput.svelte";
+    import { get, writable } from "svelte/store";
 
     export let params = {};
 
@@ -13,6 +14,17 @@
     let password = "";
     let isProcessingAuthentication = false;
     let redirectPath = defaultLandingPage;
+
+    const loginUrlParams = writable(JSON.parse(localStorage.getItem("loginUrlParams")) || {});
+    loginUrlParams.subscribe((val) => {
+        if (Object.keys(val).length === 0) {
+            // When authenticated, this is unset
+            localStorage.removeItem("loginUrlParams");
+            return;
+        }
+
+        localStorage.setItem("loginUrlParams", JSON.stringify(val));
+    });
 
     let validatedInputArray = [];
 
@@ -27,7 +39,14 @@
 
     onMount(async () => {
         if (params.message !== undefined) {
-            switch (params.message) {
+            for (const [key, value] of Object.entries(params)) {
+                params[key] = decodeURIComponent(value);
+            }
+            loginUrlParams.set(params);
+        }
+
+        if (get(loginUrlParams).message !== undefined) {
+            switch (get(loginUrlParams).message) {
                 case "registration-success":
                     displayPostRegistrationMessage(true);
                     break;
@@ -41,6 +60,7 @@
                     displayPostPasswordResetMessage(false);
                     break;
                 case "account-verification-authentication-failed":
+                    redirectPath = "/" + get(loginUrlParams).redirect;
                     displayRedirectReasonMessage("Please login before confirming email address");
                     break;
                 default:
@@ -48,11 +68,9 @@
             }
         }
 
-        if (params.redirect !== undefined) {
-            redirectPath = "/" + decodeURI(params.redirect);
+        if (await checkAuthentication(null, redirectPath)) {
+            localStorage.removeItem("loginUrlParams");
         }
-
-        await checkAuthentication(null, redirectPath);
     });
 
     const doAuthentication = async () => {
@@ -62,7 +80,10 @@
             return;
         }
 
-        await authenticate(username, password, redirectPath);
+        if (await authenticate(username, password, redirectPath)) {
+            localStorage.removeItem("loginUrlParams");
+        }
+
         isProcessingAuthentication = false;
     };
 

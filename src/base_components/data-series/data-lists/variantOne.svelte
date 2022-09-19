@@ -56,8 +56,7 @@
         globalLoading = true;
 
         if (dataSourceDelaySimulation > 0) {
-            await sleep(() => {
-            }, dataSourceDelaySimulation);
+            await sleep(() => {}, dataSourceDelaySimulation);
         }
 
         let postBody = {
@@ -100,7 +99,7 @@
 
         if (typeof data[dataSourceCountReturnProp] === "undefined") {
             throw new Error(
-                "dataSourceCountReturnProp '" + dataSourceCountReturnProp + "' is not defined on the fetch result",
+                "dataSourceCountReturnProp '" + dataSourceCountReturnProp + "' is not defined on the fetch result"
             );
         }
 
@@ -175,12 +174,12 @@
     </div>
 
     <ul
-        class="minimal-scrollbar min-w-[300px] divide-y-2 divide-gray-200 overflow-y-auto rounded-lg border-2 border-gray-200"
+        class="minimal-scrollbar min-w-[300px] divide-y divide-base-200 overflow-y-auto rounded-lg border border-base-200"
         style="max-height: inherit;">
         {#if initialLoading}
             {#each Array(2) as index}
                 <li
-                    class="flex items-center justify-between bg-transparent py-2 px-4 hover:bg-gray-200 sm:py-4
+                    class="flex items-center justify-between bg-transparent py-2 px-4 hover:bg-base-200 sm:py-4
                 sm:px-4 {clickableRow ? 'hover:cursor-pointer' : ''}">
                     <div>
                         <div class="animate-pulse rounded-lg bg-base-200 text-lg text-transparent">Loading...</div>
@@ -191,7 +190,7 @@
             {#each currentPage as row}
                 <li
                     class="flex items-center justify-between bg-transparent py-4 px-4
-                hover:bg-gray-200 {clickableRow ? 'hover:cursor-pointer' : ''}"
+                hover:bg-base-200 {clickableRow ? 'hover:cursor-pointer' : ''}"
                     on:click={(event) => {
                         if (clickableRow) {
                             handleRowClick(event, row.id);
@@ -228,7 +227,7 @@
             {/each}
         {/if}
         {#if noResultsFound}
-            <li class="flex items-center justify-between rounded-lg bg-gray-100 py-4 px-4">
+            <li class="flex items-center justify-between rounded-lg bg-base-100 py-4 px-4">
                 <div class="mx-auto text-center">No Results</div>
             </li>
         {/if}

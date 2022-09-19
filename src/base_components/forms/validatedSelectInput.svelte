@@ -10,7 +10,7 @@
     export let addRequiredLabelClass = "";
 
     let initValue = "";
-    let selectedValue = "";
+    export let selectedValue = "";
 
     // Options should be of format {value: displayedText}
     export let values = {
@@ -33,6 +33,14 @@
         selectedValue = values.defaultValue.notSelected;
         initValue = values.defaultValue.notSelected;
     });
+
+    /**
+     * Resets the state to the component to "unvalidated"
+     */
+    export const resetValidation = () => {
+        isValid = false;
+        isValidated = false;
+    };
 
     /**
      * @param {boolean} forceValidate
