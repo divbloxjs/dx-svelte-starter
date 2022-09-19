@@ -45,12 +45,15 @@
         if (forceOpen) {
             isOpen = true;
         }
+
+        inputValue = "";
+        quickActionInput.resetValidation();
+
         if (isOpen) {
-            quickActionInput.resetValidation();
             isSubmitting = false;
             setTimeout(() => {
                 quickActionInput.focus();
-            }, 400);
+            }, 200);
         }
     };
 
