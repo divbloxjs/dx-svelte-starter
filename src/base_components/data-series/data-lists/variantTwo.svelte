@@ -66,8 +66,6 @@
      * Handles refreshing the data list with the latest search and display configuration
      */
     export const loadData = async () => {
-        globalLoading = true;
-
         if (dataSourceDelaySimulation > 0) {
             await sleep(() => {}, dataSourceDelaySimulation);
         }
@@ -147,15 +145,15 @@
         totalRowCount = data[dataSourceCountReturnProp];
 
         currentPage = currentPage;
-        globalLoading = false;
-        initialLoading = false;
     };
 
     export const resetDataList = async () => {
         initialLoading = true;
+        globalLoading = true;
         pageNumber = 1;
         currentPage = [];
-        loadData();
+        await loadData();
+        globalLoading = false;
         initialLoading = false;
     };
 
@@ -248,6 +246,8 @@
     let listWidth;
     let widthSmall = 500;
     let widthMedium = 800;
+
+    let overflowType = dataListMaxHeight === "none" ? "" : "overflow-y-scroll";
 </script>
 
 <div class="static w-full">
@@ -263,13 +263,12 @@
 
     <div bind:clientWidth={listWidth}>
         <ul
-            class="minimal-scrollbar w-full divide-y-2 divide-gray-200 overflow-y-auto rounded-lg border-2 border-gray-200"
+            class="minimal-scrollbar w-full divide-y divide-base-200 {overflowType} rounded-lg border border-base-200"
             style="max-height: {dataListMaxHeight}; max-width: 100%;">
             {#if initialLoading}
                 {#each Array(2) as index}
                     <li
-                        class:p-4={listWidth < widthSmall}
-                        class="flex w-full items-center justify-between bg-transparent p-4 hover:bg-gray-200 {clickableRow
+                        class="flex w-full items-center justify-between bg-transparent p-4 hover:bg-base-200 {clickableRow
                             ? 'hover:cursor-pointer'
                             : ''}">
                         <div class="flex flex-row items-center">
@@ -298,7 +297,7 @@
             {:else}
                 {#each currentPage as row, index}
                     <li
-                        class="flex w-full items-center justify-between bg-transparent p-4 hover:bg-gray-200
+                        class="flex w-full items-center justify-between bg-transparent p-4 hover:bg-base-200
                     {clickableRow ? 'hover:cursor-pointer' : ''}"
                         class:py-2={listWidth < widthSmall}
                         on:click={(event) => {
@@ -356,7 +355,9 @@
                                             ? 'max-w-[20ch]'
                                             : 'max-w-[11ch]'} whitespace-nowrap"
                                         dropDownOptions={possibleCategories}
-                                        dropdownClasses="dropdown-end mr-2"
+                                        dropdownClasses="dropdown-end mr-2 {index > 2 && index > currentPage.length - 2
+                                            ? 'dropdown-top'
+                                            : ''}"
                                         btnClasses="text-right"
                                         includeDropDownChevron={true}
                                         loading={rowStates[row.id].loading}
@@ -389,7 +390,9 @@
                                         {#if action.hasOwnProperty("displayLabel")}
                                             <span
                                                 class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
-                                {action.faIcon === 'faTrash' ? 'mt-[2px]' : ''}">{action.displayLabel}</span>
+                                                {action.faIcon === 'faTrash' ? 'mt-[2px]' : ''}"
+                                                >{action.displayLabel}
+                                            </span>
                                         {/if}
                                     </button>
                                 {:else}
@@ -406,7 +409,9 @@
                                         {#if action.hasOwnProperty("displayLabel")}
                                             <span
                                                 class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
-                                {action.faIcon === 'faTrash' ? 'mt-[2px]' : ''}">{action.displayLabel}</span>
+                                                {action.faIcon === 'faTrash' ? 'mt-[2px]' : ''}"
+                                                >{action.displayLabel}
+                                            </span>
                                         {/if}
                                     </button>
                                 {/if}
@@ -417,7 +422,7 @@
             {/if}
 
             {#if noResultsFound && !globalLoading}
-                <li class="flex items-center justify-between rounded-lg bg-gray-100 py-4 px-4">
+                <li class="flex items-center justify-between rounded-lg bg-base-100 py-4 px-4">
                     <div class="mx-auto text-center">No Results</div>
                 </li>
             {/if}
