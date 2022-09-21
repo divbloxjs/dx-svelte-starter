@@ -13,6 +13,7 @@
     export let dataSourceIncludeCredentials = "include";
     export let dataListMaxHeight = "none";
     export let rowTitle = "name";
+    export let rowDescription = "description";
 
     export let rowsPerPage = 3;
     let pageNumber = 1;
@@ -186,6 +187,10 @@
                 sm:px-4 {clickableRow ? 'hover:cursor-pointer' : ''}">
                     <div>
                         <span class="animate-pulse rounded-lg bg-base-200 text-lg text-transparent">Loading...</span>
+                        <br />
+                        <span class="mt-2 animate-pulse rounded-lg bg-base-200 text-transparent">
+                            Loading Description...
+                        </span>
                     </div>
                 </li>
             {/each}
@@ -200,8 +205,11 @@
                         }
                     }}>
                     <div>
-                        <div class="text-lg">
+                        <div class="text-lg font-bold">
                             {row[rowTitle]}
+                        </div>
+                        <div>
+                            {row[rowDescription]}
                         </div>
                     </div>
                     <div class="flex items-center justify-center">
