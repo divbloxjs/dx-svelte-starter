@@ -150,7 +150,7 @@
         }
 
         postBody.limit = parseInt(postBody.itemsPerPage);
-        postBody.offset = pageNumber * parseInt(postBody.itemsPerPage);
+        postBody.offset = postBody.pageNumber * parseInt(postBody.itemsPerPage);
 
         let response;
         if (httpRequestType === "GET") {
@@ -317,7 +317,7 @@
 
         paginationOptions = [];
         postBody.pageNumber = newPageNumber;
-
+        postBody.offset = postBody.itemsPerPage * (postBody.pageNumber - 1);
         requestPendingStates.pagination.loading = true;
         await refreshDataTable();
         requestPendingStates.pagination.loading = false;
@@ -1134,10 +1134,13 @@
                             on:keypress={async (event) => {
                                 disableNonNumericInput(event);
                                 if (event.keyCode === 13) {
+                                    postBody.pageNumber = pageNumber;
                                     await handleGeneralStates("editLimit");
+                                    editingLimit = false;
                                 }
                             }}
                             on:change={async () => {
+                                postBody.pageNumber = pageNumber;
                                 await handleGeneralStates("editLimit");
                                 editingLimit = false;
                             }}
@@ -1162,6 +1165,7 @@
                                 class:loading={requestPendingStates.editLimit.loading}
                                 transition:fly={{ x: 10, duration: 250 }}
                                 on:click={async () => {
+                                    postBody.pageNumber = pageNumber;
                                     await handleGeneralStates("editLimit");
                                     editingLimit = false;
                                 }}>
@@ -1187,10 +1191,13 @@
                         on:keypress={async (event) => {
                             disableNonNumericInput(event);
                             if (event.keyCode === 13) {
+                                postBody.pageNumber = pageNumber;
                                 await handleGeneralStates("editLimit");
+                                editingLimit = false;
                             }
                         }}
                         on:change={async () => {
+                            postBody.pageNumber = pageNumber;
                             await handleGeneralStates("editLimit");
                             editingLimit = false;
                         }}
@@ -1215,6 +1222,7 @@
                             class:loading={requestPendingStates.editLimit.loading}
                             transition:fly={{ x: 10, duration: 250 }}
                             on:click={async () => {
+                                postBody.pageNumber = pageNumber;
                                 await handleGeneralStates("editLimit");
                                 editingLimit = false;
                             }}>
