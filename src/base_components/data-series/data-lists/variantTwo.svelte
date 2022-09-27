@@ -194,6 +194,7 @@
         rowStates[rowId].loading = true;
         if (await updateCategory(rowId, categoryInfo.id)) {
             rowStates[rowId].category = categoryInfo.name;
+            await resetDataList();
         }
 
         rowStates[rowId].loading = false;
@@ -355,16 +356,13 @@
                                             ? 'max-w-[20ch]'
                                             : 'max-w-[11ch]'} whitespace-nowrap"
                                         dropDownOptions={possibleCategories}
-                                        dropdownClasses="dropdown-end mr-2 {index > 2 && index > currentPage.length - 2
+                                        dropdownClasses="dropdown-end mr-2 {index > 2 && index >= currentPage.length - 2
                                             ? 'dropdown-top'
                                             : ''}"
                                         btnClasses="text-right"
                                         includeDropDownChevron={true}
                                         loading={rowStates[row.id].loading}
                                         on:optionSelected={async (params) => {
-                                            console.log("params", params);
-                                            console.log(params.detail.params);
-
                                             await handleCategoryChange(row.id, params.detail.params);
                                         }} />
                                 {:else}
