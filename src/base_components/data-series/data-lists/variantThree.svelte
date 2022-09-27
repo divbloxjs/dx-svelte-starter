@@ -7,7 +7,7 @@
 
     export let httpRequestType = "POST";
     export let dataSource;
-    export let dataSourceDelaySimulation = 500; // ms
+    export let dataSourceDelaySimulation = 0; // ms
     export let dataSourceReturnProp = "data";
     export let dataSourceCountReturnProp = "count";
     export let dataSourceIncludeCredentials = "include";

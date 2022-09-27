@@ -5,14 +5,20 @@
 
     export let modalTitle = "Quick Action";
     export let openOnLoad = false;
-    export let type = "text";
-    export let inputLabel = "";
-    export let inputValue = "";
-    export let inputPlaceholder = "";
+
+    export let firstInputType = "text";
+    export let firstInputLabel = "";
+    export let firstInputValue = "";
+    export let firstInputPlaceholder = "";
+    export let validateFirstInputAs = "required";
+
+    export let secondInputLabel = "";
+    export let secondInputValue = "";
+    export let secondInputPlaceholder = "";
+
     export let buttonText = "Add";
     export let buttonSubmittingText = "Adding...";
     export let introText = "";
-    export let validateAs = "required";
     export let introClasses = "alert-success"; // Can include any classes - but expects at least alert-[theme-color]
     export let buttonClasses = "btn-primary"; // Can include any classes - but expects at least btn-[theme-color]
     export let mustConfirm = false;
@@ -34,30 +40,32 @@
         reverseButtons: true,
     };
 
-    let quickActionInput;
+    let firstInputComp;
+    let secondInputComp;
 
     let isOpen = false;
 
     export let isSubmitting = false;
 
-    export const toggleModal = (forceOpen = false, resetValidation = true, resetValue = true) => {
+    export const toggleModal = (forceOpen = false, resetValidation = true, resetValues = true) => {
         isOpen = !isOpen;
         if (forceOpen) {
             isOpen = true;
         }
 
         if (resetValidation) {
-            quickActionInput.resetValidation();
+            firstInputComp.resetValidation();
         }
 
-        if (resetValue) {
-            inputValue = "";
+        if (resetValues) {
+            firstInputValue = "";
+            secondInputValue = "";
         }
 
         if (isOpen) {
             isSubmitting = false;
             setTimeout(() => {
-                quickActionInput.focus();
+                firstInputComp.focus();
             }, 200);
         }
     };
@@ -69,7 +77,7 @@
     });
 
     const validateForm = () => {
-        return quickActionInput.validate(true);
+        return firstInputComp.validate(true);
     };
 
     const dispatch = createEventDispatcher();
@@ -106,6 +114,7 @@
     <div class="modal-box relative max-w-xs">
         <button
             on:click={() => {
+                dispatch("closed");
                 toggleModal(false);
             }}
             class="btn btn-circle btn-sm absolute right-2 top-2"
@@ -117,15 +126,30 @@
         {/if}
         <div class="form-control mt-2">
             <ValidatedInput
-                bind:value={inputValue}
-                label={inputLabel}
-                {validateAs}
-                {type}
-                bind:this={quickActionInput}
+                bind:value={firstInputValue}
+                label={firstInputLabel}
+                validateAs={validateFirstInputAs}
+                {firstInputType}
+                bind:this={firstInputComp}
                 bind:keypress
                 validationMessage="Required"
                 name="Quick Action Input"
-                placeholder={inputPlaceholder} />
+                placeholder={firstInputPlaceholder} />
+            <div class="form-control">
+                <!-- svelte-ignore a11y-label-has-associated-control -->
+                <label class="label mb-1">
+                    <span class="">{secondInputLabel}</span>
+                </label>
+                <textarea
+                    bind:value={secondInputValue}
+                    on:keypress={async (event) => {
+                        if (event.keyCode === 13) {
+                            await submit();
+                        }
+                    }}
+                    class="input textarea input-bordered h-24 w-full"
+                    placeholder={secondInputPlaceholder} />
+            </div>
             <button on:click={async () => await submit()} class="btn {buttonClasses}" class:loading={isSubmitting}>
                 {#if !isSubmitting}
                     {buttonText}
