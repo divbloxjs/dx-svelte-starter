@@ -54,6 +54,10 @@
 
     export let showFilters = false;
 
+    let headerHeight;
+    let topButtonsHeight;
+    export let tableHeightPadding = "0";
+
     let postBody = {};
 
     let editingLimit = false;
@@ -402,169 +406,25 @@
 
 <div>
     <!-- #region Top Buttons -->
-    <div class="mb-2 flex w-full lg:hidden">
-        {#if enableFilters}
-            <div class="my-auto">
-                <button on:click={() => (showFilters = !showFilters)} class="btn btn-link btn-xs my-auto mr-2 pl-0">
-                    <span class:hidden={showFilters}>Show Filters</span>
-                    <span class:hidden={!showFilters}>Hide Filters</span>
-                </button>
-            </div>
-        {/if}
-        <div class="my-auto ml-auto flex flex-row">
-            <span class="badge my-auto border-base-300 bg-base-300 text-base-content">
-                {totalItemCount !== undefined ? totalItemCount : "... "} items
-            </span>
-            <div class="btn-group ml-2 {!enableNewButton ? 'hidden' : ''} sm:flex">
-                {#if enableNewButton}
-                    <button
-                        class="btn btn-primary btn-sm {newButtonOptions.hasOwnProperty('btnClasses')
-                            ? newButtonOptions.btnClasses
-                            : ''}"
-                        on:click={() => {
-                            let clickEvent = newButtonOptions.hasOwnProperty("clickEvent")
-                                ? newButtonOptions.clickEvent
-                                : "add_new_clicked";
-                            actionTriggered({ clickEvent: clickEvent });
-                        }}>
-                        {#if newButtonOptions.hasOwnProperty("faIcon")}
-                            <Fa
-                                icon={newButtonOptions.faIcon}
-                                size="1x"
-                                class={newButtonOptions.hasOwnProperty("faClasses")
-                                    ? newButtonOptions.faClasses
-                                    : ""} />
-                        {/if}
-                        {#if newButtonOptions.hasOwnProperty("displayLabel")}
-                            <span class="hidden sm:flex">{newButtonOptions.displayLabel}</span>
-                        {/if}
-                    </button>
-                {:else}
-                    <button
-                        class="btn btn-sm"
-                        on:click={async () => {
-                            if (postBody.pageNumber >= 1 && !isLoading) {
-                                await handlePaginate(postBody.pageNumber - 1);
-                            }
-                        }}
-                        >«
-                    </button>
-                    <Dropdown
-                        dropDownText="Page {postBody.pageNumber + 1}"
-                        dropDownOptions={paginationOptions}
-                        dropdownClasses="dropdown-end"
-                        btnClasses="rounded-none"
-                        loading={requestPendingStates.pagination.loading}
-                        on:optionSelected={async (params) =>
-                            await handlePaginate(parseInt(params.detail.params.pageNumber))} />
-                    <button
-                        class="btn btn-sm"
-                        on:click={async () => {
-                            if (postBody.pageNumber < totalPagesCount - 1 && !isLoading) {
-                                await handlePaginate(postBody.pageNumber + 1);
-                            }
-                        }}
-                        >»
-                    </button>
-                {/if}
-            </div>
-        </div>
-    </div>
-    <div class="mb-2 flex w-full">
-        {#if enableGlobalSearch === true}
-            <div class="form-control my-auto mr-2 w-80 lg:w-80">
-                <div class="relative -mb-2">
-                    <input
-                        type="text"
-                        bind:value={postBody.globalSearchText}
-                        on:keypress={async (event) => {
-                            if (isLoading) {
-                                return;
-                            }
-                            if (event.keyCode === 13) {
-                                await handleGeneralStates("globalSearch");
-                            }
-                        }}
-                        on:change={async () => {
-                            if (isLoading) {
-                                return;
-                            }
-                            await handleGeneralStates("globalSearch");
-                        }}
-                        on:focus={(event) => {
-                            event.target.select();
-                            requestPendingStates.globalSearch.visible = true;
-                        }}
-                        on:blur={(event) => {
-                            if (
-                                !requestPendingStates.globalSearch.loading &&
-                                event.relatedTarget !== event.currentTarget.parentNode.lastChild
-                            ) {
-                                requestPendingStates.globalSearch.visible = false;
-                            }
-                        }}
-                        placeholder="Search..."
-                        class="input input-bordered input-sm w-full pr-16" />
-                    {#if requestPendingStates.globalSearch.loading || requestPendingStates.globalSearch.visible}
-                        <button
-                            transition:fly={{ x: 10, duration: 250 }}
-                            class:loading={requestPendingStates.globalSearch.loading}
-                            class="custom-btn-loading btn btn-primary btn-sm absolute top-0 right-0 mr-0 rounded-l-none"
-                            on:click={async () => {
-                                if (isLoading) {
-                                    return;
-                                }
-                                requestPendingStates.globalSearch.visible = true;
-                                await handleGeneralStates("globalSearch");
-                                requestPendingStates.globalSearch.visible = false;
-                            }}>
-                            <span class:hidden={requestPendingStates.globalSearch.loading}>
-                                <Fa icon={faMagnifyingGlass} size="1.1x" />
-                            </span>
-                        </button>
-                    {/if}
-                </div>
-            </div>
-        {/if}
-        {#if enableRefresh === true}
-            <button
-                class="custom-btn-loading btn btn-sm my-auto ml-auto lg:ml-0"
-                class:loading={requestPendingStates.refresh.loading}
-                on:click={async () => {
-                    if (isLoading) {
-                        return;
-                    }
-                    await resetPostBody();
-                    await handleGeneralStates("refresh");
-                }}>
-                <span class:hidden={requestPendingStates.refresh.loading}>
-                    <Fa icon={faTimes} size="1.1x" />
-                </span>
-            </button>
-        {/if}
-        <div class="hidden lg:ml-auto lg:flex">
-            {#if Object.keys(multiSelectActions).length > 0 && Object.values(selectedRows).some((value) => value === true)}
-                <span class="mr-2">
-                    <Dropdown
-                        loading={false}
-                        dropdownClasses="dropdown-end"
-                        dropDownText="Options"
-                        dropDownOptions={multiSelectActions}
-                        on:optionSelected={(params) => handleMultiSelect(params)} />
-                </span>
-            {/if}
+    <div bind:clientHeight={topButtonsHeight}>
+        <div class="mb-2 flex w-full lg:hidden">
             {#if enableFilters}
-                <button on:click={() => (showFilters = !showFilters)} class="btn btn-link btn-xs my-auto mr-2">
-                    <span class:hidden={showFilters}>Show Filters</span>
-                    <span class:hidden={!showFilters}>Hide Filters</span>
-                </button>
+                <div class="my-auto">
+                    <button on:click={() => (showFilters = !showFilters)} class="btn btn-link btn-xs my-auto mr-2 pl-0">
+                        <span class:hidden={showFilters}>Show Filters</span>
+                        <span class:hidden={!showFilters}>Hide Filters</span>
+                    </button>
+                </div>
             {/if}
             <div class="my-auto ml-auto flex flex-row">
-                <span class="badge my-auto mr-2 border-base-300 bg-base-300 text-base-content">
-                    {totalItemCount !== undefined ? totalItemCount : "Loading"} items
+                <span class="badge my-auto border-base-300 bg-base-300 text-base-content">
+                    {#if totalItemCount === undefined}
+                        ... items
+                    {:else}
+                        {totalItemCount} {totalItemCount > 1 ? " items" : "item"}
+                    {/if}
                 </span>
-
-                <div class="btn-group">
+                <div class="btn-group ml-2 {!enableNewButton ? 'hidden' : ''} sm:flex">
                     {#if enableNewButton}
                         <button
                             class="btn btn-primary btn-sm {newButtonOptions.hasOwnProperty('btnClasses')
@@ -579,13 +439,13 @@
                             {#if newButtonOptions.hasOwnProperty("faIcon")}
                                 <Fa
                                     icon={newButtonOptions.faIcon}
-                                    size="1.1x"
+                                    size="1x"
                                     class={newButtonOptions.hasOwnProperty("faClasses")
                                         ? newButtonOptions.faClasses
                                         : ""} />
                             {/if}
                             {#if newButtonOptions.hasOwnProperty("displayLabel")}
-                                <span class="hidden xs:flex">{newButtonOptions.displayLabel}</span>
+                                <span class="hidden sm:flex">{newButtonOptions.displayLabel}</span>
                             {/if}
                         </button>
                     {:else}
@@ -599,9 +459,9 @@
                             >«
                         </button>
                         <Dropdown
-                            dropdownClasses="dropdown-end"
                             dropDownText="Page {postBody.pageNumber + 1}"
                             dropDownOptions={paginationOptions}
+                            dropdownClasses="dropdown-end"
                             btnClasses="rounded-none"
                             loading={requestPendingStates.pagination.loading}
                             on:optionSelected={async (params) =>
@@ -619,16 +479,170 @@
                 </div>
             </div>
         </div>
-        <div class="lg:hidden">
-            {#if Object.keys(multiSelectActions).length > 0 && Object.values(selectedRows).some((value) => value === true)}
-                <Dropdown
-                    loading={false}
-                    dropDownIcon={faBars}
-                    dropDownText=""
-                    dropDownOptions={multiSelectActions}
-                    dropdownClasses={"dropdown-end ml-2"}
-                    on:optionSelected={(params) => handleMultiSelect(params)} />
+        <div class="mb-2 flex w-full">
+            {#if enableGlobalSearch === true}
+                <div class="form-control my-auto mr-2 w-80 lg:w-80">
+                    <div class="relative -mb-2">
+                        <input
+                            type="text"
+                            bind:value={postBody.globalSearchText}
+                            on:keypress={async (event) => {
+                                if (isLoading) {
+                                    return;
+                                }
+                                if (event.keyCode === 13) {
+                                    await handleGeneralStates("globalSearch");
+                                }
+                            }}
+                            on:change={async () => {
+                                if (isLoading) {
+                                    return;
+                                }
+                                await handleGeneralStates("globalSearch");
+                            }}
+                            on:focus={(event) => {
+                                event.target.select();
+                                requestPendingStates.globalSearch.visible = true;
+                            }}
+                            on:blur={(event) => {
+                                if (
+                                    !requestPendingStates.globalSearch.loading &&
+                                    event.relatedTarget !== event.currentTarget.parentNode.lastChild
+                                ) {
+                                    requestPendingStates.globalSearch.visible = false;
+                                }
+                            }}
+                            placeholder="Search..."
+                            class="input input-bordered input-sm w-full pr-16" />
+                        {#if requestPendingStates.globalSearch.loading || requestPendingStates.globalSearch.visible}
+                            <button
+                                transition:fly={{ x: 10, duration: 250 }}
+                                class:loading={requestPendingStates.globalSearch.loading}
+                                class="custom-btn-loading btn btn-primary btn-sm absolute top-0 right-0 mr-0 rounded-l-none"
+                                on:click={async () => {
+                                    if (isLoading) {
+                                        return;
+                                    }
+                                    requestPendingStates.globalSearch.visible = true;
+                                    await handleGeneralStates("globalSearch");
+                                    requestPendingStates.globalSearch.visible = false;
+                                }}>
+                                <span class:hidden={requestPendingStates.globalSearch.loading}>
+                                    <Fa icon={faMagnifyingGlass} size="1.1x" />
+                                </span>
+                            </button>
+                        {/if}
+                    </div>
+                </div>
             {/if}
+            {#if enableRefresh === true}
+                <button
+                    class="custom-btn-loading btn btn-sm my-auto ml-auto lg:ml-0"
+                    class:loading={requestPendingStates.refresh.loading}
+                    on:click={async () => {
+                        if (isLoading) {
+                            return;
+                        }
+                        await resetPostBody();
+                        await handleGeneralStates("refresh");
+                    }}>
+                    <span class:hidden={requestPendingStates.refresh.loading}>
+                        <Fa icon={faTimes} size="1.1x" />
+                    </span>
+                </button>
+            {/if}
+            <div class="hidden lg:ml-auto lg:flex">
+                {#if Object.keys(multiSelectActions).length > 0 && Object.values(selectedRows).some((value) => value === true)}
+                    <span class="mr-2">
+                        <Dropdown
+                            loading={false}
+                            dropdownClasses="dropdown-end"
+                            dropDownText="Options"
+                            dropDownOptions={multiSelectActions}
+                            on:optionSelected={(params) => handleMultiSelect(params)} />
+                    </span>
+                {/if}
+                {#if enableFilters}
+                    <button on:click={() => (showFilters = !showFilters)} class="btn btn-link btn-xs my-auto mr-2">
+                        <span class:hidden={showFilters}>Show Filters</span>
+                        <span class:hidden={!showFilters}>Hide Filters</span>
+                    </button>
+                {/if}
+                <div class="my-auto ml-auto flex flex-row">
+                    <span class="badge my-auto mr-2 border-base-300 bg-base-300 text-base-content">
+                        {#if totalItemCount === undefined}
+                            ... items
+                        {:else}
+                            {totalItemCount} {totalItemCount > 1 ? " items" : "item"}
+                        {/if}
+                    </span>
+
+                    <div class="btn-group">
+                        {#if enableNewButton}
+                            <button
+                                class="btn btn-primary btn-sm {newButtonOptions.hasOwnProperty('btnClasses')
+                                    ? newButtonOptions.btnClasses
+                                    : ''}"
+                                on:click={() => {
+                                    let clickEvent = newButtonOptions.hasOwnProperty("clickEvent")
+                                        ? newButtonOptions.clickEvent
+                                        : "add_new_clicked";
+                                    actionTriggered({ clickEvent: clickEvent });
+                                }}>
+                                {#if newButtonOptions.hasOwnProperty("faIcon")}
+                                    <Fa
+                                        icon={newButtonOptions.faIcon}
+                                        size="1.1x"
+                                        class={newButtonOptions.hasOwnProperty("faClasses")
+                                            ? newButtonOptions.faClasses
+                                            : ""} />
+                                {/if}
+                                {#if newButtonOptions.hasOwnProperty("displayLabel")}
+                                    <span class="hidden xs:flex">{newButtonOptions.displayLabel}</span>
+                                {/if}
+                            </button>
+                        {:else}
+                            <button
+                                class="btn btn-sm"
+                                on:click={async () => {
+                                    if (postBody.pageNumber >= 1 && !isLoading) {
+                                        await handlePaginate(postBody.pageNumber - 1);
+                                    }
+                                }}
+                                >«
+                            </button>
+                            <Dropdown
+                                dropdownClasses="dropdown-end"
+                                dropDownText="Page {postBody.pageNumber + 1}"
+                                dropDownOptions={paginationOptions}
+                                btnClasses="rounded-none"
+                                loading={requestPendingStates.pagination.loading}
+                                on:optionSelected={async (params) =>
+                                    await handlePaginate(parseInt(params.detail.params.pageNumber))} />
+                            <button
+                                class="btn btn-sm"
+                                on:click={async () => {
+                                    if (postBody.pageNumber < totalPagesCount - 1 && !isLoading) {
+                                        await handlePaginate(postBody.pageNumber + 1);
+                                    }
+                                }}
+                                >»
+                            </button>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+            <div class="lg:hidden">
+                {#if Object.keys(multiSelectActions).length > 0 && Object.values(selectedRows).some((value) => value === true)}
+                    <Dropdown
+                        loading={false}
+                        dropDownIcon={faBars}
+                        dropDownText=""
+                        dropDownOptions={multiSelectActions}
+                        dropdownClasses={"dropdown-end ml-2"}
+                        on:optionSelected={(params) => handleMultiSelect(params)} />
+                {/if}
+            </div>
         </div>
     </div>
     <!-- #endregion -->
@@ -636,7 +650,7 @@
     <!-- #region Table -->
     <div class="w-full overflow-x-auto">
         <table class="table-zebra table w-full border-base-300" style="min-width: {tableMinWidth};">
-            <thead>
+            <thead class="table w-full" bind:clientHeight={headerHeight}>
                 <tr class="child:bg-base-300">
                     {#if enableMultiSelect === true}
                         <th
@@ -884,10 +898,12 @@
                 </tr>
             </thead>
 
-            <tbody>
+            <tbody
+                class="minimal-scrollbar block overflow-y-auto"
+                style="max-height: calc(100vh - {tableHeightPadding} - {headerHeight}px - {topButtonsHeight}px);">
                 {#if !isLoading}
                     {#if noResultsFound}
-                        <tr class="text-center">
+                        <tr class="table w-full text-center">
                             <td class="text-center" colspan={Object.keys(postBody.columns).length}>
                                 No results found
                             </td>
@@ -895,7 +911,7 @@
                     {:else}
                         {#each currentPage as row}
                             <tr
-                                class="group"
+                                class="group table w-full"
                                 on:click={(event) => {
                                     if (clickableColumn === undefined) {
                                         handleRowClick(event, row.id);
@@ -997,7 +1013,7 @@
                     {/if}
                 {:else}
                     {#each Array(parseInt(postBody.itemsPerPage)) as _, index}
-                        <tr class="group">
+                        <tr class="group table w-full">
                             {#if enableMultiSelect === true}
                                 <th
                                     class="sticky animate-pulse text-center align-middle"
@@ -1068,8 +1084,8 @@
             </tbody>
 
             {#if Object.keys(footerColumns).length !== 0}
-                <tfoot>
-                    <tr class="child:bg-base-300">
+                <tfoot class="table w-full">
+                    <tr class="table w-full child:bg-base-300">
                         {#if enableMultiSelect}
                             <th class="sticky" />
                         {/if}

@@ -108,7 +108,7 @@
             on:click={() => {
                 toggleModal(false);
             }}
-            class="btn btn-circle btn-sm absolute right-2 top-2"
+            class="btn btn-link btn-sm absolute right-2 top-2 text-base-content"
             >✕
         </button>
         <h3 class="text-lg font-bold">{modalTitle}</h3>
