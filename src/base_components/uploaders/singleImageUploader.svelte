@@ -18,7 +18,7 @@
     export let imageName = "Divblox Image";
     export let uploadEndpoint;
     export let credentials = "include";
-    export let enableEdit = false;
+    export let enableEdit = true;
 
     let isEditing = false;
     let isSubmitting = false;
