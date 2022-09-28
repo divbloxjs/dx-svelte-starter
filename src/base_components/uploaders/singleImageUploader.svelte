@@ -18,6 +18,7 @@
     export let imageName = "Divblox Image";
     export let uploadEndpoint;
     export let credentials = "include";
+    export let enableEdit = false;
 
     let isEditing = false;
     let isSubmitting = false;
@@ -169,11 +170,13 @@
 
 <div class="file-input mx-auto">
     <input type="file" bind:this={fileUploaderEl} on:change={handleFileSelected} id="file" class="file" />
-    <label for="file" class="btn btn-link -mt-5 text-base-content">
-        Edit
-        <Fa icon={faPencil} size="xs" translateY={0} translateX={0.5} />
-        <p class="file-name" />
-    </label>
+    {#if enableEdit}
+        <label for="file" class="btn btn-link -mt-5 text-base-content">
+            Edit
+            <Fa icon={faPencil} size="xs" translateY={0} translateX={0.5} />
+            <p class="file-name" />
+        </label>
+    {/if}
 </div>
 
 {#if isEditing}
