@@ -111,6 +111,7 @@
 
         currentPage.push(...data[dataSourceReturnProp]);
 
+        noResultsFound = false;
         if (currentPage.length < 1) {
             noResultsFound = true;
         }
@@ -144,6 +145,9 @@
     const propagateActionTriggered = async (params) => {
         switch (params.detail.clickEvent) {
             case "refresh_clicked":
+                searchValue = "";
+                await resetDataList();
+                break;
             case "search_clicked":
                 searchValue = params.detail.searchValue;
                 await resetDataList();
@@ -206,23 +210,27 @@
                     </div>
                     <div class="flex items-center justify-center">
                         {#each actions as action}
-                            <button
-                                class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
-                                on:click={(event) => handleCustomActionClick(event, action.clickEvent, row.id)}>
-                                {#if action.faIcon === "faEye"}
-                                    <Fa icon={faEye} size="1.1x" />
-                                {:else if action.faIcon === "faTrash"}
-                                    <Fa icon={faTrash} size="1.1x" />
-                                {:else if action.faIcon === "faEdit"}
-                                    <Fa icon={faEdit} size="1.1x" />
-                                {/if}
+                            {#if (action.type === "edit" && row.enableEdit) || (action.type === "delete" && row.enableDelete) || (action.type === "view" && row.enableView)}
+                                <button
+                                    class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
+                                    on:click={(event) => handleCustomActionClick(event, action.clickEvent, row.id)}>
+                                    {#if action.faIcon === "faEye"}
+                                        <Fa icon={faEye} size="1.1x" />
+                                    {:else if action.faIcon === "faTrash"}
+                                        <Fa icon={faTrash} size="1.1x" />
+                                    {:else if action.faIcon === "faEdit"}
+                                        <Fa icon={faEdit} size="1.1x" />
+                                    {/if}
 
-                                {#if action.hasOwnProperty("displayLabel")}
-                                    <span
-                                        class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
-                                {action.faIcon === 'faTrash' ? 'mt-[2px]' : ''}">{action.displayLabel}</span>
-                                {/if}
-                            </button>
+                                    {#if action.hasOwnProperty("displayLabel")}
+                                        <span
+                                            class="ml-1 {action.faIcon === 'faEdit' ? 'mt-[3px]' : ''}
+                                    {action.faIcon === 'faTrash' ? 'mt-[2px]' : ''}"
+                                            >{action.displayLabel}
+                                        </span>
+                                    {/if}
+                                </button>
+                            {/if}
                         {/each}
                     </div>
                 </li>

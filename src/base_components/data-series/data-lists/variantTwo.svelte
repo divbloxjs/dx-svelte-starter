@@ -225,7 +225,10 @@
         switch (params.detail.clickEvent) {
             case "search_clicked":
                 searchValue = params.detail.searchValue;
+                resetDataList();
+                break;
             case "refresh_clicked":
+                searchValue = "";
                 resetDataList();
                 break;
             case "create_clicked":
@@ -248,7 +251,7 @@
     let widthSmall = 500;
     let widthMedium = 800;
 
-    let overflowType = dataListMaxHeight === "none" ? "" : "overflow-y-scroll";
+    let overflowType = dataListMaxHeight === "none" ? "" : "overflow-y-auto";
 </script>
 
 <div class="static w-full">
