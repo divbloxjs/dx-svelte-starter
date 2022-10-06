@@ -6,15 +6,17 @@
     import DataListHeader from "$src/base_components/data-series/data-lists/headers/variantOne.svelte";
     import Dropdown from "$src/base_components/data-series/ui-elements/dropdown.svelte";
     import { errorToast, successToast } from "$src/lib/js/utilities/swalMixins.js";
+    import noImagePath from "$src/assets/images/no_image.svg";
 
     export let httpRequestType = "POST";
     export let dataSource;
-    export let categoryUpdateEndpoint;
+    export let categoryUpdateEndpoint = null;
     export let dataSourceDelaySimulation = 0; // ms
     export let dataSourceReturnProp = "data";
     export let dataSourceCountReturnProp = "count";
     export let dataSourcePossibleCategoriesProp = "possibleCategories";
     export let dataSourceIncludeCredentials = "include";
+    export let defaultImagePath = noImagePath;
 
     export let dataListMaxHeight = "none";
     export let rowTitle = "name";
@@ -312,7 +314,10 @@
                         <div class="flex flex-row items-center {listWidth < widthSmall ? 'w-9/12' : 'w-6/12'}">
                             <div class="avatar  justify-center {listWidth < widthSmall ? 'w-3/12' : 'w-2/12'}">
                                 <div class="w-24 rounded-full">
-                                    <img src={row[imageUrl]} alt="User Profile Picture " />
+                                    <img
+                                        src={row[imageUrl]}
+                                        alt="User Profile"
+                                        on:error={() => (row[imageUrl] = defaultImagePath)} />
                                 </div>
                             </div>
                             <div
