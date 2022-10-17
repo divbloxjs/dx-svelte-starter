@@ -7,10 +7,10 @@
 
     export let dropDownText;
     export let dropDownTextClasses = "";
-    export let dropDownIcon;
-    export let dropDownOptions;
+    export let dropDownIcon = null;
+    export let dropDownOptions = [];
     export let btnClasses = "";
-    export let dropdownClasses = "";
+    export let dropdownClasses = "mr-2";
     export let loading = true;
     export let includeDropDownChevron = false;
 
@@ -19,44 +19,42 @@
             document.activeElement.blur();
         }
 
-        dropDownPosition = dropDownPositions[0];
-
+        hideDropDownList = false;
         dropDownOpen = false;
         dispatch("optionSelected", params);
     };
 
     let dropDownOpen = false;
-    const dropDownPositions = ["static", "relative"];
-    let dropDownPosition = dropDownPositions[0];
+    let hideDropDownList = true;
 
     const mouseupHandler = () => {
         if (dropDownOpen === true) {
-            if (dropDownPosition === dropDownPositions[1]) {
-                dropDownPosition = dropDownPositions[0];
+            if (!hideDropDownList) {
+                hideDropDownList = !hideDropDownList;
             }
+
             dropDownOpen = false;
             if (document.activeElement instanceof HTMLElement) {
                 document.activeElement.blur();
             }
         } else {
             dropDownOpen = true;
-            if (dropDownPosition === dropDownPositions[0]) {
-                dropDownPosition = dropDownPositions[1];
+            if (hideDropDownList) {
+                hideDropDownList = !hideDropDownList;
             }
         }
     };
 </script>
 
-<div class="dropdown {dropdownClasses} {dropDownPosition}">
-    <button
-        on:mousedown={(event) => {
+<div class="dropdown {dropdownClasses}">
+    <span class="h-0 w-0" />
+    <!--DaisyUI fuckery -> Selector adds classes to :first-of-type -->
+    <span
+        on:mousedown={() => {
             document.addEventListener("mouseup", () => mouseupHandler(), { once: true });
 
-            if (dropDownOpen === false) {
-                if (dropDownPosition === dropDownPositions[0]) {
-                    dropDownPosition = dropDownPositions[1];
-                }
-            } else {
+            if (dropDownOpen === false && hideDropDownList) {
+                hideDropDownList = !hideDropDownList;
             }
         }}
         on:click|stopPropagation={() => {}}
@@ -71,12 +69,13 @@
         {#if includeDropDownChevron}
             <Fa icon={faChevronDown} class="ml-2" />
         {/if}
-    </button>
+    </span>
     <ul
         tabindex="0"
-        class="minimal-scrollbar dropdown-content menu rounded-box menu-compact my-1 mr-2 max-h-48 w-52 overflow-y-auto bg-base-300 p-1 shadow">
+        class:hidden={hideDropDownList}
+        class="minimal-scrollbar dropdown-content menu rounded-box menu-compact my-1 mr-2 flex max-h-48 w-52 flex-row overflow-y-auto bg-base-300 p-1 shadow">
         {#each dropDownOptions as option}
-            <li>
+            <li class="w-full">
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <a
                     on:click={(event) => {

@@ -113,6 +113,7 @@
 
         noResultsFound = false;
         if (currentPage.length < 1) {
+            actionTriggered({ clickEvent: "no_results_found" });
             noResultsFound = true;
         }
 
@@ -195,6 +196,7 @@
             {/each}
         {:else}
             {#each currentPage as row}
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <li
                     class="flex items-center justify-between bg-transparent py-2 px-4 hover:bg-base-200
                 sm:py-4 {clickableRow ? 'hover:cursor-pointer' : ''}"
