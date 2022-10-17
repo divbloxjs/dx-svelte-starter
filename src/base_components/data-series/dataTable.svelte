@@ -199,6 +199,7 @@
                 currentRow[columnName] = "No results";
             });
             currentPage.push(currentRow);
+            actionTriggered({ clickEvent: "no_results_found" });
         } else {
             noResultsFound = false;
         }
@@ -421,7 +422,7 @@
                     {#if totalItemCount === undefined}
                         ... items
                     {:else}
-                        {totalItemCount} {totalItemCount > 1 ? " items" : "item"}
+                        {totalItemCount} {totalItemCount > 1 || totalItemCount === 0 ? " items" : "item"}
                     {/if}
                 </span>
                 <div class="btn-group ml-2 {!enableNewButton ? 'hidden' : ''} sm:flex">
@@ -573,7 +574,7 @@
                         {#if totalItemCount === undefined}
                             ... items
                         {:else}
-                            {totalItemCount} {totalItemCount > 1 ? " items" : "item"}
+                            {totalItemCount} {totalItemCount > 1 || totalItemCount === 0 ? " items" : "item"}
                         {/if}
                     </span>
 
@@ -1155,10 +1156,13 @@
                                     editingLimit = false;
                                 }
                             }}
-                            on:change={async () => {
-                                postBody.pageNumber = pageNumber;
-                                await handleGeneralStates("editLimit");
-                                editingLimit = false;
+                            on:change={async (event) => {
+                                console.log(event);
+                                console.log(event.currentTarget);
+
+                                // postBody.pageNumber = pageNumber;
+                                // await handleGeneralStates("editLimit");
+                                // editingLimit = false;
                             }}
                             on:blur={(event) => {
                                 if (
@@ -1205,6 +1209,8 @@
                     <input
                         bind:value={postBody.itemsPerPage}
                         on:keypress={async (event) => {
+                            console.log("keypress");
+
                             disableNonNumericInput(event);
                             if (event.keyCode === 13) {
                                 postBody.pageNumber = pageNumber;
@@ -1213,9 +1219,16 @@
                             }
                         }}
                         on:change={async () => {
+                            console.log("change");
+
+                            // if (editingLimit) {
+                            //     console.log("editing limit set to false");
+
+                            //     editingLimit = false;
+                            //     return;
+                            // }
                             postBody.pageNumber = pageNumber;
                             await handleGeneralStates("editLimit");
-                            editingLimit = false;
                         }}
                         on:blur={(event) => {
                             if (
