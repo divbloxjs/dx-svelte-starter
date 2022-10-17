@@ -1,5 +1,5 @@
 <script>
-    import { faEdit, faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
+    import { faCopy, faEdit, faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
     import Fa from "svelte-fa";
     import { createEventDispatcher, onMount } from "svelte";
     import { sleep } from "$src/lib/js/utilities/helpers.js";
@@ -220,12 +220,14 @@
                     </div>
                     <div class="flex items-center justify-center">
                         {#each actions as action}
-                            {#if (action.type === "edit" && row.enableEdit) || (action.type === "delete" && row.enableDelete) || (action.type === "view" && row.enableView)}
+                            {#if (action.type === "edit" && row.enableEdit) || (action.type === "delete" && row.enableDelete) || (action.type === "view" && row.enableView) || action.type === "duplicate"}
                                 <button
                                     class="btn btn-xs mr-1 flex-nowrap {action.btnClasses}"
                                     on:click={(event) => handleCustomActionClick(event, action.clickEvent, row.id)}>
                                     {#if action.faIcon === "faEye"}
                                         <Fa icon={faEye} size="1.1x" />
+                                    {:else if action.faIcon === "faCopy"}
+                                        <Fa icon={faCopy} size="1.1x" />
                                     {:else if action.faIcon === "faTrash"}
                                         <Fa icon={faTrash} size="1.1x" />
                                     {:else if action.faIcon === "faEdit"}
