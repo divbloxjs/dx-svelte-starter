@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
 
+    export let disabled = false;
     export let isValidated = false;
     export let isValid = false;
 
@@ -79,6 +80,7 @@
     <select
         bind:value={selectedValue}
         {name}
+        {disabled}
         class="select select-bordered w-full {addInputClass}"
         class:select-error={!isValid && isValidated && !hideValidation}
         class:select-success={isValid && isValidated && !hideValidation}
