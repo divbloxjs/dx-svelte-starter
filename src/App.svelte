@@ -9,7 +9,7 @@
     import ForgotPassword from "$src/routes/forgotPassword.svelte";
     import ResetPassword from "$src/routes/resetPassword.svelte";
     import Profile from "$src/routes/profile.svelte";
-    import ServiceWorkerUpdate from "$src/lib/service_worker/ServiceWorkerUpdate.svelte";
+    import ServiceWorkerUpdate from "$src/lib/service_worker/serviceWorkerUpdate.svelte";
     import { onMount } from "svelte";
     import { updateProfilePicturePath } from "$src/lib/js/stores/userData";
 
