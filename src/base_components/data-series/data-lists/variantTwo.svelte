@@ -139,6 +139,7 @@
         });
 
         if (currentPage.length < 1) {
+            actionTriggered({ clickEvent: "no_results_found" });
             noResultsFound = true;
         } else {
             noResultsFound = false;

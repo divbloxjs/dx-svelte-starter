@@ -41,6 +41,8 @@
     export let passwordValidationOption = "default";
     export let keypress = "none";
 
+    export let isDisabled = false;
+
     let element;
 
     $: compareValueLocal = compareValue;
@@ -74,7 +76,7 @@
     };
 
     /**
-     * Permorms the validation on the specific input type
+     * Performs the validation on the specific input type
      *
      * @param forceValidate - Forces the validation to bypass the default skipping of empty fields
      * @return {boolean} - True if all validation is passed
@@ -177,6 +179,7 @@
         class:input-error={!isValid && isValidated && !hideValidation}
         class:input-success={isValid && isValidated && !hideValidation}
         {...$$restProps}
+        disabled={isDisabled}
         on:input={handleInput}
         on:change={handleInput}
         on:keypress={(event) => handleKeypress(event)}
