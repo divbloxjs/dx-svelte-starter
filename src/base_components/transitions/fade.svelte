@@ -10,9 +10,11 @@
     };
 
     export const duration = 200;
+    export let classes = "";
 </script>
 
 <div
+    class={classes}
     in:fade={{ duration: duration, delay: duration + 50 }}
     out:fade={{ duration: duration, delay: 0 }}
     on:outrostart={startOutro}

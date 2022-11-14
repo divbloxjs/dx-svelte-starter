@@ -9,6 +9,9 @@
     import QuickActionModal from "$src/base_components/modals/quickActionModal.svelte";
     import DataListOne from "$src/base_components/data-series/data-lists/variantOne.svelte";
     import DataListTwo from "$src/base_components/data-series/data-lists/variantTwo.svelte";
+    import VariantRowless from "../data-series/data-lists/variantRowless.svelte";
+    import ListRowOne from "$src/base_components/data-series/data-lists/rows/rowOne.svelte";
+    import { createEventDispatcher } from "svelte";
 
     let columns = [
         {
@@ -171,6 +174,9 @@
     };
 
     let quickActionModal;
+    let dataLists = {};
+
+    const dispatch = createEventDispatcher();
 </script>
 
 <QuickActionModal
@@ -195,6 +201,35 @@
                 </p>
             </article>
             <div class="divider" />
+
+            <VariantRowless
+                bind:this={dataLists.exampleOne}
+                dataSource="src/base_components/data-series/tests/data.json"
+                dataSourceDelaySimulation={50}
+                additionalPostBodyParams={{}}
+                rowsPerPage={5}
+                enableCreate={true}
+                on:actionTriggered={async (event) => {
+                    switch (event.detail.clickEvent) {
+                        case "row_clicked":
+                            dispatch("rowClicked", event.detail);
+                            break;
+                    }
+                }}
+                rowComponent={ListRowOne}
+                additionalRowProps={{}}
+                rowActions={[
+                    {
+                        type: "edit",
+                        btnClasses: "btn-link text-base-content hover:text-success",
+                        clickEvent: "edit_clicked",
+                    },
+                    {
+                        type: "delete",
+                        btnClasses: "btn-link text-base-content hover:text-error",
+                        clickEvent: "delete_clicked",
+                    },
+                ]} />
 
             <div class="tabs tabs-boxed pl-5 pr-5">
                 <span
@@ -241,7 +276,7 @@
                         on:actionTriggered={async (params) => handleActionTriggered(params)} />
                 </div>
             {:else if activeComponentTab == "dataListExample"}
-                <div in:fade={{ duration: 500 }} class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div in:fade={{ duration: 500 }} class="grid grid-cols-1 gap-2 md:grid-cols-2">
                     <div class="">
                         <DataListOne
                             on:actionTriggered={async (params) => await handleActionTriggered(params)}
@@ -252,21 +287,20 @@
                             clickableRow={true}
                             rowTitle="name"
                             actions={[
-                            {
-                                type: "edit",
-                                faIcon: "faEdit",
-                                btnClasses: "btn-link text-base-content hover:text-success",
-                                clickEvent: "edit_clicked"
-                            },
-                            {
-                                type: "delete",
-                                faIcon: "faTrash",
-                                btnClasses: "btn-link text-base-content hover:text-error",
-                                clickEvent: "delete_clicked"
-                            }
-                        ]}
-                            initialNumberOfRows="4">
-                        </DataListOne>
+                                {
+                                    type: "edit",
+                                    faIcon: "faEdit",
+                                    btnClasses: "btn-link text-base-content hover:text-success",
+                                    clickEvent: "edit_clicked",
+                                },
+                                {
+                                    type: "delete",
+                                    faIcon: "faTrash",
+                                    btnClasses: "btn-link text-base-content hover:text-error",
+                                    clickEvent: "delete_clicked",
+                                },
+                            ]}
+                            initialNumberOfRows="4" />
                     </div>
                     <div class="">
                         <DataListTwo
@@ -279,21 +313,20 @@
                             clickableRow={true}
                             rowTitle="name"
                             actions={[
-                            {
-                                type: "edit",
-                                faIcon: "faEdit",
-                                btnClasses: "btn-link text-base-content hover:text-success",
-                                clickEvent: "edit_clicked"
-                            },
-                            {
-                                type: "delete",
-                                faIcon: "faTrash",
-                                btnClasses: "btn-link text-base-content hover:text-error",
-                                clickEvent: "delete_clicked"
-                            }
-                        ]}
-                            initialNumberOfRows="4">
-                        </DataListTwo>
+                                {
+                                    type: "edit",
+                                    faIcon: "faEdit",
+                                    btnClasses: "btn-link text-base-content hover:text-success",
+                                    clickEvent: "edit_clicked",
+                                },
+                                {
+                                    type: "delete",
+                                    faIcon: "faTrash",
+                                    btnClasses: "btn-link text-base-content hover:text-error",
+                                    clickEvent: "delete_clicked",
+                                },
+                            ]}
+                            initialNumberOfRows="4" />
                     </div>
                 </div>
             {:else if activeComponentTab == "validatedInputs"}
@@ -344,7 +377,8 @@
                         class="btn btn-primary"
                         on:click={() => {
                             quickActionModal.toggleModal(true);
-                        }}>Quick Action Modal
+                        }}
+                        >Quick Action Modal
                     </button>
                 </div>
             {/if}

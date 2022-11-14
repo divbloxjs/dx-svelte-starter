@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from "svelte";
+    import { createEventDispatcher, onMount } from "svelte";
 
     export let disabled = false;
     export let isValidated = false;
@@ -23,6 +23,8 @@
     export let addInputClass = "";
     export let validationMessage = "Invalid value";
     export let hideValidation = false;
+
+    const dispatch = createEventDispatcher();
 
     onMount(async () => {
         // If a label is provided without a name ('name' attribute is used to match the label to it's
@@ -86,6 +88,7 @@
         class:select-success={isValid && isValidated && !hideValidation}
         {...$$restProps}
         on:change={() => {
+            dispatch("change");
             validate(false);
         }}>
         <option disabled value={initValue}> {Object.values(values.defaultValue)[0]}</option>
