@@ -1,6 +1,6 @@
 <script>
     import { faCopy, faEdit, faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
-    import { beforeUpdate, createEventDispatcher, onMount } from "svelte";
+    import { beforeUpdate, createEventDispatcher } from "svelte";
     import Fa from "svelte-fa";
     import Dropdown from "$src/base_components/data-series/ui-elements/dropdown.svelte";
     import { errorToast, successToast } from "$src/lib/js/utilities/swalMixins";
@@ -13,6 +13,7 @@
         categoryUpdateEndpoint: "",
         additionalCategoryParams: "",
     };
+
     export let rowDataMappingOverride = {};
     let rowDataMapping = {
         imageUrl: "imageUrl",
@@ -29,10 +30,28 @@
 
     // Used to style rows according to where they are in the list
     // e.g. dropup/down based on proximity to end of list
+
+    /**
+     * Current row index in the list
+     * Used to style rows according to where they are in the list
+     * e.g. dropup.dropdown based on proximity to end of list
+     * @type {number}
+     */
     export let rowIndex; // E.g. 0,1,2,3
+
+    /**
+     * Currently displayed list's length
+     * Used to style rows according to where they are in the list
+     * e.g. dropup.dropdown based on proximity to end of list
+     * @type {number}
+     */
     export let listLength; // E.g 10
 
-    export let rowWidth;
+    /**
+     * Bound value of the row width in px
+     * @type {number}
+     */
+    let rowWidth;
     let widthSmall = 500;
     let widthMedium = 800;
 
@@ -67,7 +86,6 @@
     let initComplete = false;
     beforeUpdate(async () => {
         if (!initComplete) {
-            console.log("initComplete", rowData);
             initComplete = true;
             await initialiseConfig();
         }
@@ -81,8 +99,11 @@
             }
         });
 
-        console.log("rowData", rowData);
-        console.log("additionalRowProps", additionalRowProps);
+        rowActions.forEach((rowAction) => {
+            if (!Object.keys(configuredActions).includes(rowAction.type)) {
+                console.error("Unconfigured row action type provided: " + rowAction.type);
+            }
+        });
 
         if (Object.keys) possibleCategories = [];
         rowData[rowDataMapping.possibleCategories]?.forEach((role) => {
@@ -104,22 +125,11 @@
         additionalCategoryParams = additionalRowProps.additionalCategoryParams;
     };
 
-    onMount(async () => {
-        console.log("onMount", rowData);
-        rowActions.forEach((rowAction) => {
-            if (!Object.keys(configuredActions).includes(rowAction.type)) {
-                console.error("Unconfigured row action type provided: " + rowAction.type);
-            }
-        });
-    });
-
     const updateCategory = async (category) => {
         let postBody = {
             category: category,
         };
 
-        console.log("id", rowData.id);
-        console.log("category", category);
         let additionalUrlParms = "";
         for (const [name, value] of Object.entries(additionalCategoryParams)) {
             additionalUrlParms += "&" + name + "=" + value;
@@ -156,6 +166,7 @@
 
 {#if showLoadingState}
     <li
+        bind:clientWidth={rowWidth}
         class="flex w-full items-center justify-between bg-transparent p-4 hover:bg-base-200 {clickableRow
             ? 'hover:cursor-pointer'
             : ''}">
@@ -184,7 +195,8 @@
 {:else}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <li
-        class="flex w-full items-center justify-between bg-transparent p-4 hover:bg-base-200
+        bind:clientWidth={rowWidth}
+        class="relative flex w-full items-center justify-between bg-transparent p-4 hover:bg-base-200
     {clickableRow ? 'hover:cursor-pointer' : ''}"
         class:py-2={rowWidth < widthSmall}
         on:click={() => {
@@ -192,6 +204,12 @@
                 dispatch("actionTriggered", { clickEvent: "row_clicked", rowId: rowData.id });
             }
         }}>
+        <!-- Divider between rows -->
+        {rowIndex}
+        {#if rowIndex !== 0}
+            <span class="absolute left-0 top-0 h-[1px] w-full bg-base-200" />
+        {/if}
+
         <div class="flex flex-row items-center {rowWidth < widthSmall ? 'w-9/12' : 'w-6/12'}">
             <div class="avatar  justify-center {rowWidth < widthSmall ? 'w-3/12' : 'w-2/12'}">
                 <div class="w-24 rounded-full">
@@ -214,9 +232,13 @@
                     {#if rowData.enableEdit}
                         <Dropdown
                             dropDownText={rowData[rowDataMapping.rowCategory]}
-                            dropDownTextClasses="overflow-hidden overflow-ellipsis max-w-[9ch] whitespace-nowrap"
+                            dropDownTextClasses="overflow-hidden overflow-ellipsis  {rowWidth > widthMedium
+                                ? 'max-w-[20ch]'
+                                : 'max-w-[11ch]'} whitespace-nowrap"
                             dropDownOptions={possibleCategories}
-                            dropdownClasses="z-100 {rowIndex > listLength - 2 && rowIndex > 3 ? '' : ''}"
+                            dropdownClasses="dropdown-end mr-2 {rowIndex > 2 && rowIndex >= listLength - 2
+                                ? 'dropdown-top'
+                                : ''}"
                             btnClasses="btn-xs mt-2 capitalize text-right"
                             loading={rowLoading}
                             includeDropDownChevron={true}

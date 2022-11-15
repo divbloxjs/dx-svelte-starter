@@ -174,11 +174,6 @@
     let noResultsFound = false;
 
     /**
-     * Bound variable of the list's rendered width (in pixels)
-     */
-    let listWidth;
-
-    /**
      *  Sets the overflow of the list to 'auto' if a maxHeight is provided
      */
     let overflowType = dataListMaxHeight === "none" ? "" : "overflow-y-auto";
@@ -307,18 +302,14 @@
     </div>
 
     <!-- List body -->
-    <div bind:clientWidth={listWidth}>
+    <div>
         <ul
             class="minimal-scrollbar w-full {overflowType} rounded-lg border border-base-200"
             style="max-height: {dataListMaxHeight}; max-width: 100%;">
             {#if loading}
                 <!-- Loading State -->
                 {#each Array(2) as value, index}
-                    <svelte:component
-                        this={rowComponent}
-                        showLoadingState={true}
-                        rowWidth={listWidth}
-                        rowIndex={index} />
+                    <svelte:component this={rowComponent} showLoadingState={true} rowIndex={index} />
                 {/each}
             {:else}
                 <!-- Actual List -->
@@ -330,7 +321,6 @@
                         {clickableRow}
                         {additionalRowProps}
                         rowDataMappingOverride={rowDataMappingOverride ?? rowDataMappingOverride}
-                        rowWidth={listWidth}
                         on:actionTriggered={(params) => {
                             dispatch("actionTriggered", params.detail);
                         }}
