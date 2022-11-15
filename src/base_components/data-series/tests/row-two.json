@@ -1,0 +1,60 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "rowTitle": "Tommy is a little man with big rowTitle",
+            "imageUrl": "https://loremflickr.com/240/240",
+            "rowSubTitle": "dani.simeonov@stratusolve.com",
+            "category": "Admin",
+            "enableEdit": true,
+            "enableDelete": true
+        },
+        {
+            "id": 2,
+            "rowTitle": "Diggy",
+            "imageUrl": "https://loremflickr.com/240/240/brazil",
+            "rowSubTitle": "Diggydiggy@haha.yoloHaaahaawhyismyemailsolong",
+            "category": "Admin",
+            "enableEdit": false,
+            "enableDelete": false
+        },
+        {
+            "id": 3,
+            "rowTitle": "smity",
+            "imageUrl": "https://placeimg.com/192/192/people",
+            "rowSubTitle": "smity@smuty.za",
+            "category": "Billing Admin Hoorah for cool things",
+            "enableEdit": true,
+            "enableDelete": true
+        },
+        {
+            "id": 4,
+            "rowTitle": "Linter",
+            "imageUrl": "https://loremflickr.com/240/240/dog",
+            "rowSubTitle": "Linter@splinter.com",
+            "category": "Owner",
+            "enableEdit": true,
+            "enableDelete": true
+        },
+        {
+            "id": 5,
+            "rowTitle": "Hinter",
+            "imageUrl": "https://loremflickr.com/240/240/fox",
+            "rowSubTitle": "Hinter@not-splinter.com",
+            "category": "Billing Admin",
+            "enableEdit": false,
+            "enableDelete": false
+        },
+        {
+            "id": 6,
+            "rowTitle": "Stickler",
+            "imageUrl": "https://loremflickr.com/240/240/dog",
+            "rowSubTitle": "Stickler@linkler.com",
+            "category": "Billing Admin",
+            "enableEdit": true,
+            "enableDelete": true
+        }
+    ],
+    "count": 40,
+    "possibleCategories": ["Owner", "Admin", "Billing Admin"]
+}

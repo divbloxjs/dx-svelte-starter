@@ -11,6 +11,7 @@
     import DataListTwo from "$src/base_components/data-series/data-lists/variantTwo.svelte";
     import VariantRowless from "../data-series/data-lists/variantRowless.svelte";
     import ListRowOne from "$src/base_components/data-series/data-lists/rows/rowOne.svelte";
+    import ListRowTwo from "$src/base_components/data-series/data-lists/rows/rowTwo.svelte";
     import { createEventDispatcher } from "svelte";
 
     let columns = [
@@ -204,9 +205,7 @@
 
             <VariantRowless
                 bind:this={dataLists.exampleOne}
-                dataSource="src/base_components/data-series/tests/data.json"
-                dataSourceDelaySimulation={50}
-                additionalPostBodyParams={{}}
+                dataSource="http://localhost:4000/api/projects/getAssignedProjectRoles?projectId=28"
                 rowsPerPage={5}
                 enableCreate={true}
                 on:actionTriggered={async (event) => {
@@ -216,8 +215,17 @@
                             break;
                     }
                 }}
-                rowComponent={ListRowOne}
-                additionalRowProps={{}}
+                rowComponent={ListRowTwo}
+                additionalRowProps={{
+                    categoryUpdateEndpoint: "http://localhost:4000/api/organisations/assignedOrganisationRole",
+                    additionalCategoryParams: { organisationId: 6 },
+                }}
+                rowDataMappingOverride={{
+                    rowTitle: "displayName",
+                    rowDescription: "emailAddress",
+                    rowCategory: "roleName",
+                    imageUrl: "profilePictureUrl",
+                }}
                 rowActions={[
                     {
                         type: "edit",

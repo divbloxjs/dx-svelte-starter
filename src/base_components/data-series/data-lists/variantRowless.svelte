@@ -1,48 +1,195 @@
 <script>
-    import { createEventDispatcher, onMount } from "svelte";
+    import { createEventDispatcher, onMount, SvelteComponent } from "svelte";
     import { sleep } from "$src/lib/js/utilities/helpers.js";
-    import DataListHeader from "$src/base_components/data-series/data-lists/headers/genericHeader.svelte";
     import { errorToast } from "$src/lib/js/utilities/swalMixins";
+    import DataListHeader from "$src/base_components/data-series/data-lists/headers/genericHeader.svelte";
 
+    const dispatch = createEventDispatcher();
+
+    //region Exports
+    /**
+     * @param {string} httpRequestType The type of HTTP request being sent
+     * @type {"POST"|"GET"}
+     */
     export let httpRequestType = "POST";
+
+    /**
+     * Full URL to dataSource to query data from
+     * @type {string}
+     */
     export let dataSource;
+
+    /**
+     * Optional parameter to simulate network latency (measured in ms)
+     * @type {number}
+     */
     export let dataSourceDelaySimulation = 0; // ms
+
+    /**
+     * The property of the return object to use to construct data rows
+     * @type {string}
+     */
     export let dataSourceReturnProp = "data";
+
+    /**
+     * The property of the return object to use as the total count of data set
+     * @type {string}
+     */
     export let dataSourceCountReturnProp = "count";
+
+    /**
+     * Whether or not to include credentials in the HTTP request
+     * @type {"include"|"omit"}
+     */
     export let dataSourceIncludeCredentials = "include";
+
+    /**
+     * Maximum allowed height for the data list (in px)
+     * @type {number|"none"}
+     */
     export let dataListMaxHeight = "none";
+
+    /**
+     * Any additional post body params needed for your HTTP request
+     * @type {{}}
+     */
     export let additionalPostBodyParams = {};
 
-    export let rowComponent; // Pass custom component to load rowData
-    export let additionalRowProps = {}; // Any further component props needed for the row
-    export let rowActions = []; // Array of actions objects - refer to your custom row compoent for structure
-    export let clickableRow = true;
-
+    /**
+     * Number of rows to display per load
+     * @type {number}
+     */
     export let rowsPerPage = 3;
-    let pageNumber = 1;
 
-    // Header Component settings
+    /**
+     * Initial page number to load (updated as "load more" is clicked)
+     */
+    export let pageNumber = 1;
+
+    //endregion
+
+    //region Header Component settings
     let dataListHeader;
+
+    /**
+     * Render the top searchbar
+     * @type {boolean}
+     */
     export let enableSearch = true;
+    /**
+     * Render the top create button
+     * @type {boolean}
+     */
     export let enableCreate = true;
+    /**
+     * Render the top refresh button
+     * @type {boolean}
+     */
     export let enableRefresh = true;
+    /**
+     * The default search value
+     * @type {string}
+     */
     export let searchValue = "";
 
+    //endregion
+
+    //region Row Component settings
+    /**
+     * Custom svelte row component to load rowData
+     * @type {import("svelte").ComponentType}
+     */
+    export let rowComponent;
+
+    /**
+     * Key Value pair in the form of {"defaultRowKey": "overrideKey", ...}
+     * Used to map data coming from backend to naming used in default row components.
+     * Can be ignored if row is custom to implementation
+     * @type {Object}
+     */
+    export let rowDataMappingOverride = {};
+
+    /**
+     * Object of parameters needed specifically for the row component
+     * @type {object}
+     */
+    export let additionalRowProps = {}; // Any further component props needed for the row
+
+    /**
+     * @typedef rowAction
+     * @type {object}
+     * @property {"view"|"edit"|"duplicate"|"delete"} type Type of row action
+     * @property {string} btnClasses Custom classes to add to the action button
+     * @property {string} clickEvent click event to fire off on triggering of the action
+     */
+
+    /**
+     * Array of rowAction configuration objects
+     * @type {rowAction[]}
+     * @param {{type: number, btnClasses: string, clickEvent: string}[]} rowAction Specific row action object
+     * @param {"view"|"edit"|"duplicate"|"delete"} rowAction.type Type of row action
+     * @param {string} rowAction.btnClasses Custom classes to add to the action button
+     * @param {string} rowAction.clickEvent click event to fire off on triggering of the action
+     */
+    export let rowActions = [];
+
+    /**
+     * Flag whether or not to allow row clicks - handled by rowComponent
+     * @type {boolean}
+     */
+    export let clickableRow = true;
+
+    //endregion
+
+    /**
+     * The total number of items in the dataset returned
+     * @type {number}
+     */
     let totalRowCount = 0;
+    /**
+     * Currently viewable subset of the entire dataset
+     * @type {Array}
+     */
     let currentPage = [];
-    let loading = false; // TODO convert to store if becoming more complicated with state management of subcomponents
-    let loadingMore = false; // Seperate state control for the "Load More" button after initial load
-    let initialLoading = true;
+
+    /**
+     * Keeps track of whether data is being loaded or not.
+     * Used to disabled actions, and visualise loading states as data is being fetched
+     * @type {boolean}
+     * TODO convert to store if becoming more complicated with state management of subcomponents
+     */
+    let loading = false;
+
+    /**
+     * Seperate state control (from loading) for the "Load More" button after initial load
+     * @type {boolean}
+     */
+    let loadingMore = false;
+
+    /**
+     * Flag for whether or not no results were found.
+     * Used to display "No results" if needed
+     * @type {boolean}
+     */
     let noResultsFound = false;
 
+    /**
+     * Bound variable of the list's rendered width (in pixels)
+     */
     let listWidth;
+
+    /**
+     *  Sets the overflow of the list to 'auto' if a maxHeight is provided
+     */
     let overflowType = dataListMaxHeight === "none" ? "" : "overflow-y-auto";
 
     onMount(async () => {
         await resetDataList();
-        initialLoading = false;
     });
 
+    /**
+     * Resets the data list with initial params
+     */
     export const resetDataList = async () => {
         loading = true;
         pageNumber = 1;
@@ -122,7 +269,7 @@
 
         noResultsFound = false;
         if (currentPage.length < 1) {
-            actionTriggered({ clickEvent: "no_results_found" });
+            dispatch("actionTriggered", { clickEvent: "no_results_found" });
             noResultsFound = true;
         }
 
@@ -130,34 +277,6 @@
 
         currentPage = currentPage;
     };
-
-    //region Event handlers
-    const dispatch = createEventDispatcher();
-    const actionTriggered = (params) => {
-        dispatch("actionTriggered", params);
-    };
-
-    /**
-     * Propagates actions from subcomponents of the datalist to the parent
-     * @param {object} params - Whatever parameters where sent from the subcomponent
-     */
-    const propagateActionTriggered = async (params) => {
-        switch (params.detail.clickEvent) {
-            case "refresh_clicked":
-                searchValue = "";
-                await resetDataList();
-                break;
-            case "search_clicked":
-                searchValue = params.detail.searchValue;
-                await resetDataList();
-                break;
-            case "create_clicked":
-                dispatch("actionTriggered", params.detail);
-                dataListHeader.setGlobalLoading(false);
-                break;
-        }
-    };
-    //endregion
 </script>
 
 <div class="static w-full" style="max-height:{dataListMaxHeight}">
@@ -169,7 +288,22 @@
             {enableSearch}
             {enableCreate}
             {searchValue}
-            on:actionTriggered={(params) => propagateActionTriggered(params)} />
+            on:actionTriggered={async (params) => {
+                switch (params.detail.clickEvent) {
+                    case "refresh_clicked":
+                        searchValue = "";
+                        await resetDataList();
+                        break;
+                    case "search_clicked":
+                        searchValue = params.detail.searchValue;
+                        await resetDataList();
+                        break;
+                    case "create_clicked":
+                        dispatch("actionTriggered", params.detail);
+                        dataListHeader.setGlobalLoading(false);
+                        break;
+                }
+            }} />
     </div>
 
     <!-- List body -->
@@ -195,9 +329,10 @@
                         {rowActions}
                         {clickableRow}
                         {additionalRowProps}
+                        rowDataMappingOverride={rowDataMappingOverride ?? rowDataMappingOverride}
                         rowWidth={listWidth}
                         on:actionTriggered={(params) => {
-                            actionTriggered(params.detail);
+                            dispatch("actionTriggered", params.detail);
                         }}
                         on:resetDataList={() => resetDataList()}
                         rowIndex={index}
@@ -212,7 +347,6 @@
             {/if}
         </ul>
     </div>
-
     <!-- Loading Bar -->
     {#if (currentPage.length < totalRowCount && !noResultsFound) || loading}
         <div class="mt-2 w-full text-center">
