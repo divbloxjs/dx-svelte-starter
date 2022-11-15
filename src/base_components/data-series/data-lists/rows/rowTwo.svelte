@@ -9,13 +9,17 @@
     export let defaultImagePath = noImagePath;
 
     export let rowData = {};
-    export let additionalRowProps = {};
+    export let additionalRowProps = {
+        categoryUpdateEndpoint: "",
+        additionalCategoryParams: "",
+    };
     export let rowDataMappingOverride = {};
     let rowDataMapping = {
         imageUrl: "imageUrl",
         rowTitle: "rowTitle",
         rowDescription: "rowDescription",
         rowCategory: "rowCategory",
+        possibleCategories: "possibleCategories",
     };
     export let rowActions = [];
     export let clickableRow = true;
@@ -78,9 +82,10 @@
         });
 
         console.log("rowData", rowData);
+        console.log("additionalRowProps", additionalRowProps);
 
         if (Object.keys) possibleCategories = [];
-        rowData.possibleProjectRoles?.forEach((role) => {
+        rowData[rowDataMapping.possibleCategories]?.forEach((role) => {
             possibleCategories.push({
                 params: { id: role.id, name: role.name },
                 displayLabel: role.name,
@@ -255,7 +260,7 @@
             <div class="flex items-center justify-center">
                 {#each rowActions as action}
                     {#if Object.keys(configuredActions).includes(action.type)}
-                        {#if configuredActions[action.type].backendFlag}
+                        {#if rowData[configuredActions[action.type].backendFlag]}
                             <button
                                 class="btn btn-xs ml-1 flex-nowrap {action.btnClasses}"
                                 on:click={(event) => {

@@ -205,6 +205,41 @@
 
             <VariantRowless
                 bind:this={dataLists.exampleOne}
+                dataSource="src/base_components/data-series/tests/row-two.json"
+                rowsPerPage={5}
+                enableCreate={true}
+                rowComponent={ListRowTwo}
+                on:actionTriggered={async (event) => {
+                    switch (event.detail.clickEvent) {
+                        case "delete_clicked":
+                            console.log(event.detail.clickEvent);
+                            break;
+                        case "create_clicked":
+                            console.log(event.detail.clickEvent);
+                            break;
+                    }
+                }}
+                additionalRowProps={{
+                    categoryUpdateEndpoint: "http://localhost:4000/api/organisations/assignedOrganisationRole",
+                    additionalCategoryParams: { organisationId: 6 },
+                }}
+                rowDataMappingOverride={{
+                    rowTitle: "displayName",
+                    rowDescription: "emailAddress",
+                    rowCategory: "roleName",
+                    imageUrl: "profilePictureUrl",
+                    possibleCategories: "possibleOrganisationRoles",
+                }}
+                rowActions={[
+                    {
+                        type: "delete",
+                        btnClasses: "btn-link text-base-content hover:text-error",
+                        clickEvent: "delete_clicked",
+                    },
+                ]} />
+
+            <VariantRowless
+                bind:this={dataLists.exampleOne}
                 dataSource="http://localhost:4000/api/projects/getAssignedProjectRoles?projectId=28"
                 rowsPerPage={5}
                 enableCreate={true}
