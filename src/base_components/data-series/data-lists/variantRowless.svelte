@@ -3,6 +3,7 @@
     import { sleep } from "$src/lib/js/utilities/helpers.js";
     import { errorToast } from "$src/lib/js/utilities/swalMixins";
     import DataListHeader from "$src/base_components/data-series/data-lists/headers/genericHeader.svelte";
+    import { faCopy, faEdit, faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
 
     const dispatch = createEventDispatcher();
 
@@ -178,6 +179,29 @@
      */
     let overflowType = dataListMaxHeight === "none" ? "" : "overflow-y-auto";
 
+    /**
+     * Object defined what row actions are caterered for.
+     * @type {Object}
+     */
+    let allowedRowActions = {
+        view: {
+            faIcon: faEye, // Icon to display
+            backendFlag: "enableView", // Allows backend to hide action based on business logic
+        },
+        edit: {
+            faIcon: faEdit,
+            backendFlag: "enableEdit",
+        },
+        duplicate: {
+            faIcon: faCopy,
+            backendFlag: "enableDuplicate",
+        },
+        delete: {
+            faIcon: faTrash,
+            backendFlag: "enableDelete",
+        },
+    };
+
     onMount(async () => {
         await resetDataList();
     });
@@ -224,7 +248,7 @@
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
-                credentials: dataSourceIncludeCredentials ? "include" : "omit",
+                credentials: dataSourceIncludeCredentials,
             });
         } else if (httpRequestType === "POST") {
             response = await fetch(dataSource, {
@@ -318,6 +342,7 @@
                         this={rowComponent}
                         {rowData}
                         {rowActions}
+                        {allowedRowActions}
                         {clickableRow}
                         {additionalRowProps}
                         rowDataMappingOverride={rowDataMappingOverride ?? rowDataMappingOverride}

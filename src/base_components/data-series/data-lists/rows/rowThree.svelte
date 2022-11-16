@@ -17,6 +17,7 @@
      */
     let rowDataMapping = {
         rowTitle: "rowTitle",
+        rowDescription: "rowDescription",
     };
 
     export let rowActions = [];
@@ -106,6 +107,9 @@
         <div class="rounded pl-2">
             <div class="text-lg font-bold">
                 {rowData[rowDataMapping.rowTitle]}
+            </div>
+            <div>
+                {rowData[rowDataMapping.rowDescription]}
             </div>
         </div>
 

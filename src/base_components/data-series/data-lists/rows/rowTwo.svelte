@@ -1,35 +1,95 @@
 <script>
-    import { faCopy, faEdit, faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
     import { beforeUpdate, createEventDispatcher } from "svelte";
     import Fa from "svelte-fa";
     import Dropdown from "$src/base_components/data-series/ui-elements/dropdown.svelte";
     import { errorToast, successToast } from "$src/lib/js/utilities/swalMixins";
     import noImagePath from "$src/assets/images/no_image.svg";
 
+    /**
+     * Path to the default image that will be displayed if imageUrl is invalid
+     * @type {string}
+     */
     export let defaultImagePath = noImagePath;
 
+    /**
+     * The row data obejct to be rendered
+     * @type {Object}
+     */
     export let rowData = {};
+
+    /**
+     * @typedef additionalRowProps
+     * @type {object}
+     * @property {string} categoryUpdateEndpoint The endpoint needed to update the category value
+     * @property {string} additionalCategoryParams Any additional parameters needed for the category update request
+     */
+
+    /**
+     * @type {additionalRowProps}
+     * @param {{categoryUpdateEndpoint: string, additionalCategoryParams: string}} additionalRowProps Specific row action object
+     * @param {string} additionalRowProps.categoryUpdateEndpoint Custom classes to add to the action button
+     * @param {string} additionalRowProps.additionalCategoryParams click event to fire off on triggering of the action
+     */
     export let additionalRowProps = {
         categoryUpdateEndpoint: "",
         additionalCategoryParams: "",
     };
 
+    /**
+     * Data mapping object used to allow any data set to render in the preconfigured setup regardless of naming
+     * @type {Object}
+     */
     export let rowDataMappingOverride = {};
+
+    /**
+     * The default row data mapping. Overridden by rowDataMappingOverride key by key
+     * @type {Object}
+     */
     let rowDataMapping = {
         imageUrl: "imageUrl",
         rowTitle: "rowTitle",
         rowDescription: "rowDescription",
-        rowCategory: "rowCategory",
+        rowCategoryName: "rowCategoryName",
+        rowCategoryId: "rowCategoryId",
         possibleCategories: "possibleCategories",
     };
+
+    /**
+     * @typedef rowAction
+     * @type {object}
+     * @property {"view"|"edit"|"duplicate"|"delete"} type Type of row action
+     * @property {string} btnClasses Custom classes to add to the action button
+     * @property {string} clickEvent click event to fire off on triggering of the action
+     */
+
+    /**
+     * Array of rowAction configuration objects
+     * @type {rowAction[]}
+     * @param {{type: number, btnClasses: string, clickEvent: string}[]} rowAction Specific row action object
+     * @param {"view"|"edit"|"duplicate"|"delete"} rowAction.type Type of row action
+     * @param {string} rowAction.btnClasses Custom classes to add to the action button
+     * @param {string} rowAction.clickEvent click event to fire off on triggering of the action
+     */
     export let rowActions = [];
+    export let allowedRowActions;
+
+    /**
+     * Whether or not to allow row clicks
+     * When true, dispatch("actionTriggered", { clickEvent: "row_clicked", rowId: rowData.id });
+     */
     export let clickableRow = true;
+
+    /**
+     * Used to load the entire row as a loading state
+     * @type {boolean}
+     */
     export let showLoadingState = false;
 
+    /**
+     * Whether or not to include credentials in the HTTP request
+     * @type {"include"|"omit"}
+     */
     export let dataSourceIncludeCredentials = "include";
-
-    // Used to style rows according to where they are in the list
-    // e.g. dropup/down based on proximity to end of list
 
     /**
      * Current row index in the list
@@ -55,32 +115,44 @@
     let widthSmall = 500;
     let widthMedium = 800;
 
+    /**
+     * Value tracking whether the category update request is in progress, if so, keeps the dropdown in loading state
+     */
     let rowLoading = false;
 
-    export let possibleCategories = [];
+    /**
+     * @typedef dropdownOption
+     * @type {object}
+     * @property {Object} params Object of parameters passed on click event
+     * @property {string} displayLabel The display label of the option
+     * @property {string} clickEvent click event to fire off on triggering of the action
+     */
 
-    let configuredActions = {
-        view: {
-            faIcon: faEye, // Icon to display
-            backendFlag: "enableView", // Allows backend to hide action based on business logic
-        },
-        edit: {
-            faIcon: faEdit,
-            backendFlag: "enableEdit",
-        },
-        duplicate: {
-            faIcon: faCopy,
-            backendFlag: "enableDuplicate",
-        },
-        delete: {
-            faIcon: faTrash,
-            backendFlag: "enableDelete",
-        },
-    };
+    /**
+     * Array of rowAction configuration objects
+     * @type {dropdownOption[]}
+     * @param {{params: Object, displayLabel: string, clickEvent: string}[]} dropdownOption Specific row action object
+     * @param {Object} dropdownOption.params Object of parameters passed on click event
+     * @param {string} dropdownOption.displayLabel The display label of the option
+     * @param {string} dropdownOption.clickEvent click event to fire off on triggering of the action
+     */
+
+    /**
+     *
+     */
+    let possibleCategoriesDropdownOptions = [];
 
     const dispatch = createEventDispatcher();
 
+    /**
+     * Base Endpoint url for updating of the category
+     */
     let categoryUpdateEndpoint;
+
+    /**
+     * Post body for the category update request
+     * @type {Object}
+     */
     let additionalCategoryParams;
 
     let initComplete = false;
@@ -91,6 +163,9 @@
         }
     });
 
+    /**
+     * Runs once before the first DOM mount, sets up necessary variable objects
+     */
     const initialiseConfig = async () => {
         // Override data keys with provided overrides
         Object.keys(rowDataMappingOverride).forEach((defaultRowDataAttribute) => {
@@ -99,36 +174,43 @@
             }
         });
 
+        // Check if any provided row actions are not allowed
         rowActions.forEach((rowAction) => {
-            if (!Object.keys(configuredActions).includes(rowAction.type)) {
+            if (!Object.keys(allowedRowActions).includes(rowAction.type)) {
                 console.error("Unconfigured row action type provided: " + rowAction.type);
             }
         });
 
-        if (Object.keys) possibleCategories = [];
+        // Build the category dropdown
+        possibleCategoriesDropdownOptions = [];
         rowData[rowDataMapping.possibleCategories]?.forEach((role) => {
-            possibleCategories.push({
+            possibleCategoriesDropdownOptions.push({
                 params: { id: role.id, name: role.name },
                 displayLabel: role.name,
                 clickEvent: "category_change_clicked",
             });
         });
 
+        // Check and set categoryUpdateEndpoint
         if (!additionalRowProps.hasOwnProperty("categoryUpdateEndpoint")) {
             throw new Error("additionalRowProps.categoryUpdateEndpoint not provided");
         }
         categoryUpdateEndpoint = additionalRowProps.categoryUpdateEndpoint;
 
+        // Check and set additionalCategoryParams
         if (!additionalRowProps.hasOwnProperty("additionalCategoryParams")) {
             throw new Error("additionalRowProps.additionalCategoryParams not provided");
         }
         additionalCategoryParams = additionalRowProps.additionalCategoryParams;
     };
 
-    const updateCategory = async (category) => {
-        let postBody = {
-            category: category,
-        };
+    /**
+     * Handles sending out the request to update the row's category by id
+     * @param {number} categoryId
+     */
+    const updateCategory = async (categoryId) => {
+        let postBody = {};
+        postBody[rowDataMapping.rowCategoryId] = categoryId;
 
         let additionalUrlParms = "";
         for (const [name, value] of Object.entries(additionalCategoryParams)) {
@@ -154,10 +236,14 @@
         return true;
     };
 
+    /**
+     * State handling for the category change event
+     * @param {Object} categoryInfo
+     */
     const handleCategoryChange = async (categoryInfo) => {
         rowLoading = true;
         if (await updateCategory(categoryInfo.id)) {
-            rowData[rowDataMapping.rowCategory] = categoryInfo.name;
+            rowData[rowDataMapping.rowCategoryName] = categoryInfo.name;
         }
 
         rowLoading = false;
@@ -205,7 +291,6 @@
             }
         }}>
         <!-- Divider between rows -->
-        {rowIndex}
         {#if rowIndex !== 0}
             <span class="absolute left-0 top-0 h-[1px] w-full bg-base-200" />
         {/if}
@@ -231,11 +316,11 @@
                 <div class:hidden={rowWidth > widthSmall}>
                     {#if rowData.enableEdit}
                         <Dropdown
-                            dropDownText={rowData[rowDataMapping.rowCategory]}
+                            dropDownText={rowData[rowDataMapping.rowCategoryName]}
                             dropDownTextClasses="overflow-hidden overflow-ellipsis  {rowWidth > widthMedium
                                 ? 'max-w-[20ch]'
                                 : 'max-w-[11ch]'} whitespace-nowrap"
-                            dropDownOptions={possibleCategories}
+                            dropDownOptions={possibleCategoriesDropdownOptions}
                             dropdownClasses="dropdown-end mr-2 {rowIndex > 2 && rowIndex >= listLength - 2
                                 ? 'dropdown-top'
                                 : ''}"
@@ -247,7 +332,7 @@
                             }} />
                     {:else}
                         <button class="btn btn-link btn-xs pl-0 text-base-content">
-                            {rowData[rowDataMapping.rowCategory]}
+                            {rowData[rowDataMapping.rowCategoryName]}
                         </button>
                     {/if}
                 </div>
@@ -257,11 +342,11 @@
             <div class:hidden={rowWidth < widthSmall}>
                 {#if rowData.enableEdit}
                     <Dropdown
-                        dropDownText={rowData[rowDataMapping.rowCategory]}
+                        dropDownText={rowData[rowDataMapping.rowCategoryName]}
                         dropDownTextClasses="overflow-hidden overflow-ellipsis  {rowWidth > widthMedium
                             ? 'max-w-[20ch]'
                             : 'max-w-[11ch]'} whitespace-nowrap"
-                        dropDownOptions={possibleCategories}
+                        dropDownOptions={possibleCategoriesDropdownOptions}
                         dropdownClasses="dropdown-end mr-2 {rowIndex > 2 && rowIndex >= listLength - 2
                             ? 'dropdown-top'
                             : ''}"
@@ -273,7 +358,7 @@
                         }} />
                 {:else}
                     <button class="btn disabled btn-link text-base-content">
-                        {rowData[rowDataMapping.rowCategory]}
+                        {rowData[rowDataMapping.rowCategoryName]}
                     </button>
                 {/if}
             </div>
@@ -281,15 +366,15 @@
             <!-- Row Actions -->
             <div class="flex items-center justify-center">
                 {#each rowActions as action}
-                    {#if Object.keys(configuredActions).includes(action.type)}
-                        {#if rowData[configuredActions[action.type].backendFlag]}
+                    {#if Object.keys(allowedRowActions).includes(action.type)}
+                        {#if rowData[allowedRowActions[action.type].backendFlag]}
                             <button
                                 class="btn btn-xs ml-1 flex-nowrap {action.btnClasses}"
                                 on:click={(event) => {
                                     event.stopPropagation(); // Stops the click on table row element behind it
                                     dispatch("actionTriggered", { clickEvent: action.clickEvent, rowId: rowData.id });
                                 }}>
-                                <Fa icon={configuredActions[action.type].faIcon} size="1.1x" />
+                                <Fa icon={allowedRowActions[action.type].faIcon} size="1.1x" />
 
                                 {#if action.hasOwnProperty("displayLabel")}
                                     <span

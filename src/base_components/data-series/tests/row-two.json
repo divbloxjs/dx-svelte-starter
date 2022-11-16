@@ -2,7 +2,7 @@
     "data": [
         {
             "id": 6,
-            "displayName": "Mr  Sir",
+            "displayName": "Mr Sir",
             "emailAddress": "dani.simeonov@stratusolve.com",
             "profilePictureUrl": "https://loremflickr.com/240/240",
             "roleName": "Owner",
@@ -48,7 +48,7 @@
         },
         {
             "id": 12,
-            "displayName": " ",
+            "displayName": "Another person",
             "emailAddress": "abc@gmail.com",
             "profilePictureUrl": "https://loremflickr.com/240/240",
             "roleName": "Owner",

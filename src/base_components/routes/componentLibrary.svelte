@@ -7,11 +7,12 @@
     import DataTable from "$src/base_components/data-series/dataTable.svelte";
     import { faFileExcel, faFileCsv, faFileText, faTrash } from "@fortawesome/free-solid-svg-icons";
     import QuickActionModal from "$src/base_components/modals/quickActionModal.svelte";
-    import DataListOne from "$src/base_components/data-series/data-lists/variantOne.svelte";
-    import DataListTwo from "$src/base_components/data-series/data-lists/variantTwo.svelte";
-    import VariantRowless from "../data-series/data-lists/variantRowless.svelte";
+    import DataListOne from "../data-series/data-lists/variantRowless.svelte";
+    import DataListTwo from "../data-series/data-lists/variantRowless.svelte";
+    import DataListThree from "../data-series/data-lists/variantRowless.svelte";
     import ListRowOne from "$src/base_components/data-series/data-lists/rows/rowOne.svelte";
     import ListRowTwo from "$src/base_components/data-series/data-lists/rows/rowTwo.svelte";
+    import ListRowThree from "$src/base_components/data-series/data-lists/rows/rowThree.svelte";
     import { createEventDispatcher } from "svelte";
 
     let columns = [
@@ -189,7 +190,7 @@
 <PageTransitionFade>
     <RoutingExampleNav />
     <main class="mt-5 mb-16">
-        <div class="container mx-auto px-5">
+        <div class="mx-auto px-5">
             <article class="prose">
                 <h1>Component Library & Examples</h1>
                 <p>
@@ -202,77 +203,6 @@
                 </p>
             </article>
             <div class="divider" />
-
-            <VariantRowless
-                bind:this={dataLists.exampleOne}
-                dataSource="src/base_components/data-series/tests/row-two.json"
-                rowsPerPage={5}
-                enableCreate={true}
-                rowComponent={ListRowTwo}
-                on:actionTriggered={async (event) => {
-                    switch (event.detail.clickEvent) {
-                        case "delete_clicked":
-                            console.log(event.detail.clickEvent);
-                            break;
-                        case "create_clicked":
-                            console.log(event.detail.clickEvent);
-                            break;
-                    }
-                }}
-                additionalRowProps={{
-                    categoryUpdateEndpoint: "http://localhost:4000/api/organisations/assignedOrganisationRole",
-                    additionalCategoryParams: { organisationId: 6 },
-                }}
-                rowDataMappingOverride={{
-                    rowTitle: "displayName",
-                    rowDescription: "emailAddress",
-                    rowCategory: "roleName",
-                    imageUrl: "profilePictureUrl",
-                    possibleCategories: "possibleOrganisationRoles",
-                }}
-                rowActions={[
-                    {
-                        type: "delete",
-                        btnClasses: "btn-link text-base-content hover:text-error",
-                        clickEvent: "delete_clicked",
-                    },
-                ]} />
-
-            <VariantRowless
-                bind:this={dataLists.exampleOne}
-                dataSource="http://localhost:4000/api/projects/getAssignedProjectRoles?projectId=28"
-                rowsPerPage={5}
-                enableCreate={true}
-                on:actionTriggered={async (event) => {
-                    switch (event.detail.clickEvent) {
-                        case "row_clicked":
-                            dispatch("rowClicked", event.detail);
-                            break;
-                    }
-                }}
-                rowComponent={ListRowTwo}
-                additionalRowProps={{
-                    categoryUpdateEndpoint: "http://localhost:4000/api/organisations/assignedOrganisationRole",
-                    additionalCategoryParams: { organisationId: 6 },
-                }}
-                rowDataMappingOverride={{
-                    rowTitle: "displayName",
-                    rowDescription: "emailAddress",
-                    rowCategory: "roleName",
-                    imageUrl: "profilePictureUrl",
-                }}
-                rowActions={[
-                    {
-                        type: "edit",
-                        btnClasses: "btn-link text-base-content hover:text-success",
-                        clickEvent: "edit_clicked",
-                    },
-                    {
-                        type: "delete",
-                        btnClasses: "btn-link text-base-content hover:text-error",
-                        clickEvent: "delete_clicked",
-                    },
-                ]} />
 
             <div class="tabs tabs-boxed pl-5 pr-5">
                 <span
@@ -319,57 +249,104 @@
                         on:actionTriggered={async (params) => handleActionTriggered(params)} />
                 </div>
             {:else if activeComponentTab == "dataListExample"}
-                <div in:fade={{ duration: 500 }} class="grid grid-cols-1 gap-2 md:grid-cols-2">
-                    <div class="">
+                <div in:fade={{ duration: 500 }} class="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
+                    <div>
+                        <div class="m-2 rounded-lg bg-info px-4 py-2 text-center">With basic row</div>
                         <DataListOne
-                            on:actionTriggered={async (params) => await handleActionTriggered(params)}
-                            dataSource="src/base_components/data-series/tests/data.json"
-                            enableSearch={true}
+                            bind:this={dataLists.exampleOne}
+                            dataSource="src/base_components/data-series/tests/row-two.json"
+                            rowsPerPage={5}
                             enableCreate={true}
-                            enableRefresh={true}
-                            clickableRow={true}
-                            rowTitle="name"
-                            actions={[
-                                {
-                                    type: "edit",
-                                    faIcon: "faEdit",
-                                    btnClasses: "btn-link text-base-content hover:text-success",
-                                    clickEvent: "edit_clicked",
-                                },
+                            rowComponent={ListRowOne}
+                            on:actionTriggered={async (event) => {
+                                switch (event.detail.clickEvent) {
+                                    case "delete_clicked":
+                                        console.log(event.detail.clickEvent);
+                                        break;
+                                    case "create_clicked":
+                                        console.log(event.detail.clickEvent);
+                                        break;
+                                }
+                            }}
+                            additionalRowProps={{}}
+                            rowDataMappingOverride={{
+                                rowTitle: "displayName",
+                            }}
+                            rowActions={[
                                 {
                                     type: "delete",
-                                    faIcon: "faTrash",
                                     btnClasses: "btn-link text-base-content hover:text-error",
                                     clickEvent: "delete_clicked",
                                 },
-                            ]}
-                            initialNumberOfRows="4" />
+                            ]} />
                     </div>
-                    <div class="">
+                    <div>
+                        <div class="m-2 rounded-lg bg-info px-4 py-2 text-center">With advanced row</div>
                         <DataListTwo
-                            on:actionTriggered={async (params) => await handleActionTriggered(params)}
-                            dataSource="src/base_components/data-series/tests/data-list-var-two.json"
-                            categoryUpdateEndpoint=""
-                            enableSearch={true}
+                            bind:this={dataLists.exampleOne}
+                            dataSource="src/base_components/data-series/tests/row-two.json"
+                            rowsPerPage={5}
                             enableCreate={true}
-                            enableRefresh={true}
-                            clickableRow={true}
-                            rowTitle="name"
-                            actions={[
-                                {
-                                    type: "edit",
-                                    faIcon: "faEdit",
-                                    btnClasses: "btn-link text-base-content hover:text-success",
-                                    clickEvent: "edit_clicked",
-                                },
+                            rowComponent={ListRowTwo}
+                            on:actionTriggered={async (event) => {
+                                switch (event.detail.clickEvent) {
+                                    case "delete_clicked":
+                                        console.log(event.detail.clickEvent);
+                                        break;
+                                    case "create_clicked":
+                                        console.log(event.detail.clickEvent);
+                                        break;
+                                }
+                            }}
+                            additionalRowProps={{
+                                categoryUpdateEndpoint: "",
+                                additionalCategoryParams: {},
+                            }}
+                            rowDataMappingOverride={{
+                                rowTitle: "displayName",
+                                rowDescription: "emailAddress",
+                                rowCategoryName: "roleName",
+                                imageUrl: "profilePictureUrl",
+                                possibleCategories: "possibleOrganisationRoles",
+                            }}
+                            rowActions={[
                                 {
                                     type: "delete",
-                                    faIcon: "faTrash",
                                     btnClasses: "btn-link text-base-content hover:text-error",
                                     clickEvent: "delete_clicked",
                                 },
-                            ]}
-                            initialNumberOfRows="4" />
+                            ]} />
+                    </div>
+                    <div>
+                        <div class="m-2 rounded-lg bg-info px-4 py-2 text-center">With Title and Description</div>
+                        <DataListThree
+                            bind:this={dataLists.exampleThree}
+                            dataSource="src/base_components/data-series/tests/row-two.json"
+                            rowsPerPage={5}
+                            enableCreate={true}
+                            rowComponent={ListRowThree}
+                            on:actionTriggered={async (event) => {
+                                switch (event.detail.clickEvent) {
+                                    case "delete_clicked":
+                                        console.log(event.detail.clickEvent);
+                                        break;
+                                    case "create_clicked":
+                                        console.log(event.detail.clickEvent);
+                                        break;
+                                }
+                            }}
+                            additionalRowProps={{}}
+                            rowDataMappingOverride={{
+                                rowTitle: "displayName",
+                                rowDescription: "emailAddress",
+                            }}
+                            rowActions={[
+                                {
+                                    type: "delete",
+                                    btnClasses: "btn-link text-base-content hover:text-error",
+                                    clickEvent: "delete_clicked",
+                                },
+                            ]} />
                     </div>
                 </div>
             {:else if activeComponentTab == "validatedInputs"}
