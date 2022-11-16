@@ -41,7 +41,6 @@
             margin: 0;
         }
 
-        //#region Minimal Scrollbar
         .minimal-scrollbar::-webkit-scrollbar {
             width: 5px;
             height: 5px;
@@ -66,9 +65,7 @@
             background: #000000aa;
             cursor: pointer;
         }
-        //#endregion
 
-        //#region Exagerrated Scrollbar
         .exagerrated-scrollbar::-webkit-scrollbar {
             width: 15px;
             height: 15px;
@@ -93,7 +90,6 @@
             background: #000000aa;
             cursor: pointer;
         }
-        //#endregion
     }
 }
 
