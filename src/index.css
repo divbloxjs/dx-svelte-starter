@@ -65,6 +65,31 @@
             background: #000000aa;
             cursor: pointer;
         }
+
+        .exagerrated-scrollbar::-webkit-scrollbar {
+            width: 15px;
+            height: 15px;
+        }
+
+        .exagerrated-scrollbar::-webkit-scrollbar:hover {
+            width: 20px;
+            height: 20px;
+        }
+
+        .exagerrated-scrollbar::-webkit-scrollbar-track {
+            border-radius: 100vh;
+            background: #00000022;
+        }
+
+        .exagerrated-scrollbar::-webkit-scrollbar-thumb {
+            background: #00000066;
+            border-radius: 100vh;
+        }
+
+        .exagerrated-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #000000aa;
+            cursor: pointer;
+        }
     }
 }
 

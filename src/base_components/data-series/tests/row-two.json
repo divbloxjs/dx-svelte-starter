@@ -1,0 +1,75 @@
+{
+    "data": [
+        {
+            "id": 6,
+            "displayName": "Mr Sir",
+            "emailAddress": "dani.simeonov@stratusolve.com",
+            "profilePictureUrl": "https://loremflickr.com/240/240",
+            "roleName": "Owner",
+            "enableEdit": false,
+            "enableDelete": false,
+            "possibleOrganisationRoles": [
+                {
+                    "id": 11,
+                    "name": "Owner"
+                },
+                {
+                    "id": 12,
+                    "name": "Admin"
+                },
+                {
+                    "id": 12,
+                    "name": "Potato"
+                }
+            ]
+        },
+        {
+            "id": 22,
+            "displayName": "Pending User",
+            "emailAddress": "a@b.com",
+            "profilePictureUrl": "https://loremflickr.com/240/240",
+            "roleName": "Admin",
+            "enableEdit": true,
+            "enableDelete": true,
+            "possibleOrganisationRoles": [
+                {
+                    "id": 11,
+                    "name": "Owner"
+                },
+                {
+                    "id": 12,
+                    "name": "Admin"
+                },
+                {
+                    "id": 12,
+                    "name": "Potato"
+                }
+            ]
+        },
+        {
+            "id": 12,
+            "displayName": "Another person",
+            "emailAddress": "abc@gmail.com",
+            "profilePictureUrl": "https://loremflickr.com/240/240",
+            "roleName": "Owner",
+            "enableEdit": false,
+            "enableDelete": false,
+            "possibleOrganisationRoles": [
+                {
+                    "id": 11,
+                    "name": "Owner"
+                },
+                {
+                    "id": 12,
+                    "name": "Admin"
+                },
+                {
+                    "id": 12,
+                    "name": "Potato"
+                }
+            ]
+        }
+    ],
+    "count": 40,
+    "possibleCategories": ["Owner", "Admin", "Billing Admin"]
+}

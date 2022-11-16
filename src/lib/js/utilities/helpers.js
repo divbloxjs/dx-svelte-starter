@@ -26,7 +26,7 @@ export const asyncTimeout = (ms) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-export const sleep = async (fn, ...args) => {
-    await asyncTimeout(3000);
+export const sleep = async (fn, timeOut = 3000, ...args) => {
+    await asyncTimeout(timeOut);
     return fn(...args);
 };
