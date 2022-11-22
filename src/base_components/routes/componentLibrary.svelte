@@ -252,8 +252,6 @@
                         <DataList
                             bind:this={dataLists.exampleOne}
                             dataSource="src/base_components/data-series/tests/row-two.json"
-                            rowsPerPage={5}
-                            enableCreate={true}
                             let:rowData
                             let:rowIndex
                             let:listLength
@@ -273,19 +271,7 @@
                                 }}
                                 on:actionTriggered={(event) => {
                                     console.log("handled in parent: ", event.detail);
-                                }}
-                                let:rowActionTriggered
-                                let:rowData>
-                                <RowAction {rowData} on:actionTriggered={rowActionTriggered} />
-                                <RowAction
-                                    action={{ type: "edit" }}
-                                    {rowData}
-                                    on:actionTriggered={rowActionTriggered} />
-                                <RowAction
-                                    action={{ type: "duplicate" }}
-                                    {rowData}
-                                    on:actionTriggered={rowActionTriggered} />
-                            </ListRowOne>
+                                }} />
                         </DataList>
                     </div>
                     <div>
@@ -293,8 +279,6 @@
                         <DataList
                             bind:this={dataLists.exampleOne}
                             dataSource="src/base_components/data-series/tests/row-two.json"
-                            rowsPerPage={5}
-                            enableCreate={true}
                             on:actionTriggered={async (event) => {
                                 console.log("handled in parent: ", event.detail);
                                 switch (event.detail.clickEvent) {
