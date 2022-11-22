@@ -48,13 +48,13 @@
             faIcon: faEye, // Icon to display
             backendFlag: "enableView", // Allows backend to hide action based on business logic
             clickEvent: "view_clicked", // event passed back up to parents a long with the row ID
-            defaultBtnClasses: "text-base-content hover:text-success",
+            defaultBtnClasses: "text-base-content hover:text-primary",
         },
         edit: {
             faIcon: faEdit,
             backendFlag: "enableEdit",
             clickEvent: "edit_clicked",
-            defaultBtnClasses: "text-base-content hover:text-info",
+            defaultBtnClasses: "text-base-content hover:text-success",
         },
         duplicate: {
             faIcon: faCopy,
@@ -85,7 +85,7 @@
 </script>
 
 {#if Object.keys(configuredActions).includes(action.type)}
-    {#if configuredActions[action.type].backendFlag}
+    {#if rowData[configuredActions[action.type].backendFlag] === undefined || rowData[configuredActions[action.type].backendFlag]}
         <button
             class="btn btn-link btn-xs ml-1 flex-nowrap 
             {action.btnClasses}

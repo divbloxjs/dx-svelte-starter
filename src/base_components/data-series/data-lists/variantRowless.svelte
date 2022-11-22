@@ -44,8 +44,8 @@
     export let dataSourceIncludeCredentials = "include";
 
     /**
-     * Maximum allowed height for the data list (in px)
-     * @type {number|"none"}
+     * Maximum allowed height for the data list
+     * @type {string|"none"}
      */
     export let dataListMaxHeight = "none";
 
@@ -235,7 +235,7 @@
     };
 </script>
 
-<div class="static w-full" style="max-height:{dataListMaxHeight}">
+<div class="static w-full">
     <!-- List Header -->
     <div class="my-3 w-full">
         <DataListHeader
