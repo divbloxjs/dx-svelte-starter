@@ -21,7 +21,7 @@
      * @typedef additionalRowProps
      * @type {object}
      * @property {string} categoryUpdateEndpoint The endpoint needed to update the category value
-     * @property {string} additionalCategoryParams Any additional parameters needed for the category update request
+     * @property {Object} additionalCategoryParams Any additional parameters needed for the category update request
      */
 
     /**
@@ -53,25 +53,6 @@
         rowCategoryId: "rowCategoryId",
         possibleCategories: "possibleCategories",
     };
-
-    /**
-     * @typedef rowAction
-     * @type {object}
-     * @property {"view"|"edit"|"duplicate"|"delete"} type Type of row action
-     * @property {string} btnClasses Custom classes to add to the action button
-     * @property {string} clickEvent click event to fire off on triggering of the action
-     */
-
-    /**
-     * Array of rowAction configuration objects
-     * @type {rowAction[]}
-     * @param {{type: number, btnClasses: string, clickEvent: string}[]} rowAction Specific row action object
-     * @param {"view"|"edit"|"duplicate"|"delete"} rowAction.type Type of row action
-     * @param {string} rowAction.btnClasses Custom classes to add to the action button
-     * @param {string} rowAction.clickEvent click event to fire off on triggering of the action
-     */
-    export let rowActions = [];
-    export let allowedRowActions;
 
     /**
      * Whether or not to allow row clicks
@@ -174,13 +155,6 @@
             }
         });
 
-        // Check if any provided row actions are not allowed
-        rowActions.forEach((rowAction) => {
-            if (!Object.keys(allowedRowActions).includes(rowAction.type)) {
-                console.error("Unconfigured row action type provided: " + rowAction.type);
-            }
-        });
-
         // Build the category dropdown
         possibleCategoriesDropdownOptions = [];
         rowData[rowDataMapping.possibleCategories]?.forEach((role) => {
@@ -248,6 +222,14 @@
 
         rowLoading = false;
     };
+
+    /**
+     * Handle row actions and bubble up event
+     * @param event
+     */
+    const rowActionTriggered = (event) => {
+        dispatch("actionTriggered", event.detail);
+    };
 </script>
 
 {#if showLoadingState}
@@ -295,8 +277,8 @@
             <span class="absolute left-0 top-0 h-[1px] w-full bg-base-200" />
         {/if}
 
-        <div class="flex flex-row items-center {rowWidth < widthSmall ? 'w-9/12' : 'w-6/12'}">
-            <div class="avatar  justify-center {rowWidth < widthSmall ? 'w-3/12' : 'w-2/12'}">
+        <div class="flex flex-row items-center overflow-x-hidden">
+            <div class="avatar justify-center">
                 <div class="w-24 rounded-full">
                     <img
                         src={rowData[rowDataMapping.imageUrl]}
@@ -304,13 +286,11 @@
                         on:error={() => (rowData[rowDataMapping.imageUrl] = defaultImagePath)} />
                 </div>
             </div>
-            <div
-                class:text-base={rowWidth < widthSmall}
-                class="ml-3 text-sm {rowWidth < widthSmall ? 'w-9/12' : 'w-10/12'}">
-                <div class:text-xl={rowWidth < widthSmall} class="text-lg">
+            <div class="ml-3 w-full overflow-hidden text-sm child:overflow-x-hidden child:overflow-ellipsis">
+                <div class="w-full pr-2 text-lg">
                     {rowData[rowDataMapping.rowTitle]}
                 </div>
-                <div class="overflow-x-hidden overflow-ellipsis italic {rowWidth < widthSmall ? '' : ''}">
+                <div class="w-full pr-2 italic">
                     {rowData[rowDataMapping.rowDescription]}
                 </div>
                 <div class:hidden={rowWidth > widthSmall}>
@@ -321,9 +301,7 @@
                                 ? 'max-w-[20ch]'
                                 : 'max-w-[11ch]'} whitespace-nowrap"
                             dropDownOptions={possibleCategoriesDropdownOptions}
-                            dropdownClasses="dropdown-end mr-2 {rowIndex > 2 && rowIndex >= listLength - 2
-                                ? 'dropdown-top'
-                                : ''}"
+                            dropdownClasses="dropdown-end mr-2"
                             btnClasses="btn-xs mt-2 capitalize text-right"
                             loading={rowLoading}
                             includeDropDownChevron={true}
@@ -338,7 +316,7 @@
                 </div>
             </div>
         </div>
-        <div class="flex items-center justify-end {rowWidth < widthSmall ? 'w-3/12' : 'w-6/12'}">
+        <div class="flex items-center justify-end">
             <div class:hidden={rowWidth < widthSmall}>
                 {#if rowData.enableEdit}
                     <Dropdown
@@ -347,9 +325,7 @@
                             ? 'max-w-[20ch]'
                             : 'max-w-[11ch]'} whitespace-nowrap"
                         dropDownOptions={possibleCategoriesDropdownOptions}
-                        dropdownClasses="dropdown-end mr-2 {rowIndex > 2 && rowIndex >= listLength - 2
-                            ? 'dropdown-top'
-                            : ''}"
+                        dropdownClasses="dropdown-end mr-2"
                         btnClasses="text-right"
                         includeDropDownChevron={true}
                         loading={rowLoading}
@@ -365,28 +341,7 @@
 
             <!-- Row Actions -->
             <div class="flex items-center justify-center">
-                {#each rowActions as action}
-                    {#if Object.keys(allowedRowActions).includes(action.type)}
-                        {#if rowData[allowedRowActions[action.type].backendFlag]}
-                            <button
-                                class="btn btn-xs ml-1 flex-nowrap {action.btnClasses}"
-                                on:click={(event) => {
-                                    event.stopPropagation(); // Stops the click on table row element behind it
-                                    dispatch("actionTriggered", { clickEvent: action.clickEvent, rowId: rowData.id });
-                                }}>
-                                <Fa icon={allowedRowActions[action.type].faIcon} size="1.1x" />
-
-                                {#if action.hasOwnProperty("displayLabel")}
-                                    <span
-                                        class="ml-1 {action.type === 'edit' ? 'mt-[3px]' : ''}
-                            {action.type === 'delete' ? 'mt-[2px]' : ''}">
-                                        {action.displayLabel}
-                                    </span>
-                                {/if}
-                            </button>
-                        {/if}
-                    {/if}
-                {/each}
+                <slot {rowData} {rowActionTriggered} />
             </div>
         </div>
     </li>

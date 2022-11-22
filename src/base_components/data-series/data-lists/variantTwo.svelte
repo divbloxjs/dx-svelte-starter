@@ -303,6 +303,7 @@
                 {/each}
             {:else}
                 {#each currentPage as row, index}
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <li
                         class="flex w-full items-center justify-between bg-transparent p-4 hover:bg-base-200
                     {clickableRow ? 'hover:cursor-pointer' : ''}"
