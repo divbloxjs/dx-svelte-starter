@@ -12,6 +12,7 @@
     import ListRowOne from "$src/base_components/data-series/data-lists/rows/rowOne.svelte";
     import ListRowTwo from "$src/base_components/data-series/data-lists/rows/rowTwo.svelte";
     import ListRowThree from "$src/base_components/data-series/data-lists/rows/rowThree.svelte";
+    import ListRowFour from "$src/base_components/data-series/data-lists/rows/rowFour.svelte";
     import RowAction from "$src/base_components/data-series/data-lists/rows/rowAction.svelte";
 
     let columns = [
@@ -356,6 +357,39 @@
                                     {rowData}
                                     on:actionTriggered={rowActionTriggered} />
                             </ListRowThree>
+                        </DataList>
+                    </div>
+                    <div>
+                        <div class="m-2 rounded-lg bg-info px-4 py-2 text-center">
+                            With Title and Description + Colour
+                        </div>
+                        <DataList
+                            bind:this={dataLists.exampleFour}
+                            dataSource="src/base_components/data-series/tests/row-two.json"
+                            on:actionTriggered={async (event) => {
+                                console.log("handled in parent: ", event.detail);
+                                switch (event.detail.clickEvent) {
+                                    case "create_clicked":
+                                        console.log(event.detail.clickEvent);
+                                        break;
+                                }
+                            }}
+                            let:rowData
+                            let:listLength
+                            let:rowIndex
+                            let:showLoadingState>
+                            <ListRowFour
+                                {rowData}
+                                {listLength}
+                                {rowIndex}
+                                {showLoadingState}
+                                on:actionTriggered={(event) => {
+                                    console.log("handled in parent: ", event.detail);
+                                }}
+                                rowDataMappingOverride={{
+                                    rowTitle: "displayName",
+                                    rowDescription: "emailAddress",
+                                }} />
                         </DataList>
                     </div>
                 </div>
