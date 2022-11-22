@@ -238,6 +238,10 @@
         class="flex w-full items-center justify-between bg-transparent p-4 hover:bg-base-200 {clickableRow
             ? 'hover:cursor-pointer'
             : ''}">
+        <!-- Divider between rows -->
+        {#if rowIndex !== 0}
+            <span class="absolute left-0 top-0 h-[1px] w-full bg-base-200" />
+        {/if}
         <div class="flex flex-row items-center">
             <div class="avatar">
                 <div
@@ -310,7 +314,7 @@
                                 await handleCategoryChange(params.detail.params);
                             }} />
                     {:else}
-                        <button class="btn btn-link btn-xs pl-0 text-base-content">
+                        <button class="btn-link btn btn-xs pl-0 text-base-content">
                             {rowData[rowDataMapping.rowCategoryName]}
                         </button>
                     {/if}
