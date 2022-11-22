@@ -241,13 +241,14 @@
         <div class="flex flex-row items-center">
             <div class="avatar">
                 <div
-                    class:w-24={rowWidth < widthSmall}
+                    class:w-16={rowWidth < widthSmall}
                     class="w-12 animate-pulse rounded-full bg-base-200  text-transparent" />
             </div>
             <div class:text-base={rowWidth < widthSmall} class="ml-3 text-sm">
                 <div
                     class:text-xl={rowWidth < widthSmall}
-                    class="w-24 animate-pulse rounded-lg bg-base-200  text-lg text-transparent">
+                    class:w-16={rowWidth < widthSmall}
+                    class="w-12 animate-pulse rounded-lg bg-base-200 text-lg text-transparent">
                     Loading...
                 </div>
                 <div
@@ -279,7 +280,7 @@
 
         <div class="flex flex-row items-center overflow-x-hidden">
             <div class="avatar justify-center">
-                <div class="w-24 rounded-full">
+                <div class:w-16={rowWidth > widthSmall} class="w-12 rounded-full">
                     <img
                         src={rowData[rowDataMapping.imageUrl]}
                         alt="User Profile"
