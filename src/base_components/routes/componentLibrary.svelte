@@ -256,6 +256,7 @@
                             let:rowData
                             let:rowIndex
                             let:listLength
+                            let:showLoadingState
                             on:actionTriggered={async (event) => {
                                 switch (event.detail.clickEvent) {
                                     case "create_clicked":
@@ -267,6 +268,7 @@
                                 {rowData}
                                 {rowIndex}
                                 {listLength}
+                                {showLoadingState}
                                 rowDataMappingOverride={{
                                     rowTitle: "displayName",
                                 }}
@@ -278,6 +280,7 @@
                     <div>
                         <div class="m-2 rounded-lg bg-info px-4 py-2 text-center">With advanced row</div>
                         <DataList
+                            dataSourceDelaySimulation={1500}
                             bind:this={dataLists.exampleOne}
                             dataSource="src/base_components/data-series/tests/row-two.json"
                             on:actionTriggered={async (event) => {
@@ -290,11 +293,13 @@
                             }}
                             let:rowData
                             let:rowIndex
-                            let:listLength>
+                            let:listLength
+                            let:showLoadingState>
                             <ListRowTwo
                                 {rowData}
                                 {rowIndex}
                                 {listLength}
+                                {showLoadingState}
                                 rowDataMappingOverride={{
                                     rowTitle: "displayName",
                                     rowDescription: "emailAddress",
