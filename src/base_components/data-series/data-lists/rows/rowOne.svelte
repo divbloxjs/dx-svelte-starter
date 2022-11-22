@@ -75,12 +75,8 @@
      * @param event
      */
     const rowActionTriggered = (event) => {
-        console.log("handled in list: ", event.detail);
         dispatch("actionTriggered", event.detail);
     };
-
-    let rowWidth;
-    let actionsWidth;
 </script>
 
 {#if showLoadingState}
@@ -105,7 +101,6 @@
 {:else}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <li
-        bind:clientWidth={rowWidth}
         class="relative flex items-center justify-between py-2 px-4 hover:bg-base-200
         sm:py-4 {clickableRow ? 'hover:cursor-pointer' : ''}"
         on:click={() => {
@@ -119,14 +114,14 @@
         {/if}
 
         <!-- Row Data Content -->
-        <div class="overflow-x-hidden rounded pl-2" style="max-width: {rowWidth - actionsWidth};">
+        <div class="overflow-x-hidden rounded pl-2">
             <div class="w-full overflow-x-hidden overflow-ellipsis text-lg font-bold">
                 {rowData[rowDataMapping.rowTitle]}
             </div>
         </div>
 
         <!-- Row Actions -->
-        <div bind:clientWidth={actionsWidth} class="flex items-center justify-center">
+        <div class="flex items-center justify-center">
             <slot {rowData} {rowActionTriggered} />
         </div>
     </li>

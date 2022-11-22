@@ -228,7 +228,6 @@
      * @param event
      */
     const rowActionTriggered = (event) => {
-        console.log("handled in list: ", event.detail);
         dispatch("actionTriggered", event.detail);
     };
 </script>

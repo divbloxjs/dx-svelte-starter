@@ -273,11 +273,6 @@
                                 }}
                                 on:actionTriggered={(event) => {
                                     console.log("handled in parent: ", event.detail);
-                                    switch (event.detail.clickEvent) {
-                                        case "delete_clicked":
-                                            // console.log(event.detail);
-                                            break;
-                                    }
                                 }}
                                 let:rowActionTriggered
                                 let:rowData>
@@ -301,10 +296,8 @@
                             rowsPerPage={5}
                             enableCreate={true}
                             on:actionTriggered={async (event) => {
+                                console.log("handled in parent: ", event.detail);
                                 switch (event.detail.clickEvent) {
-                                    case "delete_clicked":
-                                        console.log(event.detail.clickEvent);
-                                        break;
                                     case "create_clicked":
                                         console.log(event.detail.clickEvent);
                                         break;
@@ -325,6 +318,9 @@
                                     possibleCategories: "possibleOrganisationRoles",
                                 }}
                                 let:rowActionTriggered
+                                on:actionTriggered={(event) => {
+                                    console.log("handled in parent: ", event.detail);
+                                }}
                                 additionalRowProps={{
                                     categoryUpdateEndpoint: "",
                                     additionalCategoryParams: {},
@@ -342,10 +338,8 @@
                             bind:this={dataLists.exampleThree}
                             dataSource="src/base_components/data-series/tests/row-two.json"
                             on:actionTriggered={async (event) => {
+                                console.log("handled in parent: ", event.detail);
                                 switch (event.detail.clickEvent) {
-                                    case "delete_clicked":
-                                        console.log(event.detail.clickEvent);
-                                        break;
                                     case "create_clicked":
                                         console.log(event.detail.clickEvent);
                                         break;
@@ -362,6 +356,9 @@
                                 {showLoadingState}
                                 let:rowData
                                 let:rowActionTriggered
+                                on:actionTriggered={(event) => {
+                                    console.log("handled in parent: ", event.detail);
+                                }}
                                 rowDataMappingOverride={{
                                     rowTitle: "displayName",
                                     rowDescription: "emailAddress",
