@@ -1,9 +1,8 @@
 <script>
-    import { createEventDispatcher, onMount, SvelteComponent } from "svelte";
+    import { createEventDispatcher, onMount } from "svelte";
     import { sleep } from "$src/lib/js/utilities/helpers.js";
     import { errorToast } from "$src/lib/js/utilities/swalMixins";
     import DataListHeader from "$src/base_components/data-series/data-lists/headers/genericHeader.svelte";
-    import { faCopy, faEdit, faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
 
     const dispatch = createEventDispatcher();
 
@@ -60,7 +59,7 @@
      * Number of rows to display per load
      * @type {number}
      */
-    export let rowsPerPage = 3;
+    export let rowsPerPage = 10;
 
     /**
      * Initial page number to load (updated as "load more" is clicked)
@@ -94,45 +93,6 @@
     export let searchValue = "";
 
     //endregion
-
-    //region Row Component settings
-    /**
-     * Custom svelte row component to load rowData
-     * @type {import("svelte").ComponentType}
-     */
-    export let rowComponent;
-
-    /**
-     * Key Value pair in the form of {"defaultRowKey": "overrideKey", ...}
-     * Used to map data coming from backend to naming used in default row components.
-     * Can be ignored if row is custom to implementation
-     * @type {Object}
-     */
-    export let rowDataMappingOverride = {};
-
-    /**
-     * Object of parameters needed specifically for the row component
-     * @type {object}
-     */
-    export let additionalRowProps = {}; // Any further component props needed for the row
-
-    /**
-     * @typedef rowAction
-     * @type {object}
-     * @property {"view"|"edit"|"duplicate"|"delete"} type Type of row action
-     * @property {string} btnClasses Custom classes to add to the action button
-     * @property {string} clickEvent click event to fire off on triggering of the action
-     */
-
-    /**
-     * Array of rowAction configuration objects
-     * @type {rowAction[]}
-     * @param {{type: number, btnClasses: string, clickEvent: string}[]} rowAction Specific row action object
-     * @param {"view"|"edit"|"duplicate"|"delete"} rowAction.type Type of row action
-     * @param {string} rowAction.btnClasses Custom classes to add to the action button
-     * @param {string} rowAction.clickEvent click event to fire off on triggering of the action
-     */
-    export let rowActions = [];
 
     /**
      * Flag whether or not to allow row clicks - handled by rowComponent
@@ -178,29 +138,6 @@
      *  Sets the overflow of the list to 'auto' if a maxHeight is provided
      */
     let overflowType = dataListMaxHeight === "none" ? "" : "overflow-y-auto";
-
-    /**
-     * Object defined what row actions are caterered for.
-     * @type {Object}
-     */
-    let allowedRowActions = {
-        view: {
-            faIcon: faEye, // Icon to display
-            backendFlag: "enableView", // Allows backend to hide action based on business logic
-        },
-        edit: {
-            faIcon: faEdit,
-            backendFlag: "enableEdit",
-        },
-        duplicate: {
-            faIcon: faCopy,
-            backendFlag: "enableDuplicate",
-        },
-        delete: {
-            faIcon: faTrash,
-            backendFlag: "enableDelete",
-        },
-    };
 
     onMount(async () => {
         await resetDataList();
@@ -332,25 +269,17 @@
             style="max-height: {dataListMaxHeight}; max-width: 100%;">
             {#if loading}
                 <!-- Loading State -->
-                {#each Array(2) as value, index}
-                    <svelte:component this={rowComponent} showLoadingState={true} rowIndex={index} />
+                {#each Array(2) as value, rowIndex}
+                    <slot showLoadingState={true} {rowIndex} rowData={{}} listLength={2} />
                 {/each}
             {:else}
                 <!-- Actual List -->
-                {#each currentPage as rowData, index}
-                    <svelte:component
-                        this={rowComponent}
+                {#each currentPage as rowData, rowIndex}
+                    <slot
+                        showLoadingState={false}
                         {rowData}
-                        {rowActions}
-                        {allowedRowActions}
                         {clickableRow}
-                        {additionalRowProps}
-                        rowDataMappingOverride={rowDataMappingOverride ?? rowDataMappingOverride}
-                        on:actionTriggered={(params) => {
-                            dispatch("actionTriggered", params.detail);
-                        }}
-                        on:resetDataList={() => resetDataList()}
-                        rowIndex={index}
+                        {rowIndex}
                         listLength={currentPage.length} />
                 {/each}
             {/if}

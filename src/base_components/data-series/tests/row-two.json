@@ -25,7 +25,7 @@
         },
         {
             "id": 22,
-            "displayName": "Pending User",
+            "displayName": "PendingUserDidntSpaceHisName",
             "emailAddress": "a@b.com",
             "profilePictureUrl": "https://loremflickr.com/240/240",
             "roleName": "Admin",
@@ -48,7 +48,7 @@
         },
         {
             "id": 12,
-            "displayName": "Another person",
+            "displayName": "Another person with a long name",
             "emailAddress": "abc@gmail.com",
             "profilePictureUrl": "https://loremflickr.com/240/240",
             "roleName": "Owner",

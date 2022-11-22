@@ -21,7 +21,7 @@
      * @typedef additionalRowProps
      * @type {object}
      * @property {string} categoryUpdateEndpoint The endpoint needed to update the category value
-     * @property {string} additionalCategoryParams Any additional parameters needed for the category update request
+     * @property {Object} additionalCategoryParams Any additional parameters needed for the category update request
      */
 
     /**
@@ -53,25 +53,6 @@
         rowCategoryId: "rowCategoryId",
         possibleCategories: "possibleCategories",
     };
-
-    /**
-     * @typedef rowAction
-     * @type {object}
-     * @property {"view"|"edit"|"duplicate"|"delete"} type Type of row action
-     * @property {string} btnClasses Custom classes to add to the action button
-     * @property {string} clickEvent click event to fire off on triggering of the action
-     */
-
-    /**
-     * Array of rowAction configuration objects
-     * @type {rowAction[]}
-     * @param {{type: number, btnClasses: string, clickEvent: string}[]} rowAction Specific row action object
-     * @param {"view"|"edit"|"duplicate"|"delete"} rowAction.type Type of row action
-     * @param {string} rowAction.btnClasses Custom classes to add to the action button
-     * @param {string} rowAction.clickEvent click event to fire off on triggering of the action
-     */
-    export let rowActions = [];
-    export let allowedRowActions;
 
     /**
      * Whether or not to allow row clicks
@@ -174,13 +155,6 @@
             }
         });
 
-        // Check if any provided row actions are not allowed
-        rowActions.forEach((rowAction) => {
-            if (!Object.keys(allowedRowActions).includes(rowAction.type)) {
-                console.error("Unconfigured row action type provided: " + rowAction.type);
-            }
-        });
-
         // Build the category dropdown
         possibleCategoriesDropdownOptions = [];
         rowData[rowDataMapping.possibleCategories]?.forEach((role) => {
@@ -247,6 +221,15 @@
         }
 
         rowLoading = false;
+    };
+
+    /**
+     * Handle row actions and bubble up event
+     * @param event
+     */
+    const rowActionTriggered = (event) => {
+        console.log("handled in list: ", event.detail);
+        dispatch("actionTriggered", event.detail);
     };
 </script>
 
@@ -365,7 +348,7 @@
 
             <!-- Row Actions -->
             <div class="flex items-center justify-center">
-                {#each rowActions as action}
+                <!-- {#each rowActions as action}
                     {#if Object.keys(allowedRowActions).includes(action.type)}
                         {#if rowData[allowedRowActions[action.type].backendFlag]}
                             <button
@@ -386,7 +369,8 @@
                             </button>
                         {/if}
                     {/if}
-                {/each}
+                {/each} -->
+                <slot {rowData} {rowActionTriggered} />
             </div>
         </div>
     </li>

@@ -1,13 +1,23 @@
 <script>
-    import { faCopy, faEdit, faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
-    import { beforeUpdate, createEventDispatcher, onMount } from "svelte";
-    import Fa from "svelte-fa";
+    import { beforeUpdate, createEventDispatcher } from "svelte";
 
-    export let rowData = {};
+    /**
+     * @typedef rowData
+     * @property {string} rowTitle Title of this simple row
+     */
+    /**
+     * Row data object to display
+     * @type {rowData}
+     * @property {string} rowData.rowTitle
+     */
+    export let rowData = {
+        rowTitle: "Placeholder title",
+    };
 
     /**
      * Data mapping object used to allow any data set to render in the preconfigured setup regardless of naming
      * @type {Object}
+     * @property {string} rowDataMappingOverride.rowTitle What key is passed as the 'rowTitle' for this row
      */
     export let rowDataMappingOverride = {};
 
@@ -19,33 +29,32 @@
         rowTitle: "rowTitle",
     };
 
-    export let rowActions = [];
+    /**
+     *  Whether or not the render to row as clickable or not
+     * @type {boolean}
+     */
     export let clickableRow = true;
+
+    /**
+     * Whether or not to load the row in a loading state
+     * @type {boolean}
+     */
     export let showLoadingState = false;
 
     // Used to style rows according to where they are in the list
     // e.g. dropup/down based on proximity to end of list
-    export let rowIndex; // E.g. 0,1,2,3
-    export let listLength; // E.g 10
 
-    let configuredActions = {
-        view: {
-            faIcon: faEye, // Icon to display
-            backendFlag: "enableView", // Allows backend to hide action based on business logic
-        },
-        edit: {
-            faIcon: faEdit,
-            backendFlag: "enableEdit",
-        },
-        duplicate: {
-            faIcon: faCopy,
-            backendFlag: "enableDuplicate",
-        },
-        delete: {
-            faIcon: faTrash,
-            backendFlag: "enableDelete",
-        },
-    };
+    /**
+     * The index of the current row in the list
+     * @type {number}
+     */
+    export let rowIndex; // E.g. 0,1,2,3
+
+    /**
+     * The length of the currently rendered list
+     * @type {number}
+     */
+    export let listLength; // E.g 10
 
     const dispatch = createEventDispatcher();
 
@@ -53,32 +62,37 @@
     beforeUpdate(async () => {
         if (!initComplete) {
             initComplete = true;
-            await initConfig();
+            Object.keys(rowDataMappingOverride).forEach((defaultRowDataAttribute) => {
+                if (rowDataMapping.hasOwnProperty(defaultRowDataAttribute)) {
+                    rowDataMapping[defaultRowDataAttribute] = rowDataMappingOverride[defaultRowDataAttribute];
+                }
+            });
         }
     });
 
-    const initConfig = async () => {
-        Object.keys(rowDataMappingOverride).forEach((defaultRowDataAttribute) => {
-            if (rowDataMapping.hasOwnProperty(defaultRowDataAttribute)) {
-                rowDataMapping[defaultRowDataAttribute] = rowDataMappingOverride[defaultRowDataAttribute];
-            }
-        });
-
-        rowActions.forEach((rowAction) => {
-            if (!Object.keys(configuredActions).includes(rowAction.type)) {
-                console.error("Unconfigured row action type provided: " + rowAction.type);
-            }
-        });
+    /**
+     * Handle row actions and bubble up event
+     * @param event
+     */
+    const rowActionTriggered = (event) => {
+        console.log("handled in list: ", event.detail);
+        dispatch("actionTriggered", event.detail);
     };
+
+    let rowWidth;
+    let actionsWidth;
 </script>
 
 {#if showLoadingState}
     <li
         class="relative flex w-full items-center justify-between bg-transparent py-2 px-4 hover:bg-base-200 
         {clickableRow ? 'hover:cursor-pointer' : ''}">
+        <!-- Divider between rows -->
         {#if rowIndex !== 0}
             <span class="absolute left-0 top-0 h-[1px] w-full bg-base-200" />
         {/if}
+
+        <!-- Row Data Placeholder Content -->
         <div class="rounded pl-2">
             <div class="w-24 animate-pulse rounded-lg bg-base-200 text-lg font-bold text-transparent">Loading...</div>
             <div
@@ -91,6 +105,7 @@
 {:else}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <li
+        bind:clientWidth={rowWidth}
         class="relative flex items-center justify-between py-2 px-4 hover:bg-base-200
         sm:py-4 {clickableRow ? 'hover:cursor-pointer' : ''}"
         on:click={() => {
@@ -102,37 +117,17 @@
         {#if rowIndex !== 0}
             <span class="absolute left-0 top-0 h-[1px] w-full bg-base-200" />
         {/if}
+
         <!-- Row Data Content -->
-        <div class="rounded pl-2">
-            <div class="text-lg font-bold">
+        <div class="overflow-x-hidden rounded pl-2" style="max-width: {rowWidth - actionsWidth};">
+            <div class="w-full overflow-x-hidden overflow-ellipsis text-lg font-bold">
                 {rowData[rowDataMapping.rowTitle]}
             </div>
         </div>
 
         <!-- Row Actions -->
-        <div class="flex items-center justify-center">
-            {#each rowActions as action}
-                {#if Object.keys(configuredActions).includes(action.type)}
-                    {#if configuredActions[action.type].backendFlag}
-                        <button
-                            class="btn btn-xs ml-1 flex-nowrap {action.btnClasses}"
-                            on:click={(event) => {
-                                event.stopPropagation(); // Stops the click on table row element behind it
-                                dispatch("actionTriggered", { clickEvent: action.clickEvent, rowId: rowData.id });
-                            }}>
-                            <Fa icon={configuredActions[action.type].faIcon} size="1.1x" />
-
-                            {#if action.hasOwnProperty("displayLabel")}
-                                <span
-                                    class="ml-1 {action.type === 'edit' ? 'mt-[3px]' : ''}
-                            {action.type === 'delete' ? 'mt-[2px]' : ''}">
-                                    {action.displayLabel}
-                                </span>
-                            {/if}
-                        </button>
-                    {/if}
-                {/if}
-            {/each}
+        <div bind:clientWidth={actionsWidth} class="flex items-center justify-center">
+            <slot {rowData} {rowActionTriggered} />
         </div>
     </li>
 {/if}
