@@ -263,34 +263,27 @@
     </div>
 
     <!-- List body -->
-    <div>
-        <ul
-            class="minimal-scrollbar w-full {overflowType} rounded-lg border border-base-200"
-            style="max-height: {dataListMaxHeight}; max-width: 100%;">
-            {#if loading}
-                <!-- Loading State -->
-                {#each Array(2) as value, rowIndex}
-                    <slot showLoadingState={true} {rowIndex} rowData={{}} listLength={2} />
-                {/each}
-            {:else}
-                <!-- Actual List -->
-                {#each currentPage as rowData, rowIndex}
-                    <slot
-                        showLoadingState={false}
-                        {rowData}
-                        {clickableRow}
-                        {rowIndex}
-                        listLength={currentPage.length} />
-                {/each}
-            {/if}
-            <!-- Custom row for no results found -->
-            {#if noResultsFound && !loading}
-                <li class="flex items-center justify-between rounded-lg bg-base-100 py-4 px-4">
-                    <div class="mx-auto text-center">No Results</div>
-                </li>
-            {/if}
-        </ul>
-    </div>
+    <ul
+        class="minimal-scrollbar w-full {overflowType} rounded-lg border border-base-200"
+        style="max-height: {dataListMaxHeight}; max-width: 100%;">
+        {#if loading}
+            <!-- Loading State -->
+            {#each Array(2) as value, rowIndex}
+                <slot showLoadingState={true} {rowIndex} rowData={{}} listLength={2} />
+            {/each}
+        {:else}
+            <!-- Actual List -->
+            {#each currentPage as rowData, rowIndex}
+                <slot showLoadingState={false} {rowData} {clickableRow} {rowIndex} listLength={currentPage.length} />
+            {/each}
+        {/if}
+        <!-- Custom row for no results found -->
+        {#if noResultsFound && !loading}
+            <li class="flex items-center justify-between rounded-lg bg-base-100 py-4 px-4">
+                <div class="mx-auto text-center">No Results</div>
+            </li>
+        {/if}
+    </ul>
     <!-- Loading Bar -->
     {#if (currentPage.length < totalRowCount && !noResultsFound) || loading}
         <div class="mt-2 w-full text-center">
@@ -315,9 +308,3 @@
         </div>
     {/if}
 </div>
-
-<style>
-    ul {
-        overflow: hidden;
-    }
-</style>

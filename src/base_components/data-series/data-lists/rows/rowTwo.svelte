@@ -278,8 +278,8 @@
             <span class="absolute left-0 top-0 h-[1px] w-full bg-base-200" />
         {/if}
 
-        <div class="flex flex-row items-center {rowWidth < widthSmall ? 'w-9/12' : 'w-6/12'}">
-            <div class="avatar  justify-center {rowWidth < widthSmall ? 'w-3/12' : 'w-2/12'}">
+        <div class="flex flex-row items-center overflow-x-hidden">
+            <div class="avatar justify-center">
                 <div class="w-24 rounded-full">
                     <img
                         src={rowData[rowDataMapping.imageUrl]}
@@ -287,13 +287,11 @@
                         on:error={() => (rowData[rowDataMapping.imageUrl] = defaultImagePath)} />
                 </div>
             </div>
-            <div
-                class:text-base={rowWidth < widthSmall}
-                class="ml-3 text-sm {rowWidth < widthSmall ? 'w-9/12' : 'w-10/12'}">
-                <div class:text-xl={rowWidth < widthSmall} class="text-lg">
+            <div class="ml-3 w-full overflow-hidden text-sm child:overflow-x-hidden child:overflow-ellipsis">
+                <div class="w-full pr-2 text-lg">
                     {rowData[rowDataMapping.rowTitle]}
                 </div>
-                <div class="overflow-x-hidden overflow-ellipsis italic {rowWidth < widthSmall ? '' : ''}">
+                <div class="w-full pr-2 italic">
                     {rowData[rowDataMapping.rowDescription]}
                 </div>
                 <div class:hidden={rowWidth > widthSmall}>
@@ -304,9 +302,7 @@
                                 ? 'max-w-[20ch]'
                                 : 'max-w-[11ch]'} whitespace-nowrap"
                             dropDownOptions={possibleCategoriesDropdownOptions}
-                            dropdownClasses="dropdown-end mr-2 {rowIndex > 2 && rowIndex >= listLength - 2
-                                ? 'dropdown-top'
-                                : ''}"
+                            dropdownClasses="dropdown-end mr-2"
                             btnClasses="btn-xs mt-2 capitalize text-right"
                             loading={rowLoading}
                             includeDropDownChevron={true}
@@ -321,7 +317,7 @@
                 </div>
             </div>
         </div>
-        <div class="flex items-center justify-end {rowWidth < widthSmall ? 'w-3/12' : 'w-6/12'}">
+        <div class="flex items-center justify-end">
             <div class:hidden={rowWidth < widthSmall}>
                 {#if rowData.enableEdit}
                     <Dropdown
@@ -330,9 +326,7 @@
                             ? 'max-w-[20ch]'
                             : 'max-w-[11ch]'} whitespace-nowrap"
                         dropDownOptions={possibleCategoriesDropdownOptions}
-                        dropdownClasses="dropdown-end mr-2 {rowIndex > 2 && rowIndex >= listLength - 2
-                            ? 'dropdown-top'
-                            : ''}"
+                        dropdownClasses="dropdown-end mr-2"
                         btnClasses="text-right"
                         includeDropDownChevron={true}
                         loading={rowLoading}
@@ -348,28 +342,6 @@
 
             <!-- Row Actions -->
             <div class="flex items-center justify-center">
-                <!-- {#each rowActions as action}
-                    {#if Object.keys(allowedRowActions).includes(action.type)}
-                        {#if rowData[allowedRowActions[action.type].backendFlag]}
-                            <button
-                                class="btn btn-xs ml-1 flex-nowrap {action.btnClasses}"
-                                on:click={(event) => {
-                                    event.stopPropagation(); // Stops the click on table row element behind it
-                                    dispatch("actionTriggered", { clickEvent: action.clickEvent, rowId: rowData.id });
-                                }}>
-                                <Fa icon={allowedRowActions[action.type].faIcon} size="1.1x" />
-
-                                {#if action.hasOwnProperty("displayLabel")}
-                                    <span
-                                        class="ml-1 {action.type === 'edit' ? 'mt-[3px]' : ''}
-                            {action.type === 'delete' ? 'mt-[2px]' : ''}">
-                                        {action.displayLabel}
-                                    </span>
-                                {/if}
-                            </button>
-                        {/if}
-                    {/if}
-                {/each} -->
                 <slot {rowData} {rowActionTriggered} />
             </div>
         </div>

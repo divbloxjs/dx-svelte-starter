@@ -49,6 +49,7 @@
 <div class="dropdown {dropdownClasses}">
     <span class="h-0 w-0" />
     <!--DaisyUI fuckery -> Selector adds classes to :first-of-type -->
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <span
         on:mousedown={() => {
             document.addEventListener("mouseup", () => mouseupHandler(), { once: true });
@@ -59,7 +60,7 @@
         }}
         on:click|stopPropagation={() => {}}
         tabIndex="0"
-        class="btn btn-sm flex w-full items-center justify-center {btnClasses}"
+        class="btn btn-sm flex w-full flex-nowrap items-center justify-center {btnClasses}"
         class:loading>
         {#if dropDownIcon}
             <Fa icon={dropDownIcon} size="1.1x" class={dropDownText === undefined ? "mr-2" : ""} />
@@ -70,6 +71,7 @@
             <Fa icon={faChevronDown} class="ml-2" />
         {/if}
     </span>
+    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
     <ul
         tabindex="0"
         class:hidden={hideDropDownList}
@@ -77,6 +79,7 @@
         {#each dropDownOptions as option}
             <li class="w-full">
                 <!-- svelte-ignore a11y-missing-attribute -->
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <a
                     on:click={(event) => {
                         event.stopPropagation();

@@ -51,8 +51,8 @@
             "displayName": "Another person with a long name",
             "emailAddress": "abc@gmail.com",
             "profilePictureUrl": "https://loremflickr.com/240/240",
-            "roleName": "Owner",
-            "enableEdit": false,
+            "roleName": "Administrator with long name",
+            "enableEdit": true,
             "enableDelete": false,
             "possibleOrganisationRoles": [
                 {
