@@ -6,6 +6,7 @@
             "emailAddress": "dani.simeonov@stratusolve.com",
             "profilePictureUrl": "https://loremflickr.com/240/240",
             "roleName": "Owner",
+            "colourHexCode": "#0000FF",
             "enableEdit": false,
             "enableDelete": false,
             "possibleOrganisationRoles": [
@@ -29,6 +30,7 @@
             "emailAddress": "a@b.com",
             "profilePictureUrl": "https://loremflickr.com/240/240",
             "roleName": "Admin",
+            "colourHexCode": "#00FF00",
             "enableEdit": true,
             "enableDelete": true,
             "possibleOrganisationRoles": [
