@@ -168,7 +168,7 @@
     </div>
 </div>
 
-<div class="file-input mx-auto">
+<div class="mx-auto">
     <input type="file" bind:this={fileUploaderEl} on:change={handleFileSelected} id="file" class="file" />
     {#if enableEdit}
         <label for="file" class="btn btn-link -mt-5 text-base-content">

@@ -33,6 +33,12 @@
     export let enableFilters = false;
     export let tableMinWidth = "1400px";
 
+    /**
+     * Any additional post body params needed for your HTTP request
+     * @type {{}}
+     */
+    export let additionalPostBodyParams = {};
+
     export let multiActionsColumnWidth = 3;
     export let customActionsColumnWidth = 9;
     const multiActionsColumnMinWidth = multiActionsColumnWidth;
@@ -146,7 +152,7 @@
         requestPendingStates.filters[columnName][filterName].visible = false;
     };
 
-    const refreshDataTable = async () => {
+    export const refreshDataTable = async () => {
         isLoading = true;
 
         if (dataSourceDelaySimulation > 0) {
@@ -155,6 +161,10 @@
 
         postBody.limit = parseInt(postBody.itemsPerPage);
         postBody.offset = postBody.pageNumber * parseInt(postBody.itemsPerPage);
+
+        for (const [paramName, paramValue] of Object.entries(additionalPostBodyParams)) {
+            postBody[paramName] = paramValue;
+        }
 
         let response;
         if (httpRequestType === "GET") {
@@ -514,7 +524,7 @@
                                 }
                             }}
                             placeholder="Search..."
-                            class="input input-bordered input-sm w-full pr-16" />
+                            class="input-bordered input input-sm w-full pr-16" />
                         {#if requestPendingStates.globalSearch.loading || requestPendingStates.globalSearch.visible}
                             <button
                                 transition:fly={{ x: 10, duration: 250 }}
@@ -745,7 +755,7 @@
                                                             }
                                                         }}
                                                         placeholder={filterInfo.placeholder}
-                                                        class="input input-bordered input-xs mb-0 w-full grow " />
+                                                        class="input-bordered input input-xs mb-0 w-full grow " />
                                                 {:else if filterName === "filterNumber"}
                                                     <input
                                                         type="text"
@@ -786,7 +796,7 @@
                                                             }
                                                         }}
                                                         placeholder={filterInfo.placeholder}
-                                                        class="input input-bordered input-xs mb-0 w-full grow" />
+                                                        class="input-bordered input input-xs mb-0 w-full grow" />
                                                 {:else if filterName === "filterDropdown"}
                                                     <select
                                                         bind:value={postBody.columns[column.dataSourceAttributeName]
@@ -797,7 +807,7 @@
                                                                 filterName
                                                             );
                                                         }}
-                                                        class="select select-bordered select-xs mb-0 grow pr-8">
+                                                        class="select-bordered select select-xs mb-0 grow pr-8">
                                                         <option selected value="">{filterInfo.placeholder}</option>
                                                         {#each filterInfo.defaultOptions as value}
                                                             <option {value}>{value}</option>
@@ -1178,7 +1188,7 @@
                                 requestPendingStates.editLimit.visible = true;
                             }}
                             placeholder="25"
-                            class="input input-bordered input-sm w-full pr-16" />
+                            class="input-bordered input input-sm w-full pr-16" />
                         {#if requestPendingStates.editLimit.loading || requestPendingStates.editLimit.visible}
                             <button
                                 class="custom-btn-loading btn btn-primary btn-sm absolute top-0 right-0 rounded-l-none"
@@ -1244,7 +1254,7 @@
                             requestPendingStates.editLimit.visible = true;
                         }}
                         placeholder="25"
-                        class="input input-bordered input-sm w-full pr-16" />
+                        class="input-bordered input input-sm w-full pr-16" />
                     {#if requestPendingStates.editLimit.loading || requestPendingStates.editLimit.visible}
                         <button
                             class="custom-btn-loading btn btn-primary btn-sm absolute top-0 right-0 rounded-l-none"

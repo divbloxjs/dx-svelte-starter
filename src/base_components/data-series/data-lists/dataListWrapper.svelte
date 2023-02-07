@@ -2,7 +2,7 @@
     import { createEventDispatcher, onMount } from "svelte";
     import { sleep } from "$src/lib/js/utilities/helpers.js";
     import { errorToast } from "$src/lib/js/utilities/swalMixins";
-    import DataListHeader from "$src/base_components/data-series/data-lists/headers/genericHeader.svelte";
+    import DataListHeader from "$src/base_components/data-series/data-lists/header-variants/genericHeader.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -194,7 +194,7 @@
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
-                credentials: dataSourceIncludeCredentials ? "include" : "omit",
+                credentials: dataSourceIncludeCredentials,
                 body: JSON.stringify(postBody),
             });
         } else {
@@ -288,7 +288,7 @@
     {#if (currentPage.length < totalRowCount && !noResultsFound) || loading}
         <div class="mt-2 w-full text-center">
             <button
-                class="btn btn-link"
+                class="btn-link btn"
                 on:click={async () => {
                     if (loading || loadingMore) {
                         return;

@@ -87,7 +87,7 @@
 {#if Object.keys(configuredActions).includes(action.type)}
     {#if rowData[configuredActions[action.type].backendFlag] === undefined || rowData[configuredActions[action.type].backendFlag]}
         <button
-            class="btn btn-link btn-xs ml-1 flex-nowrap 
+            class="btn-link btn-xs btn ml-1 flex-nowrap 
             {action.btnClasses}
             {configuredActions[action.type].defaultBtnClasses}"
             on:click={(event) => rowActionTriggered(event)}>

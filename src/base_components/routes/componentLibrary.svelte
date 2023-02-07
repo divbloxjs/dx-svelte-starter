@@ -8,12 +8,12 @@
     import { faFileExcel, faFileCsv, faFileText, faTrash } from "@fortawesome/free-solid-svg-icons";
     import QuickActionModal from "$src/base_components/modals/quickActionModal.svelte";
 
-    import DataList from "../data-series/data-lists/variantRowless.svelte";
-    import ListRowOne from "$src/base_components/data-series/data-lists/rows/rowOne.svelte";
-    import ListRowTwo from "$src/base_components/data-series/data-lists/rows/rowTwo.svelte";
-    import ListRowThree from "$src/base_components/data-series/data-lists/rows/rowThree.svelte";
-    import ListRowFour from "$src/base_components/data-series/data-lists/rows/rowFour.svelte";
-    import RowAction from "$src/base_components/data-series/data-lists/rows/rowAction.svelte";
+    import DataList from "$src/base_components/data-series/data-lists/dataListWrapper.svelte";
+    import ListRowOne from "$src/base_components/data-series/data-lists/row-variants/stockholm.svelte";
+    import ListRowTwo from "$src/base_components/data-series/data-lists/row-variants/toronto.svelte";
+    import ListRowThree from "$src/base_components/data-series/data-lists/row-variants/sofia.svelte";
+    import ListRowFour from "$src/base_components/data-series/data-lists/row-variants/geneva.svelte";
+    import RowAction from "$src/base_components/data-series/data-lists/dataListRowAction.svelte";
 
     let columns = [
         {
@@ -232,7 +232,7 @@
             {#if activeComponentTab == "dataTableExample"}
                 <div in:fade={{ duration: 500 }} class="pt-4">
                     <DataTable
-                        dataSource="https://assets.divblox.com/example_data/data.json"
+                        dataSource="https://assets.divblox.com/example_data/data-table-example-data.json"
                         {columns}
                         enableGlobalSearch={true}
                         enableFilters={true}
@@ -252,7 +252,8 @@
                         <div class="m-2 rounded-lg bg-info px-4 py-2 text-center">With basic row</div>
                         <DataList
                             bind:this={dataLists.exampleOne}
-                            dataSource="src/base_components/data-series/tests/row-two.json"
+                            dataSource="https://assets.divblox.com/example_data/data-list-example-data.json"
+                            dataSourceIncludeCredentials="omit"
                             let:rowData
                             let:rowIndex
                             let:listLength
@@ -282,7 +283,8 @@
                         <DataList
                             dataSourceDelaySimulation={1500}
                             bind:this={dataLists.exampleOne}
-                            dataSource="src/base_components/data-series/tests/row-two.json"
+                            dataSource="https://assets.divblox.com/example_data/data-list-example-data.json"
+                            dataSourceIncludeCredentials="omit"
                             on:actionTriggered={async (event) => {
                                 console.log("handled in parent: ", event.detail);
                                 switch (event.detail.clickEvent) {
@@ -326,7 +328,8 @@
                         <div class="m-2 rounded-lg bg-info px-4 py-2 text-center">With Title and Description</div>
                         <DataList
                             bind:this={dataLists.exampleThree}
-                            dataSource="src/base_components/data-series/tests/row-two.json"
+                            dataSource="https://assets.divblox.com/example_data/data-list-example-data.json"
+                            dataSourceIncludeCredentials="omit"
                             on:actionTriggered={async (event) => {
                                 console.log("handled in parent: ", event.detail);
                                 switch (event.detail.clickEvent) {
@@ -370,7 +373,8 @@
                         </div>
                         <DataList
                             bind:this={dataLists.exampleFour}
-                            dataSource="src/base_components/data-series/tests/row-two.json"
+                            dataSource="https://assets.divblox.com/example_data/data-list-example-data.json"
+                            dataSourceIncludeCredentials="omit"
                             on:actionTriggered={async (event) => {
                                 console.log("handled in parent: ", event.detail);
                                 switch (event.detail.clickEvent) {
@@ -437,13 +441,13 @@
                             validationMessage="Passwords do not match"
                             bind:isValid={isValid[2]}
                             bind:this={validatedInputArray[2]} />
-                        <button class="btn btn-primary float-right mt-2" on:click={pretendSubmit}>Test</button>
+                        <button class="btn-primary btn float-right mt-2" on:click={pretendSubmit}>Test</button>
                     </div>
                 </div>
             {:else if activeComponentTab == "modals"}
                 <div in:fade={{ duration: 500 }} class="flex flex-row gap-5 pt-4">
                     <button
-                        class="btn btn-primary"
+                        class="btn-primary btn"
                         on:click={() => {
                             quickActionModal.toggleModal(true);
                         }}

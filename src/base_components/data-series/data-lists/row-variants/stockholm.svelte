@@ -1,25 +1,31 @@
 <script>
     import { beforeUpdate, createEventDispatcher } from "svelte";
 
-    export let rowData = {};
-
     /**
-     * @typedef rowDataMappingOverride
-     * @property {string} [rowTitle] The name of data attribute to pass into rowTitle position
-     * @property {string} [rowDescription] The name of data attribute to pass into rowDescription position
-     * @property {string} [colourHexCode] The hexCode of the colour to display on left of row
+     * @typedef rowData
+     * @property {string} rowTitle Title of this simple row
      */
     /**
-     * Data mapping object used to allow any data set to render in the preconfigured setup regardless of naming
+     * Row data object to display
+     * @type {rowData}
+     * @property {string} rowData.rowTitle
+     */
+    export let rowData = {
+        rowTitle: "Placeholder title",
+    };
+
+    /**
+    /**
+     * @typedef rowDataMappingOverride
+     * @property {string} [rowTitle]  What key is passed as the 'rowTitle' for this row
+     */
+    /**
+     * Data mapping object used to allow any data set to render in the pre-configured setup regardless of naming
      * @type {rowDataMappingOverride}
-     * @property {string} [rowTitle] The name of data attribute to pass into rowTitle position
-     * @property {string} [rowDescription] The name of data attribute to pass into rowDescription position
-     * @property {string} [colourHexCode] The hexCode of the colour to display on left of row
+     * @property {string} rowDataMappingOverride.rowTitle What key is passed as the 'rowTitle' for this row
      */
     export let rowDataMappingOverride = {
         rowTitle: "rowTitle",
-        rowDescription: "rowDescription",
-        colourHexCode: "colourHexCode",
     };
 
     /**
@@ -28,16 +34,33 @@
      */
     let rowDataMapping = {
         rowTitle: "rowTitle",
-        rowDescription: "rowDescription",
-        colourHexCode: "colourHexCode",
     };
 
+    /**
+     *  Whether or not the render to row as clickable or not
+     * @type {boolean}
+     */
     export let clickableRow = true;
+
+    /**
+     * Whether or not to load the row in a loading state
+     * @type {boolean}
+     */
     export let showLoadingState = false;
 
     // Used to style rows according to where they are in the list
     // e.g. dropup/down based on proximity to end of list
+
+    /**
+     * The index of the current row in the list
+     * @type {number}
+     */
     export let rowIndex; // E.g. 0,1,2,3
+
+    /**
+     * The length of the currently rendered list
+     * @type {number}
+     */
     export let listLength; // E.g 10
 
     const dispatch = createEventDispatcher();
@@ -46,17 +69,13 @@
     beforeUpdate(async () => {
         if (!initComplete) {
             initComplete = true;
-            await initConfig();
+            Object.keys(rowDataMappingOverride).forEach((defaultRowDataAttribute) => {
+                if (rowDataMapping.hasOwnProperty(defaultRowDataAttribute)) {
+                    rowDataMapping[defaultRowDataAttribute] = rowDataMappingOverride[defaultRowDataAttribute];
+                }
+            });
         }
     });
-
-    const initConfig = async () => {
-        Object.keys(rowDataMappingOverride).forEach((defaultRowDataAttribute) => {
-            if (rowDataMapping.hasOwnProperty(defaultRowDataAttribute)) {
-                rowDataMapping[defaultRowDataAttribute] = rowDataMappingOverride[defaultRowDataAttribute];
-            }
-        });
-    };
 
     /**
      * Handle row actions and bubble up event
@@ -89,11 +108,8 @@
 {:else}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <li
-        class="relative flex items-center justify-between border-l-8 border-base-200 py-2 px-4 hover:bg-base-200
+        class="relative flex items-center justify-between py-2 px-4 hover:bg-base-200
         sm:py-4 {clickableRow ? 'hover:cursor-pointer' : ''}"
-        class:rounded-tl-lg={rowIndex === 0}
-        class:rounded-bl-lg={rowIndex === listLength - 1}
-        style="border-color: {rowData.colourHexCode};"
         on:click={() => {
             if (clickableRow) {
                 dispatch("actionTriggered", { clickEvent: "row_clicked", rowId: rowData.id });
@@ -106,11 +122,8 @@
 
         <!-- Row Data Content -->
         <div class="overflow-x-hidden rounded pl-2">
-            <div class="w-full overflow-x-hidden overflow-ellipsis text-lg font-bold ">
+            <div class="w-full overflow-x-hidden overflow-ellipsis text-lg font-bold">
                 {rowData[rowDataMapping.rowTitle]}
-            </div>
-            <div class="w-full overflow-x-hidden overflow-ellipsis">
-                {rowData[rowDataMapping.rowDescription]}
             </div>
         </div>
 

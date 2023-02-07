@@ -1,6 +1,5 @@
 <script>
     import { beforeUpdate, createEventDispatcher } from "svelte";
-    import Fa from "svelte-fa";
     import Dropdown from "$src/base_components/data-series/ui-elements/dropdown.svelte";
     import { errorToast, successToast } from "$src/lib/js/utilities/swalMixins";
     import noImagePath from "$src/assets/images/no_image.svg";
@@ -12,7 +11,7 @@
     export let defaultImagePath = noImagePath;
 
     /**
-     * The row data obejct to be rendered
+     * The row data object to be rendered
      * @type {Object}
      */
     export let rowData = {};
@@ -36,10 +35,32 @@
     };
 
     /**
-     * Data mapping object used to allow any data set to render in the preconfigured setup regardless of naming
-     * @type {Object}
+     * @typedef rowDataMappingOverride
+     * @property {string} [imageUrl]  What key is passed as the 'imageUrl' for this row
+     * @property {string} [rowTitle]  What key is passed as the 'rowTitle' for this row
+     * @property {string} [rowDescription] What key is passed as the 'rowDescription' for this row
+     * @property {string} [rowCategoryName] What key is passed as the 'rowCategoryName' for this row
+     * @property {string} [rowCategoryId] What key is passed as the 'rowCategoryId' for this row
+     * @property {string} [possibleCategories] What key is passed as the 'possibleCategories' for this row
      */
-    export let rowDataMappingOverride = {};
+    /**
+     * Data mapping object used to allow any data set to render in the pre-configured setup regardless of naming
+     * @type {rowDataMappingOverride}
+     * @property {string} rowDataMappingOverride.imageUrl What key is passed as the 'imageUrl' for this row
+     * @property {string} rowDataMappingOverride.rowTitle What key is passed as the 'rowTitle' for this row
+     * @property {string} rowDataMappingOverride.rowDescription What key is passed as the 'rowDescription' for this row
+     * @property {string} rowDataMappingOverride.rowCategoryName What key is passed as the 'rowCategoryName' for this row
+     * @property {string} rowDataMappingOverride.rowCategoryId What key is passed as the 'rowCategoryId' for this row
+     * @property {string} rowDataMappingOverride.possibleCategories What key is passed as the 'possibleCategories' for this row
+     */
+    export let rowDataMappingOverride = {
+        imageUrl: "imageUrl",
+        rowTitle: "rowTitle",
+        rowDescription: "rowDescription",
+        rowCategoryName: "rowCategoryName",
+        rowCategoryId: "rowCategoryId",
+        possibleCategories: "possibleCategories",
+    };
 
     /**
      * The default row data mapping. Overridden by rowDataMappingOverride key by key
@@ -314,7 +335,7 @@
                                 await handleCategoryChange(params.detail.params);
                             }} />
                     {:else}
-                        <button class="btn-link btn btn-xs pl-0 text-base-content">
+                        <button class="btn-link btn-xs btn pl-0 text-base-content">
                             {rowData[rowDataMapping.rowCategoryName]}
                         </button>
                     {/if}
@@ -338,7 +359,7 @@
                             await handleCategoryChange(params.detail.params);
                         }} />
                 {:else}
-                    <button class="btn disabled btn-link text-base-content">
+                    <button class="btn-link disabled btn text-base-content">
                         {rowData[rowDataMapping.rowCategoryName]}
                     </button>
                 {/if}

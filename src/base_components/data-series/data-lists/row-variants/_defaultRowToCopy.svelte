@@ -1,33 +1,11 @@
 <script>
     import { beforeUpdate, createEventDispatcher } from "svelte";
+    import { errorAlert } from "$src/lib/js/utilities/swalMixins";
+    throw new Error(
+        "This component should not be used as is! Copy it out of base_components, customise it and remove this line. Refer to the README.md"
+    );
 
-    /**
-     * @typedef rowData
-     * @property {string} rowTitle Title of this simple row
-     */
-    /**
-     * Row data object to display
-     * @type {rowData}
-     * @property {string} rowData.rowTitle
-     */
-    export let rowData = {
-        rowTitle: "Placeholder title",
-    };
-
-    /**
-     * Data mapping object used to allow any data set to render in the preconfigured setup regardless of naming
-     * @type {Object}
-     * @property {string} rowDataMappingOverride.rowTitle What key is passed as the 'rowTitle' for this row
-     */
-    export let rowDataMappingOverride = {};
-
-    /**
-     * The default row data mapping. Overridden by rowDataMappingOverride key by key
-     * @type {Object}
-     */
-    let rowDataMapping = {
-        rowTitle: "rowTitle",
-    };
+    export let rowData = {};
 
     /**
      *  Whether or not the render to row as clickable or not
@@ -50,32 +28,52 @@
      */
     export let rowIndex; // E.g. 0,1,2,3
 
-    /**
-     * The length of the currently rendered list
-     * @type {number}
-     */
-    export let listLength; // E.g 10
-
     const dispatch = createEventDispatcher();
 
     let initComplete = false;
     beforeUpdate(async () => {
         if (!initComplete) {
             initComplete = true;
-            Object.keys(rowDataMappingOverride).forEach((defaultRowDataAttribute) => {
-                if (rowDataMapping.hasOwnProperty(defaultRowDataAttribute)) {
-                    rowDataMapping[defaultRowDataAttribute] = rowDataMappingOverride[defaultRowDataAttribute];
-                }
-            });
+            if (showLoadingState) {
+                return;
+            }
         }
     });
 
     /**
      * Handle row actions and bubble up event
+     * Perform some action based on event, and if needed, bubble up the event on success/failure
+     * Works with events fire from the 'dataListRowAction' component
+     * i.e. "view_clicked", "edit_clicked", "duplicate_clicked", "delete_clicked"
      * @param event
      */
-    const rowActionTriggered = (event) => {
-        dispatch("actionTriggered", event.detail);
+    const rowActionTriggered = async (event) => {
+        switch (event.detail.clickEvent) {
+            case "action_clicked":
+                await handleAction(event.detail);
+                break;
+        }
+    };
+
+    const handleAction = async (eventDetail) => {
+        const result = await errorAlert.fire({
+            html: "Are you sure?",
+            confirmButtonText: "OK",
+            timer: 0,
+        });
+
+        if (!result.isConfirmed) {
+            return;
+        }
+
+        if (await soHandlerFunction(rowData.id, rowData.propertyName)) {
+            dispatch("actionTriggered", eventDetail);
+        }
+    };
+
+    // If this is CRUD operations, this function may be abstracted to a entityName.js file
+    const soHandlerFunction = async (id, other) => {
+        return true;
     };
 </script>
 
@@ -101,11 +99,15 @@
 {:else}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <li
-        class="relative flex items-center justify-between py-2 px-4 hover:bg-base-200
-        sm:py-4 {clickableRow ? 'hover:cursor-pointer' : ''}"
+        class="relative flex flex-col items-start justify-between py-2 px-4 hover:bg-base-200
+        {clickableRow ? 'hover:cursor-pointer' : ''}"
         on:click={() => {
             if (clickableRow) {
-                dispatch("actionTriggered", { clickEvent: "row_clicked", rowId: rowData.id });
+                dispatch("actionTriggered", {
+                    clickEvent: "row_clicked",
+                    rowId: rowData.id,
+                    projectId: rowData.project.id,
+                });
             }
         }}>
         <!-- Divider between rows -->
@@ -114,14 +116,14 @@
         {/if}
 
         <!-- Row Data Content -->
-        <div class="overflow-x-hidden rounded pl-2">
-            <div class="w-full overflow-x-hidden overflow-ellipsis text-lg font-bold">
-                {rowData[rowDataMapping.rowTitle]}
+        <div class="w-full overflow-x-hidden rounded">
+            <div class="mb-2 w-full overflow-x-hidden overflow-ellipsis pr-3 text-sm font-bold">
+                {rowData.propertyName}
             </div>
         </div>
 
         <!-- Row Actions -->
-        <div class="flex items-center justify-center">
+        <div class="absolute top-2 right-1">
             <slot {rowData} {rowActionTriggered} />
         </div>
     </li>
