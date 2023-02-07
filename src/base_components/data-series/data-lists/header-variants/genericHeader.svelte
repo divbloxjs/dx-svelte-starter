@@ -114,12 +114,12 @@
                                     }
                                 }}
                                 placeholder={searchPlaceholder}
-                                class="input input-bordered input-sm w-full pr-16" />
+                                class="input-bordered input input-sm w-full pr-16" />
                             {#if requestPendingStates.search.loading || requestPendingStates.search.visible}
                                 <button
                                     transition:fly={{ x: 10, duration: 250 }}
                                     class:loading={requestPendingStates.search.loading}
-                                    class="custom-btn-loading btn btn-primary btn-sm absolute top-0 right-0 mr-0 rounded-l-none"
+                                    class="custom-btn-loading btn-primary btn-sm btn absolute top-0 right-0 mr-0 rounded-l-none"
                                     on:click={async () => {
                                         if (loading) {
                                             return;
@@ -140,7 +140,7 @@
         </div>
         {#if enableRefresh === true}
             <button
-                class="custom-btn-loading btn btn-sm ml-2"
+                class="custom-btn-loading btn-sm btn ml-2"
                 class:loading={requestPendingStates.refresh.loading}
                 on:click={async () => {
                     if (loading) {
@@ -156,7 +156,7 @@
         {/if}
         {#if enableCreate}
             <button
-                class="btn btn-primary btn-sm ml-2 {createButtonOptions.hasOwnProperty('btnClasses')
+                class="btn-primary btn-sm btn ml-2 {createButtonOptions.hasOwnProperty('btnClasses')
                     ? createButtonOptions.btnClasses
                     : ''}"
                 on:click={() => {
