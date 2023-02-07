@@ -194,7 +194,7 @@
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
-                credentials: dataSourceIncludeCredentials ? "include" : "omit",
+                credentials: dataSourceIncludeCredentials,
                 body: JSON.stringify(postBody),
             });
         } else {

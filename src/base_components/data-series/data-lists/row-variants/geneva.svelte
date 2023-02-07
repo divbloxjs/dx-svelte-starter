@@ -10,7 +10,7 @@
      * @property {string} [colourHexCode] The hexCode of the colour to display on left of row
      */
     /**
-     * Data mapping object used to allow any data set to render in the preconfigured setup regardless of naming
+     * Data mapping object used to allow any data set to render in the pre-configured setup regardless of naming
      * @type {rowDataMappingOverride}
      * @property {string} [rowTitle] The name of data attribute to pass into rowTitle position
      * @property {string} [rowDescription] The name of data attribute to pass into rowDescription position

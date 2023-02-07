@@ -1,6 +1,5 @@
 <script>
     import { beforeUpdate, createEventDispatcher } from "svelte";
-    import Fa from "svelte-fa";
     import Dropdown from "$src/base_components/data-series/ui-elements/dropdown.svelte";
     import { errorToast, successToast } from "$src/lib/js/utilities/swalMixins";
     import noImagePath from "$src/assets/images/no_image.svg";
@@ -314,7 +313,7 @@
                                 await handleCategoryChange(params.detail.params);
                             }} />
                     {:else}
-                        <button class="btn-link btn btn-xs pl-0 text-base-content">
+                        <button class="btn-link btn-xs btn pl-0 text-base-content">
                             {rowData[rowDataMapping.rowCategoryName]}
                         </button>
                     {/if}
@@ -338,7 +337,7 @@
                             await handleCategoryChange(params.detail.params);
                         }} />
                 {:else}
-                    <button class="btn disabled btn-link text-base-content">
+                    <button class="btn-link disabled btn text-base-content">
                         {rowData[rowDataMapping.rowCategoryName]}
                     </button>
                 {/if}
