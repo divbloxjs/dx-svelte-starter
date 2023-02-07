@@ -119,7 +119,7 @@
      * @type {boolean}
      * TODO convert to store if becoming more complicated with state management of subcomponents
      */
-    let loading = false;
+    export let loading = false;
 
     /**
      * Seperate state control (from loading) for the "Load More" button after initial load
@@ -233,39 +233,48 @@
 
         currentPage = currentPage;
     };
+
+    let loadMoreSectionHeight;
+    let headerSectionHeight;
 </script>
 
-<div class="static w-full">
+<div class="static w-full" style="max-height: {dataListMaxHeight}; max-width: 100%;">
     <!-- List Header -->
-    <div class="my-3 w-full">
-        <DataListHeader
-            bind:this={dataListHeader}
-            {enableRefresh}
-            {enableSearch}
-            {enableCreate}
-            {searchValue}
-            on:actionTriggered={async (params) => {
-                switch (params.detail.clickEvent) {
-                    case "refresh_clicked":
-                        searchValue = "";
-                        await resetDataList();
-                        break;
-                    case "search_clicked":
-                        searchValue = params.detail.searchValue;
-                        await resetDataList();
-                        break;
-                    case "create_clicked":
-                        dispatch("actionTriggered", params.detail);
-                        dataListHeader.setGlobalLoading(false);
-                        break;
-                }
-            }} />
+    <div class="w-full" bind:clientHeight={headerSectionHeight}>
+        <div class="my-3">
+            <DataListHeader
+                bind:this={dataListHeader}
+                {enableRefresh}
+                {enableSearch}
+                {enableCreate}
+                {searchValue}
+                on:actionTriggered={async (params) => {
+                    switch (params.detail.clickEvent) {
+                        case "refresh_clicked":
+                            searchValue = "";
+                            await resetDataList();
+                            break;
+                        case "search_clicked":
+                            searchValue = params.detail.searchValue;
+                            await resetDataList();
+                            break;
+                        case "create_clicked":
+                            dispatch("actionTriggered", params.detail);
+                            dataListHeader.setGlobalLoading(false);
+                            break;
+                    }
+                }} />
+        </div>
     </div>
 
     <!-- List body -->
     <ul
         class="minimal-scrollbar w-full {overflowType} rounded-lg border border-base-200"
-        style="max-height: {dataListMaxHeight}; max-width: 100%;">
+        style="max-height: calc({dataListMaxHeight} - {headerSectionHeight}px {(currentPage.length < totalRowCount &&
+            !noResultsFound) ||
+        loading
+            ? '- ' + loadMoreSectionHeight + 'px'
+            : ''} - 30px);">
         {#if loading}
             <!-- Loading State -->
             {#each Array(2) as value, rowIndex}
@@ -286,9 +295,9 @@
     </ul>
     <!-- Loading Bar -->
     {#if (currentPage.length < totalRowCount && !noResultsFound) || loading}
-        <div class="mt-2 w-full text-center">
+        <div class="w-full text-center" bind:clientHeight={loadMoreSectionHeight}>
             <button
-                class="btn-link btn"
+                class="btn-link btn mt-2"
                 on:click={async () => {
                     if (loading || loadingMore) {
                         return;
