@@ -15,11 +15,18 @@
     };
 
     /**
-     * Data mapping object used to allow any data set to render in the preconfigured setup regardless of naming
-     * @type {Object}
+    /**
+     * @typedef rowDataMappingOverride
+     * @property {string} [rowTitle]  What key is passed as the 'rowTitle' for this row
+     */
+    /**
+     * Data mapping object used to allow any data set to render in the pre-configured setup regardless of naming
+     * @type {rowDataMappingOverride}
      * @property {string} rowDataMappingOverride.rowTitle What key is passed as the 'rowTitle' for this row
      */
-    export let rowDataMappingOverride = {};
+    export let rowDataMappingOverride = {
+        rowTitle: "rowTitle",
+    };
 
     /**
      * The default row data mapping. Overridden by rowDataMappingOverride key by key

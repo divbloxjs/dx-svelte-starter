@@ -5,14 +5,14 @@
 
     /**
      * @typedef rowDataMappingOverride
-     * @property {string} rowTitle The name of data attribute to pass into rowTitle position
-     * @property {string} rowDescription The name of data attribute to pass into rowDescription position
+     * @property {string} [rowTitle]  What key is passed as the 'rowTitle' for this row
+     * @property {string} [rowDescription] What key is passed as the 'rowDescription' for this row
      */
     /**
-     * Data mapping object used to allow any data set to render in the preconfigured setup regardless of naming
+     * Data mapping object used to allow any data set to render in the pre-configured setup regardless of naming
      * @type {rowDataMappingOverride}
-     * @property {string} rowTitle The name of data attribute to pass into rowTitle position
-     * @property {string} rowDescription The name of data attribute to pass into rowDescription position
+     * @property {string} rowDataMappingOverride.rowTitle What key is passed as the 'rowTitle' for this row
+     * @property {string} rowDataMappingOverride.rowDescription What key is passed as the 'rowDescription' for this row
      */
     export let rowDataMappingOverride = {
         rowTitle: "rowTitle",

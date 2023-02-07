@@ -8,8 +8,8 @@
     import { faFileExcel, faFileCsv, faFileText, faTrash } from "@fortawesome/free-solid-svg-icons";
     import QuickActionModal from "$src/base_components/modals/quickActionModal.svelte";
 
-    import DataList from "../data-series/data-lists/dataListWrapper.svelte";
-    import ListRowOne from "$src/base_components/data-series/data-lists/row-variants/_defaultRowToCopy.svelte";
+    import DataList from "$src/base_components/data-series/data-lists/dataListWrapper.svelte";
+    import ListRowOne from "$src/base_components/data-series/data-lists/row-variants/stockholm.svelte";
     import ListRowTwo from "$src/base_components/data-series/data-lists/row-variants/toronto.svelte";
     import ListRowThree from "$src/base_components/data-series/data-lists/row-variants/sofia.svelte";
     import ListRowFour from "$src/base_components/data-series/data-lists/row-variants/geneva.svelte";
