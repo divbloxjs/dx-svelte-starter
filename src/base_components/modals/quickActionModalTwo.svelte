@@ -110,7 +110,16 @@
     };
 </script>
 
-<div class="modal" class:modal-open={isOpen}>
+<div
+    class="modal"
+    class:modal-open={isOpen}
+    on:click|self={() => toggleModal()}
+    on:keydown={(event) => {
+        if (event.key === "Escape") {
+            event.preventDefault();
+            toggleModal();
+        }
+    }}>
     <div class="modal-box relative max-w-xs">
         <button
             on:click={() => {
