@@ -102,7 +102,17 @@
     };
 </script>
 
-<div class="modal" class:modal-open={isOpen}>
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div
+    class="modal"
+    class:modal-open={isOpen}
+    on:click|self={() => toggleModal()}
+    on:keydown={(event) => {
+        if (event.key === "Escape") {
+            event.preventDefault();
+            toggleModal();
+        }
+    }}>
     <div class="modal-box relative max-w-xs">
         <button
             on:click={() => {
