@@ -1,0 +1,32 @@
+{
+    "btnCreate": {
+        "inputType": "btn",
+        "options": {
+            "btnText": "Create",
+            "loadingText": "Creating...",
+            "requireConfirm": false,
+            "btnType": "primary",
+            "action": "POST"
+        }
+    },
+    "btnUpdate": {
+        "inputType": "btn",
+        "options": {
+            "btnText": "Update",
+            "loadingText": "Updating...",
+            "requireConfirm": false,
+            "btnType": "primary",
+            "action": "PUT"
+        }
+    },
+    "btnDelete": {
+        "inputType": "btn",
+        "options": {
+            "btnText": "Delete",
+            "loadingText": "Deleting...",
+            "requireConfirm": true,
+            "btnType": "danger",
+            "action": "DELETE"
+        }
+    }
+}

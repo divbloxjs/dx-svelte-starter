@@ -56,6 +56,11 @@
         isValidated = false;
     };
 
+    export const resetInput = () => {
+        resetValidation();
+        value = "";
+    };
+
     /**
      * Performs the validation on date type
      *
@@ -93,7 +98,6 @@
     };
 
     const validateRequired = () => {
-        console.log("validate", value);
         return value !== undefined && value !== null && value !== "";
     };
 

@@ -75,6 +75,11 @@
         isValidated = false;
     };
 
+    export const resetInput = () => {
+        resetValidation();
+        value = "";
+    };
+
     /**
      * Performs the validation on the specific input type
      *
@@ -159,7 +164,7 @@
             <span class={addLabelClass}>{label}</span>
         {/if}
         {#if !isValid && isValidated && !hideValidation}
-            <span class:-mb-2={label !== null} class="label-text-alt ml-auto  text-xs text-red-500">
+            <span class:-mb-2={label !== null} class="label-text-alt ml-auto text-xs text-red-500">
                 {validationMessage}
             </span>
         {:else if !isValidated && requiredLabel !== null && requiredLabel !== undefined && requiredLabel.length > 0}

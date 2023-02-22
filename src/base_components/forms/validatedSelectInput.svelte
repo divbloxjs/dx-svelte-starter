@@ -1,7 +1,9 @@
 <script>
+    import { INPUT_TYPES } from "$src/lib/js/constants/formConstants";
     import { createEventDispatcher, onMount } from "svelte";
 
     export let disabled = false;
+    export let validateAsRequired = false;
     export let isValidated = false;
     export let isValid = false;
 
@@ -15,7 +17,7 @@
 
     // Options should be of format {value: displayedText}
     export let values = {
-        defaultValue: { notSelected: "-Please Select-" },
+        defaultValue: { notSelected: INPUT_TYPES.SELECT.DEFAULT_VALUE },
         options: {},
     };
 
@@ -45,14 +47,26 @@
         isValidated = false;
     };
 
+    export const resetInput = () => {
+        resetValidation();
+        selectedValue = INPUT_TYPES.SELECT.DEFAULT_VALUE;
+    };
+
+    export const isValidValue = () => {
+        return selectedValue !== INPUT_TYPES.SELECT.DEFAULT_VALUE;
+    };
+
     /**
      * @param {boolean} forceValidate
      * @return {boolean} - True if all validation is passed
      */
     export const validate = (forceValidate = false) => {
-        // TODO: When required, add aditional logic to be triggered if forceValidate is false
+        // TODO: When required, add additional logic to be triggered if forceValidate is false
         isValid = false;
-        if (selectedValue !== values.defaultValue.notSelected) {
+        if (!validateAsRequired) {
+            // No validation
+            isValid = true;
+        } else if (selectedValue !== values.defaultValue.notSelected) {
             isValid = true;
         }
 
@@ -91,7 +105,7 @@
             dispatch("change");
             validate(false);
         }}>
-        <option disabled value={initValue}> {Object.values(values.defaultValue)[0]}</option>
+        <option disabled={validateAsRequired} value={initValue}> {Object.values(values.defaultValue)[0]}</option>
         {#each Object.entries(values.options) as [value, displayedText]}
             <option {value}>{displayedText}</option>
         {/each}

@@ -1,0 +1,129 @@
+{
+    "userAccountCreate": {
+        "entityName": "userAccount",
+        "formType": "create",
+        "elements": {
+            "firstName": {
+                "displayLabel": "First Name",
+                "inputType": "text",
+                "validateAs": false,
+                "options": {
+                    "placeholder": "First Name",
+                    "name": "firstName",
+                    "validationMessage": "please add a name"
+                },
+                "actions": [
+                    {
+                        "event": "focusOut",
+                        "action": "create"
+                    }
+                ]
+            },
+            "gender": {
+                "displayLabel": "Gender",
+                "inputType": "select",
+                "validateAs": false,
+                "options": {
+                    "placeholder": "-Please Select-",
+                    "name": "gender",
+                    "values": ["Boy", "Girl", "Monkey"],
+                    "multiselect": true,
+                    "mask": "someRegex"
+                },
+                "actions": [
+                    {
+                        "event": "focusOut",
+                        "action": "create"
+                    }
+                ]
+            },
+            "occupation": {
+                "displayLabel": "Occupation",
+                "inputType": "select",
+                "validateAs": false,
+                "options": {
+                    "placeholder": "-Please Select-",
+                    "name": "occupation",
+                    "validationMessage": "please select a occupation"
+                },
+                "data": {
+                    "name": "occupation",
+                    "GET": {
+                        "endpointUrl": "http://localhost:3000/api/fkTable/get",
+                        "params": {}
+                    }
+                }
+            },
+            "btnCreate": true
+        },
+        "data": {
+            "POST": {
+                "endpointUrl": "http://localhost:3000/api/create",
+                "params": {}
+            }
+        },
+        "actions": {
+            "create": true
+        }
+    },
+    "userAccountUpdate": {
+        "entityName": "userAccount",
+        "formType": "update",
+        "elements": {
+            "firstName": {
+                "displayLabel": "First Name",
+                "inputType": "text",
+                "validateAs": false,
+                "options": {
+                    "placeholder": "First Name",
+                    "name": "firstName",
+                    "validationMessage": "please add a name"
+                },
+                "actions": [
+                    {
+                        "event": "focusOut",
+                        "action": "create"
+                    }
+                ]
+            },
+            "gender": {
+                "displayLabel": "Gender",
+                "inputType": "text",
+                "validateAs": false,
+                "options": {
+                    "placeholder": "-Please Select-",
+                    "name": "gender",
+                    "values": ["Boy", "Girl", "Monkey"],
+                    "multiselect": true,
+                    "mask": "someRegex"
+                },
+                "actions": [
+                    {
+                        "event": "focusOut",
+                        "action": "create"
+                    }
+                ]
+            },
+            "btnUpdate": true,
+            "btnDelete": true
+        },
+        "data": {
+            "GET": {
+                "endpointUrl": "http://localhost:3000/api/get",
+                "params": { "id": 1 }
+            },
+            "PUT": {
+                "endpointUrl": "http://localhost:3000/api/update",
+                "params": { "id": 1 }
+            },
+            "DELETE": {
+                "endpointUrl": "http://localhost:3000/api/delete",
+                "params": { "id": 1 }
+            }
+        },
+        "actions": {
+            "update": true,
+            "delete": true
+        }
+    }
+}

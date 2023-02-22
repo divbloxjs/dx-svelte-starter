@@ -7,7 +7,8 @@
         "build": "node dx-pre-build.cjs && vite build",
         "preview": "vite preview",
         "storybook": "start-storybook -p 6006",
-        "build-storybook": "build-storybook"
+        "build-storybook": "build-storybook",
+        "generate-form": "node ./dx_tools/form_generation/dx-build-form.cjs"
     },
     "devDependencies": {
         "@babel/core": "^7.20.12",
@@ -22,6 +23,7 @@
         "@tailwindcss/typography": "^0.5.9",
         "autoprefixer": "^10.4.13",
         "babel-loader": "^9.1.2",
+        "dx-utilities": "^1.0.2",
         "postcss": "^8.4.21",
         "svelte": "^3.55.1",
         "svelte-loader": "^3.1.5",
@@ -32,7 +34,6 @@
         "@fortawesome/free-solid-svg-icons": "^6.2.1",
         "cropperjs": "^1.5.13",
         "daisyui": "^2.50.0",
-        "dx-utilities": "^1.0.2",
         "prettier-plugin-tailwindcss": "^0.2.2",
         "svelte-fa": "^3.0.3",
         "svelte-spa-router": "^3.3.0",

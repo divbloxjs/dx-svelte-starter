@@ -1,0 +1,17 @@
+[
+    {
+        "type": "onclick",
+        "element": "create",
+        "action": "POST"
+    },
+    {
+        "type": "onclick",
+        "element": "UPDATE",
+        "action": "PUT"
+    },
+    {
+        "type": "onclick",
+        "element": "delete",
+        "action": "DELETE"
+    }
+]
