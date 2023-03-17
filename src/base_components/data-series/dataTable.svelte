@@ -255,7 +255,7 @@
         sortBy = undefined;
         isSortAscending = true;
 
-        postBody.globalSearchText = initialGlobalSearch;
+        postBody.searchValue = "";
 
         columns.forEach((column, index) => {
             postBody.columns[column.dataSourceAttributeName].isSortAscending = column.isSortAscending;
@@ -282,7 +282,7 @@
             initialGlobalSearch = "";
         }
 
-        postBody.globalSearchText = initialGlobalSearch;
+        postBody.searchValue = initialGlobalSearch;
         postBody.itemsPerPage = itemsPerPage;
         postBody.pageNumber = pageNumber;
         postBody.columns = {};
@@ -496,7 +496,7 @@
                     <div class="relative -mb-2">
                         <input
                             type="text"
-                            bind:value={postBody.globalSearchText}
+                            bind:value={postBody.searchValue}
                             on:keypress={async (event) => {
                                 if (isLoading) {
                                     return;
