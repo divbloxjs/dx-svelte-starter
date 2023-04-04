@@ -2,13 +2,19 @@ import logo from "$src/assets/images/divblox_icon_violet.png";
 import logoAlternateDarkMode from "$src/assets/images/divblox_logo_white.png";
 import logoAlternateLightMode from "$src/assets/images/divblox_logo_black.png";
 import { get, writable } from "svelte/store";
+import appConfig from "$root/app.config.json";
 
-// Update this to customize your app details
-export const domainRoot = "https://divblox.com";
-export const appName = "Divblox";
-export const defaultLandingPage = "/";
 export const appLogo = logo;
-export const backendRoot = "http://localhost:4000";
+
+// These values can be modified in the app.config.json file
+export const domainRoot = appConfig.domainRoot;
+export const appName = appConfig.appName;
+export const defaultLandingPage = appConfig.defaultLandingPage;
+export const backendRoot = appConfig.backendRoot;
+
+export const isFcmEnabled = appConfig.pushNotifications.isFcmEnabled;
+export const firebaseConfig = appConfig.pushNotifications.firebaseConfig;
+export const firebaseVapidKey = appConfig.pushNotifications.firebaseVapidKey;
 
 const isSystemThemeDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
 
