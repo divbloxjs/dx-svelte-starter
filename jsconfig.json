@@ -26,7 +26,8 @@
          */
         "checkJs": true,
         "paths": {
-            "$src/*": ["src/*"]
+            "$src/*": ["src/*"],
+            "$root/*": ["./*"]
         }
     },
     /**

@@ -1,10 +1,32 @@
 //////////////////////////////////////////
 // DIVBLOX GENERATED CODE - DO NOT MODIFY!
-const dxBuildTimeStamp = "15Aug2022a";
+const dxBuildTimeStamp = "1680611704151";
+const fcmConfig = {
+    isFcmEnabled: true,
+    firebaseConfig: {
+        apiKey: "AIzaSyCLEn3_LRBzMVM8HFARiPN5ApxVQunJdjI",
+        authDomain: "divblox.firebaseapp.com",
+        databaseURL: "https://divblox.firebaseio.com",
+        projectId: "divblox",
+        storageBucket: "divblox.appspot.com",
+        messagingSenderId: "83768644040",
+        appId: "1:83768644040:web:dabaa26be6ce4e8d1eb0fd",
+        measurementId: "G-TGBJP6VTSB",
+    },
+    firebaseVapidKey: "BOoYXjdhsgf6XJyDx7V4M9vLO2EvtO__mJcKUS_AW6NznFxZEZYNkT5K1zemT7n1JNi0E-ZB45kVX9h5oHdzq7g",
+    pushSubscriptionEndpoint:
+        "http://localhost:3000/api/dxPushNotifications/pushSubscription?vapidPublicKey=BOoYXjdhsgf6XJyDx7V4M9vLO2EvtO__mJcKUS_AW6NznFxZEZYNkT5K1zemT7n1JNi0E-ZB45kVX9h5oHdzq7g",
+};
 //////////////////////////////////////////
+// DIVBLOX GENERATED CODE - ENDS
 
 const PRECACHE = "precache-" + dxBuildTimeStamp;
 const RUNTIME = "runtime-" + dxBuildTimeStamp;
+
+// VAPID KEY For push notifications
+const applicationServerKey = fcmConfig.firebaseVapidKey;
+// Backend endpoint to store push subscriptions
+const pushSubscriptionEndpoint = fcmConfig.pushSubscriptionEndpoint;
 
 // A list of local resources we always want to be cached.
 const PRECACHE_URLS = [
@@ -65,7 +87,7 @@ self.addEventListener("message", (event) => {
 });
 
 // The activate handler takes care of cleaning up old caches.
-self.addEventListener("activate", (event) => {
+self.addEventListener("activate", async (event) => {
     const currentCaches = [PRECACHE, RUNTIME];
     event.waitUntil(
         caches
@@ -82,6 +104,28 @@ self.addEventListener("activate", (event) => {
             })
             .then(() => self.clients.claim())
     );
+
+    if (fcmConfig.isFcmEnabled && self.registration.pushManager) {
+        // Web Push supported.
+        try {
+            const options = { applicationServerKey, userVisibleOnly: true };
+            const subscription = await self.registration.pushManager.subscribe(options);
+
+            //Save this to backend with the provided endpoint
+            console.log("Push subscription:", subscription);
+            const saveResult = await fetch(pushSubscriptionEndpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ pushSubscriptionObject: subscription }),
+            });
+        } catch (err) {
+            console.log("Error", err);
+        }
+    } else {
+        // Web Push not supported.
+        console.log("Web push not supported");
+    }
 });
 
 // The fetch handler serves responses for same-origin resources from a cache.
@@ -112,4 +156,30 @@ self.addEventListener("fetch", (event) => {
             })
         );
     }
+});
+
+self.addEventListener("push", function (event) {
+    if (event.data) {
+        const pushData = event.data.json();
+
+        const options = {};
+        const title = pushData.notification.title ? pushData.notification.title : "";
+
+        for (const option of Object.keys(pushData.notification)) {
+            options[option] = pushData.notification[option];
+        }
+
+        self.registration.showNotification(title, options);
+    } else {
+        console.log("Push event but no data");
+    }
+});
+
+self.addEventListener("notificationclick", (event) => {
+    const clickedNotification = event.notification;
+    clickedNotification.close();
+
+    // Do something as the result of the notification click
+    //const promiseChain = doSomething();
+    //event.waitUntil(promiseChain);
 });
