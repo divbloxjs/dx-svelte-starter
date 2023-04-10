@@ -1,6 +1,6 @@
 //////////////////////////////////////////
 // DIVBLOX GENERATED CODE - DO NOT MODIFY!
-const dxBuildTimeStamp = "1680611704151";
+const dxBuildTimeStamp = "1681137743909";
 const fcmConfig = {
     isFcmEnabled: true,
     firebaseConfig: {
@@ -13,9 +13,9 @@ const fcmConfig = {
         appId: "1:83768644040:web:dabaa26be6ce4e8d1eb0fd",
         measurementId: "G-TGBJP6VTSB",
     },
-    firebaseVapidKey: "BOoYXjdhsgf6XJyDx7V4M9vLO2EvtO__mJcKUS_AW6NznFxZEZYNkT5K1zemT7n1JNi0E-ZB45kVX9h5oHdzq7g",
+    firebaseVapidKey: "YOUR_PUBLIC_VAPID_KEY",
     pushSubscriptionEndpoint:
-        "http://localhost:3000/api/dxPushNotifications/pushSubscription?vapidPublicKey=BOoYXjdhsgf6XJyDx7V4M9vLO2EvtO__mJcKUS_AW6NznFxZEZYNkT5K1zemT7n1JNi0E-ZB45kVX9h5oHdzq7g",
+        "http://localhost:4000/api/dxPushNotifications/pushSubscription?vapidPublicKey=[YOUR_PUBLIC_VAPID_KEY]",
 };
 //////////////////////////////////////////
 // DIVBLOX GENERATED CODE - ENDS
@@ -79,9 +79,33 @@ self.addEventListener("install", (event) => {
     );
 });
 
-self.addEventListener("message", (event) => {
+self.addEventListener("message", async (event) => {
     console.log(`The client sent me a message: ${event.data}`);
     if (event.data.action === "skipWaiting") {
+        self.skipWaiting();
+    }
+
+    if (event.data.action === "storePushSubscription") {
+        if (fcmConfig.isFcmEnabled && self.registration.pushManager) {
+            // Web Push supported.
+            try {
+                const options = { applicationServerKey, userVisibleOnly: true };
+                const subscription = await self.registration.pushManager.subscribe(options);
+
+                //Save this to backend with the provided endpoint
+                const saveResult = await fetch(pushSubscriptionEndpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify({ pushSubscriptionObject: subscription }),
+                });
+            } catch (err) {
+                console.log("Error", err);
+            }
+        } else {
+            // Web Push not supported.
+            console.log("Web push not supported");
+        }
         self.skipWaiting();
     }
 });
@@ -104,28 +128,6 @@ self.addEventListener("activate", async (event) => {
             })
             .then(() => self.clients.claim())
     );
-
-    if (fcmConfig.isFcmEnabled && self.registration.pushManager) {
-        // Web Push supported.
-        try {
-            const options = { applicationServerKey, userVisibleOnly: true };
-            const subscription = await self.registration.pushManager.subscribe(options);
-
-            //Save this to backend with the provided endpoint
-            console.log("Push subscription:", subscription);
-            const saveResult = await fetch(pushSubscriptionEndpoint, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ pushSubscriptionObject: subscription }),
-            });
-        } catch (err) {
-            console.log("Error", err);
-        }
-    } else {
-        // Web Push not supported.
-        console.log("Web push not supported");
-    }
 });
 
 // The fetch handler serves responses for same-origin resources from a cache.

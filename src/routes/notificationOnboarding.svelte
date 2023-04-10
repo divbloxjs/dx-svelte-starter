@@ -64,11 +64,13 @@
 
                     setUserNotificationPreferences({ ignored: false, accepted: true, rejected: false });
 
-                    showLocalNotification(
+                    navigator.serviceWorker.controller.postMessage({ action: "storePushSubscription" });
+
+                    /*showLocalNotification(
                         "Thank you!",
                         "This is how your notifications will look when they arrive",
                         get(serviceWorkerRegistration)
-                    );
+                    );*/
 
                     routeUtilities.goToPage("home");
                 } else {
@@ -119,7 +121,7 @@
                     <button class="btn btn-primary" on:click={onAllowNotificationsClicked}>
                         Ok, allow notifications
                     </button>
-                    <button class="btn-default btn" on:click={onRejectNotificationsClicked}> No thanks. </button>
+                    <button class="btn btn-default" on:click={onRejectNotificationsClicked}> No thanks. </button>
                 </div>
             </div>
         </div>
