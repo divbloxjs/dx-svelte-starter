@@ -4,18 +4,18 @@ const dxBuildTimeStamp = "1681137743909";
 const fcmConfig = {
     isFcmEnabled: true,
     firebaseConfig: {
-        apiKey: "AIzaSyCLEn3_LRBzMVM8HFARiPN5ApxVQunJdjI",
-        authDomain: "divblox.firebaseapp.com",
-        databaseURL: "https://divblox.firebaseio.com",
-        projectId: "divblox",
-        storageBucket: "divblox.appspot.com",
-        messagingSenderId: "83768644040",
-        appId: "1:83768644040:web:dabaa26be6ce4e8d1eb0fd",
-        measurementId: "G-TGBJP6VTSB",
+        apiKey: "placeholder - replace with correct firebase details",
+        authDomain: "placeholder - replace with correct firebase details",
+        databaseURL: "placeholder - replace with correct firebase details",
+        projectId: "placeholder - replace with correct firebase details",
+        storageBucket: "placeholder - replace with correct firebase details",
+        messagingSenderId: "placeholder - replace with correct firebase details",
+        appId: "placeholder - replace with correct firebase details",
+        measurementId: "placeholder - replace with correct firebase details",
     },
-    firebaseVapidKey: "YOUR_PUBLIC_VAPID_KEY",
+    firebaseVapidKey: "placeholder - replace with correct firebase details",
     pushSubscriptionEndpoint:
-        "http://localhost:4000/api/dxPushNotifications/pushSubscription?vapidPublicKey=[YOUR_PUBLIC_VAPID_KEY]",
+        "http://localhost:3000/api/dxPushNotifications/pushSubscription?vapidPublicKey=[placeholder - replace with correct firebase details]",
 };
 //////////////////////////////////////////
 // DIVBLOX GENERATED CODE - ENDS
