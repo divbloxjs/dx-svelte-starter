@@ -87,7 +87,7 @@
         <div class="divblox-bottom-banner-space flex flex-grow content-center justify-center">
             <div
                 class="align-center card m-5 mb-[calc(1.25rem+54px)] flex max-w-xl flex-col justify-center bg-base-200 shadow-xl sm:card-side sm:mx-auto sm:flex-row md:max-w-2xl">
-                <div class="tabs tabs-boxed flex flex-row rounded-r-none bg-base-300 p-2 sm:w-64 sm:flex-col">
+                <div class="tabs tabs-boxed flex flex-row rounded-2xl sm:rounded-r-none bg-base-300 py-2 sm:w-64 sm:flex-col">
                     {#each Object.entries(tabs) as [tabName, tabTitle]}
                         <button
                             class="tab mx-auto sm:mt-2"
