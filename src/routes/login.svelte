@@ -4,7 +4,7 @@
     import { checkAuthentication, authenticate, isAuthenticated } from "$src/lib/js/stores/authentication";
     import { onMount } from "svelte";
     import PageTransitionFade from "$src/base_components/page_transitions/pageTransitionFade.svelte";
-    import { successToast, errorAlert, errorToast } from "$src/lib/js/utilities/swalMixins";
+    import { successToast, errorAlert, errorToast } from "$src/lib/js/utilities/swalMixins.utilities.js";
     import ValidatedInput from "$src/base_components/forms/validatedInput.svelte";
     import { get, writable } from "svelte/store";
 

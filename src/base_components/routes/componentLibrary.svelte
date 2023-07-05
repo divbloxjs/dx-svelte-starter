@@ -1,7 +1,7 @@
 <script>
     import RoutingExampleNav from "../navigation/routingExampleNav.svelte";
     import { fade } from "svelte/transition";
-    import PageTransitionFade from "../page_transitions/pageTransitionFade.svelte";
+    import FadeTransition from "../transitions/fade.svelte";
     import ValidatedInput from "../forms/validatedInput.svelte";
     import ValidatedSelectInput from "../forms/validatedSelectInput.svelte";
     import DataTable from "$src/base_components/data-series/dataTable.svelte";
@@ -9,10 +9,10 @@
     import QuickActionModal from "$src/base_components/modals/quickActionModal.svelte";
 
     import DataList from "$src/base_components/data-series/data-lists/dataListWrapper.svelte";
-    import ListRowOne from "$src/base_components/data-series/data-lists/row-variants/stockholm.svelte";
+    import ListStockholmRow from "$src/base_components/data-series/data-lists/row-variants/stockholm.svelte";
     import ListRowTwo from "$src/base_components/data-series/data-lists/row-variants/toronto.svelte";
-    import ListRowThree from "$src/base_components/data-series/data-lists/row-variants/sofia.svelte";
-    import ListRowFour from "$src/base_components/data-series/data-lists/row-variants/geneva.svelte";
+    import ListSofiaRow from "$src/base_components/data-series/data-lists/row-variants/sofia.svelte";
+    import ListGenevaRow from "$src/base_components/data-series/data-lists/row-variants/geneva.svelte";
     import RowAction from "$src/base_components/data-series/data-lists/dataListRowAction.svelte";
 
     let columns = [
@@ -185,7 +185,7 @@
     introText="Some introduction message here"
     inputLabel="Input Label" />
 
-<PageTransitionFade>
+<FadeTransition>
     <RoutingExampleNav />
     <main class="mt-5 mb-16">
         <div class="mx-auto px-5">
@@ -265,7 +265,7 @@
                                         break;
                                 }
                             }}>
-                            <ListRowOne
+                            <ListStockholmRow
                                 {rowData}
                                 {rowIndex}
                                 {listLength}
@@ -342,7 +342,7 @@
                             let:listLength
                             let:rowIndex
                             let:showLoadingState>
-                            <ListRowThree
+                            <ListSofiaRow
                                 {rowData}
                                 {listLength}
                                 {rowIndex}
@@ -364,7 +364,7 @@
                                     action={{ type: "delete" }}
                                     {rowData}
                                     on:actionTriggered={rowActionTriggered} />
-                            </ListRowThree>
+                            </ListSofiaRow>
                         </DataList>
                     </div>
                     <div>
@@ -387,7 +387,7 @@
                             let:listLength
                             let:rowIndex
                             let:showLoadingState>
-                            <ListRowFour
+                            <ListGenevaRow
                                 {rowData}
                                 {listLength}
                                 {rowIndex}
@@ -457,4 +457,4 @@
             {/if}
         </div>
     </main>
-</PageTransitionFade>
+</FadeTransition>

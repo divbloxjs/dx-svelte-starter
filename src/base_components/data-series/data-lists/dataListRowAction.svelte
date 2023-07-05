@@ -1,11 +1,11 @@
 <script>
     import { beforeUpdate, createEventDispatcher } from "svelte";
     import Fa from "svelte-fa";
-    import { faCopy, faEdit, faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
+    import { faCopy, faEdit, faExternalLink, faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
 
     /**
      * @typedef rowAction
-     * @property {'edit'|'view'|'duplicate'|'delete'} type Preconfigured type of action
+     * @property {'edit'|'view'|'duplicate'|'delete'|'external'} type Preconfigured type of action
      * @property {string} [action.btnClasses] Additional classes ot add to the action button
      * @property {string} [action.displayLabel] Display label to be shown next to the action button
      */
@@ -13,7 +13,7 @@
     /**
      * Config option for the row action
      * @type {rowAction}
-     * @property {'edit'|'view'|'duplicate'|'delete'} action.type Display label to be shown next to the action button
+     * @property {'edit'|'view'|'duplicate'|'delete'|'external'} action.type Display label to be shown next to the action button
      * @property {string} [action.btnClasses] Additional classes ot add to the action button
      * @property {string} [action.displayLabel] Display label to be shown next to the action button
      */
@@ -68,6 +68,11 @@
             clickEvent: "delete_clicked",
             defaultBtnClasses: "text-base-content hover:text-error",
         },
+        external: {
+            faIcon: faExternalLink,
+            clickEvent: "external_clicked",
+            defaultBtnClasses: "text-base-content hover:text-info",
+        },
     };
 
     /**
@@ -87,7 +92,7 @@
 {#if Object.keys(configuredActions).includes(action.type)}
     {#if rowData[configuredActions[action.type].backendFlag] === undefined || rowData[configuredActions[action.type].backendFlag]}
         <button
-            class="btn-link btn-xs btn ml-1 flex-nowrap 
+            class="btn-link btn-xs btn ml-1 flex-nowrap
             {action.btnClasses}
             {configuredActions[action.type].defaultBtnClasses}"
             on:click={(event) => rowActionTriggered(event)}>

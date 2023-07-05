@@ -2,7 +2,7 @@
     import RoutingExampleNav from "../navigation/routingExampleNav.svelte";
 
     import { push, pop, replace } from "svelte-spa-router";
-    import PageTransitionFade from "../page_transitions/pageTransitionFade.svelte";
+    import FadeTransition from "../transitions/fade.svelte";
     export let params = {};
 
     const doNavigate = (event, whereTo) => {
@@ -14,7 +14,7 @@
     };
 </script>
 
-<PageTransitionFade>
+<FadeTransition>
     <RoutingExampleNav />
     <main class="p-5">
         <h1>This is the example page</h1>
@@ -24,4 +24,4 @@
         <button class="btn" on:click={(event) => doNavigate(event, "home")}
             >Go Home</button>
     </main>
-</PageTransitionFade>
+</FadeTransition>

@@ -1,7 +1,7 @@
 <script>
     import { beforeUpdate, createEventDispatcher } from "svelte";
     import Dropdown from "$src/base_components/data-series/ui-elements/dropdown.svelte";
-    import { errorToast, successToast } from "$src/lib/js/utilities/swalMixins";
+    import { errorToast, successToast } from "$src/lib/js/utilities/swalMixins.utilities.js";
     import noImagePath from "$src/assets/images/no_image.svg";
 
     /**

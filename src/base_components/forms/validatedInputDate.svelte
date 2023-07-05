@@ -93,7 +93,6 @@
     };
 
     const validateRequired = () => {
-        console.log("validate", value);
         return value !== undefined && value !== null && value !== "";
     };
 
@@ -140,7 +139,7 @@
         {name}
         type="date"
         {placeholder}
-        class="input input-bordered w-full {addInputClass}"
+        class="input-bordered input w-full {addInputClass}"
         class:input-error={!isValid && isValidated && !hideValidation}
         class:input-success={isValid && isValidated && !hideValidation}
         {...$$restProps}

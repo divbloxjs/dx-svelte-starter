@@ -83,7 +83,7 @@
         bind:value={selectedValue}
         {name}
         {disabled}
-        class="select select-bordered w-full {addInputClass}"
+        class="select-bordered select w-full {addInputClass}"
         class:select-error={!isValid && isValidated && !hideValidation}
         class:select-success={isValid && isValidated && !hideValidation}
         {...$$restProps}

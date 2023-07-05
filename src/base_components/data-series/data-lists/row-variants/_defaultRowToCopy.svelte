@@ -1,6 +1,6 @@
 <script>
     import { beforeUpdate, createEventDispatcher } from "svelte";
-    import { errorAlert } from "$src/lib/js/utilities/swalMixins";
+    import { errorAlert } from "$src/lib/js/utilities/swalMixins.utilities.js";
     throw new Error(
         "This component should not be used as is! Copy it out of base_components, customise it and remove this line. Refer to the README.md"
     );

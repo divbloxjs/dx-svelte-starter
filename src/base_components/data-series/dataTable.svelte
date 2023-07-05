@@ -13,7 +13,7 @@
         faTrash,
     } from "@fortawesome/free-solid-svg-icons";
     import { beforeUpdate, createEventDispatcher, onMount } from "svelte";
-    import { disableNonNumericInput, sleep } from "$src/lib/js/utilities/helpers";
+    import { disableNonNumericInput, sleep } from "$src/lib/js/utilities/helper.utilities.js";
     import Dropdown from "$src/base_components/data-series/ui-elements/dropdown.svelte";
 
     export let httpRequestType = "POST";
@@ -168,9 +168,9 @@
 
         let response;
         if (httpRequestType === "GET") {
-            let encodedPostBody = encodeURIComponent(JSON.stringify(postBody));
+            let constraintData = encodeURIComponent(JSON.stringify(postBody));
 
-            response = await fetch(dataSource + "?encodedPostBody=" + encodedPostBody, {
+            response = await fetch(dataSource + "?constraintData=" + constraintData, {
                 method: httpRequestType,
                 headers: {
                     Accept: "application/json",
@@ -342,13 +342,11 @@
     //#region Clicks
     const handleRowClick = (event, rowId) => {
         actionTriggered({ clickEvent: "row_clicked", rowId: rowId });
-        console.log("row clicked: ", rowId);
     };
 
     const handleCustomActionClick = (event, customAction, rowId) => {
         actionTriggered({ clickEvent: customAction, rowId: rowId });
         event.stopPropagation(); // Stops the click on table row element
-        console.log(`${customAction} clicked: `, rowId);
     };
 
     const handleMultiSelect = (event) => {
@@ -357,7 +355,6 @@
         });
 
         actionTriggered({ clickEvent: event.detail.clickEvent, rowIds: selectedRowIds });
-        console.log(`${event.detail.clickEvent}: `, selectedRowIds);
     };
     //endregion
 
@@ -686,7 +683,7 @@
                                 max-width:calc({column.maxWidth});">
                             <button
                                 on:click={async () => handleSortBy(column.dataSourceAttributeName)}
-                                class="btn btn-link  btn-xs pl-0 text-base-content"
+                                class="btn btn-link btn-xs pl-0 text-base-content"
                                 class:py-0={!showFilters}
                                 class:text-success={sortBy === column.dataSourceAttributeName}>
                                 <span
@@ -755,7 +752,7 @@
                                                             }
                                                         }}
                                                         placeholder={filterInfo.placeholder}
-                                                        class="input-bordered input input-xs mb-0 w-full grow " />
+                                                        class="input-bordered input input-xs mb-0 w-full grow" />
                                                 {:else if filterName === "filterNumber"}
                                                     <input
                                                         type="text"
@@ -967,7 +964,7 @@
                                                     style="max-width:100%;">
                                                     <button
                                                         on:click={(event) => handleRowClick(event, row.id)}
-                                                        class="btn btn-link btn-xs text-base-content  underline">
+                                                        class="btn btn-link btn-xs text-base-content underline">
                                                         {row[column.dataSourceAttributeName]}
                                                     </button>
                                                 </span>
@@ -982,7 +979,7 @@
                                             min-width: {columns[index].minWidth};
                                             max-width: calc({columns[index].maxWidth});">
                                                 <div
-                                                    class="text-nowrap inline-block  overflow-hidden overflow-ellipsis align-middle"
+                                                    class="text-nowrap inline-block overflow-hidden overflow-ellipsis align-middle"
                                                     style="max-width:calc(100%);">
                                                     {@html row[column.dataSourceAttributeName]}
                                                 </div>

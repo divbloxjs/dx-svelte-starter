@@ -1,6 +1,8 @@
 <script>
     // This component is used to provide easy validation for basic input fiends
-    import { onMount } from "svelte";
+    import { createEventDispatcher, onMount } from "svelte";
+
+    const dispatch = createEventDispatcher();
 
     // Configured validation options
     const validationOptions = {
@@ -65,6 +67,10 @@
         value = type.match(/^(number|range)$/) ? +e.target.value : e.target.value;
 
         validate();
+    };
+
+    const handleInputEvent = (e) => {
+        dispatch("inputEvent", e);
     };
 
     /**
@@ -144,6 +150,10 @@
         element.focus();
     };
 
+    export const select = () => {
+        element.select();
+    };
+
     onMount(async () => {
         // If a label is provided without a name ('name' attribute is used to match the label to it's
         // corresponding input), the label name is set to the label.
@@ -181,6 +191,8 @@
         {...$$restProps}
         disabled={isDisabled}
         on:input={handleInput}
+        on:focusout={handleInputEvent}
+        on:focusin={handleInputEvent}
         on:change={handleInput}
         on:keypress={(event) => handleKeypress(event)}
         bind:this={element} />

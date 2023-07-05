@@ -2,7 +2,7 @@
     import MainFooter from "$src/lib/navigation/mainFooter.svelte";
     import { domainRoot, appLogo, appName, defaultLandingPage } from "$src/lib/js/stores/configurations";
     import { checkAuthentication, authenticate, isAuthenticated } from "$src/lib/js/stores/authentication";
-    import { routeUtilities } from "$src/lib/js/utilities/routeUtilities";
+    import { routeUtilities } from "$src/lib/js/utilities/route.utilities.js";
     import { onMount } from "svelte";
     import PageTransitionFade from "$src/base_components/page_transitions/pageTransitionFade.svelte";
     import ValidatedInput from "$src/base_components/forms/validatedInput.svelte";
