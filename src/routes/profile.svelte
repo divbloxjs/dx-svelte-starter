@@ -8,7 +8,7 @@
     import { routeUtilities } from "$src/lib/js/utilities/route.utilities.js";
     import ValidatedInput from "$src/base_components/forms/validatedInput.svelte";
     import { fade } from "svelte/transition";
-    import { checkAuthentication, logout } from "$src/lib/js/stores/authentication";
+    import { checkAuthentication, logout } from "$src/lib/js/api/authentication.api.js";
     import SingleImageUploader from "$src/base_components/uploaders/singleImageUploader.svelte";
     import { onMount } from "svelte";
 
@@ -101,7 +101,8 @@
                 {#if activeTab === "details"}
                     <div class="card-body w-full p-5 sm:p-10" in:fade={{ duration: 500 }}>
                         <SingleImageUploader
-                            maxHeight="150px"
+                            maxHeight="200px"
+                            objectFit="none"
                             uploadEndpoint="http://localhost/"
                             displayAsCircle={true}
                             defaultImagePath={profilePictureDefault}

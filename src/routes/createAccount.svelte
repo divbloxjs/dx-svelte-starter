@@ -1,6 +1,7 @@
 <script>
     import MainFooter from "../lib/navigation/mainFooter.svelte";
-    import { isAuthenticated, checkAuthentication, authenticate } from "$src/lib/js/stores/authentication";
+    import { isAuthenticated } from "$src/lib/js/stores/authentication.store.js";
+    import {  checkAuthentication, authenticate } from "$src/lib/js/api/authentication.api.js";
     import { domainRoot, appLogo, appName, defaultLandingPage } from "$src/lib/js/stores/configurations";
     import { routeUtilities } from "$src/lib/js/utilities/route.utilities.js";
     import { onMount } from "svelte";

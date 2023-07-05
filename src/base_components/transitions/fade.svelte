@@ -9,26 +9,21 @@
     const startOutro = () => {
         displayClass = "hidden";
         isHidden = true;
-        // document.body.classList.add("no-scrollbar");
     };
 
     const endOutro = () => {
         displayClass = "";
         isHidden = false;
-        // document.body.classList.remove("no-scrollbar");
-        // dispatch("endedFadeIn");
     };
 
     const startIntro = () => {
         displayClass = "hidden";
         isHidden = true;
-        // document.body.classList.add("no-scrollbar");
     };
 
     const endIntro = () => {
         displayClass = "";
         isHidden = false;
-        // document.body.classList.remove("no-scrollbar");
         dispatch("endedFadeIn");
     };
 
