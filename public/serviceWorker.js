@@ -1,10 +1,32 @@
 //////////////////////////////////////////
 // DIVBLOX GENERATED CODE - DO NOT MODIFY!
-const dxBuildTimeStamp = "15Aug2022a";
+const dxBuildTimeStamp = "1681137743909";
+const fcmConfig = {
+    isFcmEnabled: true,
+    firebaseConfig: {
+        apiKey: "placeholder - replace with correct firebase details",
+        authDomain: "placeholder - replace with correct firebase details",
+        databaseURL: "placeholder - replace with correct firebase details",
+        projectId: "placeholder - replace with correct firebase details",
+        storageBucket: "placeholder - replace with correct firebase details",
+        messagingSenderId: "placeholder - replace with correct firebase details",
+        appId: "placeholder - replace with correct firebase details",
+        measurementId: "placeholder - replace with correct firebase details",
+    },
+    firebaseVapidKey: "placeholder - replace with correct firebase details",
+    pushSubscriptionEndpoint:
+        "http://localhost:3000/api/dxPushNotifications/pushSubscription?vapidPublicKey=[placeholder - replace with correct firebase details]",
+};
 //////////////////////////////////////////
+// DIVBLOX GENERATED CODE - ENDS
 
 const PRECACHE = "precache-" + dxBuildTimeStamp;
 const RUNTIME = "runtime-" + dxBuildTimeStamp;
+
+// VAPID KEY For push notifications
+const applicationServerKey = fcmConfig.firebaseVapidKey;
+// Backend endpoint to store push subscriptions
+const pushSubscriptionEndpoint = fcmConfig.pushSubscriptionEndpoint;
 
 // A list of local resources we always want to be cached.
 const PRECACHE_URLS = [
@@ -57,15 +79,39 @@ self.addEventListener("install", (event) => {
     );
 });
 
-self.addEventListener("message", (event) => {
+self.addEventListener("message", async (event) => {
     console.log(`The client sent me a message: ${event.data}`);
     if (event.data.action === "skipWaiting") {
+        self.skipWaiting();
+    }
+
+    if (event.data.action === "storePushSubscription") {
+        if (fcmConfig.isFcmEnabled && self.registration.pushManager) {
+            // Web Push supported.
+            try {
+                const options = { applicationServerKey, userVisibleOnly: true };
+                const subscription = await self.registration.pushManager.subscribe(options);
+
+                //Save this to backend with the provided endpoint
+                const saveResult = await fetch(pushSubscriptionEndpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify({ pushSubscriptionObject: subscription }),
+                });
+            } catch (err) {
+                console.log("Error", err);
+            }
+        } else {
+            // Web Push not supported.
+            console.log("Web push not supported");
+        }
         self.skipWaiting();
     }
 });
 
 // The activate handler takes care of cleaning up old caches.
-self.addEventListener("activate", (event) => {
+self.addEventListener("activate", async (event) => {
     const currentCaches = [PRECACHE, RUNTIME];
     event.waitUntil(
         caches
@@ -112,4 +158,30 @@ self.addEventListener("fetch", (event) => {
             })
         );
     }
+});
+
+self.addEventListener("push", function (event) {
+    if (event.data) {
+        const pushData = event.data.json();
+
+        const options = {};
+        const title = pushData.notification.title ? pushData.notification.title : "";
+
+        for (const option of Object.keys(pushData.notification)) {
+            options[option] = pushData.notification[option];
+        }
+
+        self.registration.showNotification(title, options);
+    } else {
+        console.log("Push event but no data");
+    }
+});
+
+self.addEventListener("notificationclick", (event) => {
+    const clickedNotification = event.notification;
+    clickedNotification.close();
+
+    // Do something as the result of the notification click
+    //const promiseChain = doSomething();
+    //event.waitUntil(promiseChain);
 });

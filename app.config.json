@@ -1,0 +1,21 @@
+{
+    "domainRoot": "https://divblox.com",
+    "appName": "Divblox",
+    "defaultLandingPage": "/",
+    "backendRoot": "http://localhost:3000",
+    "pushNotifications": {
+        "isFcmEnabled": true,
+        "firebaseConfig": {
+            "apiKey": "placeholder - replace with correct firebase details",
+            "authDomain": "placeholder - replace with correct firebase details",
+            "databaseURL": "placeholder - replace with correct firebase details",
+            "projectId": "placeholder - replace with correct firebase details",
+            "storageBucket": "placeholder - replace with correct firebase details",
+            "messagingSenderId": "placeholder - replace with correct firebase details",
+            "appId": "placeholder - replace with correct firebase details",
+            "measurementId": "placeholder - replace with correct firebase details"
+        },
+        "firebaseVapidKey": "placeholder - replace with correct firebase details",
+        "pushSubscriptionEndpoint": "http://localhost:3000/api/dxPushNotifications/pushSubscription?vapidPublicKey=[placeholder - replace with correct firebase details]"
+    }
+}
