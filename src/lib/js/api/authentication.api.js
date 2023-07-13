@@ -1,11 +1,9 @@
-import { writable, get } from "svelte/store";
-import { defaultLandingPage } from "./configurations";
-import { updateProfilePicturePath } from "./userData";
-import { push, pop, replace } from "svelte-spa-router";
+import { isAuthenticated } from "$src/lib/js/stores/authentication.store.js";
+import { defaultLandingPage } from "$src/lib/js/stores/configurations.js";
+import { get } from "svelte/store";
+import { push, replace } from "svelte-spa-router";
+import { updateProfilePicturePath } from "$src/lib/js/stores/userData.js";
 
-export const isAuthenticated = writable(JSON.parse(localStorage.getItem("isAuthenticated")) || false);
-
-isAuthenticated.subscribe((val) => localStorage.setItem("isAuthenticated", JSON.stringify(val)));
 
 /**
  * Checks whether the current user is authenticated and either redirects to a given page or calls a callback function, based

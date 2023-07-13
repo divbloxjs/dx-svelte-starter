@@ -2,7 +2,7 @@
     import Fa from "svelte-fa";
     import { faEllipsisV, faGrip, faPowerOff } from "@fortawesome/free-solid-svg-icons";
     import { profilePicturePath } from "$src/lib/js/stores/userData";
-    import { logout } from "$src/lib/js/stores/authentication";
+    import { logout } from "$src/lib/js/api/authentication.api.js";
     let dropDownEl;
     let isExpanded = false;
     let isClicked = false;

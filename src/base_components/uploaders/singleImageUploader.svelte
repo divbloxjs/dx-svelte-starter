@@ -1,5 +1,5 @@
 <script>
-    import { defaultImagePath } from "$src/lib/js/utilities/helpers.js";
+    import { defaultImagePath } from "$src/lib/js/utilities/helper.utilities.js";
     import { fade } from "svelte/transition";
     import Fa from "svelte-fa";
     import { faPencil } from "@fortawesome/free-solid-svg-icons";
@@ -18,7 +18,7 @@
     export let imageName = "Divblox Image";
     export let uploadEndpoint;
     export let credentials = "include";
-    export let enableEdit = true;
+    export let enableEdit = false;
 
     let isEditing = false;
     let isSubmitting = false;
@@ -154,7 +154,7 @@
 <div class="mx-auto max-w-full" style="max-height: {maxHeight}; max-width: {maxWidth};">
     <div class="avatar">
         <div
-            style="aspect-ratio: {aspectRatio}; max-height: {maxHeight}; max-width: {maxWidth}"
+            style="aspect-ratio: {aspectRatio}; max-height: {maxHeight}; min-height:200px; max-width: {maxWidth}"
             class:rounded-full={displayAsCircle}
             class:rounded-lg={!displayAsCircle}>
             <img
@@ -171,7 +171,7 @@
 <div class="mx-auto">
     <input type="file" bind:this={fileUploaderEl} on:change={handleFileSelected} id="file" class="file" />
     {#if enableEdit}
-        <label for="file" class="btn btn-link -mt-5 text-base-content">
+        <label for="file" class="btn-link btn -mt-5 text-base-content">
             Edit
             <Fa icon={faPencil} size="xs" translateY={0} translateX={0.5} />
             <p class="file-name" />
@@ -191,14 +191,14 @@
         <div class="mx-auto w-11/12 max-w-[90vw] text-center">
             <button
                 type="button"
-                class="btn btn-link mt-2 text-base-content"
+                class="btn-link btn mt-2 text-base-content"
                 class:btn-disabled={isSubmitting}
                 on:click={() => (isEditing = false)}>
                 Cancel
             </button>
             <button
                 type="button"
-                class="btn btn-primary mt-2"
+                class="btn-primary btn mt-2"
                 class:loading={isSubmitting}
                 on:click={handleConfirmCrop}>
                 <span class:hidden={!isSubmitting}>Saving...</span>

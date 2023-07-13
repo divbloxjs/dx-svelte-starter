@@ -1,7 +1,7 @@
 <script>
     import { createEventDispatcher, onMount } from "svelte";
-    import { sleep } from "$src/lib/js/utilities/helpers.js";
-    import { errorToast } from "$src/lib/js/utilities/swalMixins";
+    import { sleep } from "$src/lib/js/utilities/helper.utilities.js";
+    import { errorToast } from "$src/lib/js/utilities/swalMixins.utilities.js";
     import DataListHeader from "$src/base_components/data-series/data-lists/header-variants/genericHeader.svelte";
 
     const dispatch = createEventDispatcher();
@@ -177,9 +177,12 @@
 
         let response;
         if (httpRequestType === "GET") {
-            let encodedPostBody = encodeURIComponent(JSON.stringify(postBody));
+            let constraintData = encodeURIComponent(JSON.stringify(postBody));
+            let dataSourceUrl = new URL(dataSource);
+            let urlSearchParams = new URLSearchParams(dataSourceUrl.search);
+            urlSearchParams.append("constraintData", constraintData);
 
-            response = await fetch(dataSource + "?encodedPostBody=" + encodedPostBody, {
+            response = await fetch(`${dataSourceUrl.origin}${dataSourceUrl.pathname}?${urlSearchParams.toString()}`, {
                 method: httpRequestType,
                 headers: {
                     Accept: "application/json",
@@ -199,6 +202,10 @@
             });
         } else {
             throw Error("Allowed HTTP request types are only 'POST' and 'GET'. Provided: " + httpRequestType);
+        }
+
+        if (!response.ok) {
+            return;
         }
 
         let data = await response.json();
@@ -288,7 +295,7 @@
         {/if}
         <!-- Custom row for no results found -->
         {#if noResultsFound && !loading}
-            <li class="flex items-center justify-between rounded-lg bg-base-100 py-4 px-4">
+            <li class="flex items-center justify-between rounded-lg bg-base-100 px-4 py-4">
                 <div class="mx-auto text-center">No Results</div>
             </li>
         {/if}

@@ -1,5 +1,5 @@
 <script>
-    import { logout } from "$src/lib/js/stores/authentication";
+    import { logout } from "$src/lib/js/api/authentication.api.js";
     import { profilePicturePath } from "$src/lib/js/stores/userData";
     import {
         domainRoot,

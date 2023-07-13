@@ -18,7 +18,7 @@
     export let mustConfirm = false;
     export let swalConfig = {
         customClass: {
-            popup: "dark:bg-red-100",
+            popup: "dark:bg-base-100 dark:text-base-content",
             icon: "p-1 my-1",
             confirmButton: "btn btn-error ml-2",
             cancelButton: "btn btn-info",

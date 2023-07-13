@@ -2,7 +2,7 @@
     import MainNav from "$src/lib/navigation/mainNav.svelte";
     import { push, pop, replace } from "svelte-spa-router";
     import QuickActionsMenu from "$src/lib/navigation/quickActionsMenu.svelte";
-    import { checkAuthentication } from "$src/lib/js/stores/authentication";
+    import { checkAuthentication } from "$src/lib/js/api/authentication.api.js";
     import { onMount } from "svelte";
     import PageTransitionFade from "$src/base_components/page_transitions/pageTransitionFade.svelte";
 
