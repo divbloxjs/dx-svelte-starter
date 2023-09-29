@@ -8,7 +8,7 @@
     } from "$src/lib/js/stores/firebase";
     import { serviceWorkerRegistration } from "$src/lib/js/stores/serviceWorker";
     import { get } from "svelte/store";
-    import { routeUtilities } from "$src/lib/js/utilities/routeUtilities";
+    import { routeUtilities } from "$src/lib/js/utilities/route.utilities.js";
 
     let debugData = "";
 
